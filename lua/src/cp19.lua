@@ -41,3 +41,33 @@ module("cp19", lunit.testcase, package.seeall)
         table.insert(a, 2, 3)
         assert_list_equal({0, 3, 1}, a, 'a={0, 3, 1}')
     end
+
+    function testRemove()
+        a = {1, 2, 3, 4}
+        assert_equal(2, table.remove(a, 2), 'value 2 was removed from a')
+        assert_list_equal({1, 3, 4}, a, 'a[2] was removed')
+
+        assert_equal(4, table.remove(a), 'last element was removed by default')
+        assert_list_equal({1, 3}, a, 'last element was removed by default')
+
+        -- 0 position
+        assert_error('position out of bounds', handler2(table.remove, a, 0))
+        assert_pass('0 postion can be specified if #list=0', handler2(table.remove, {}, 0))
+
+        -- #list+1 postion
+        assert_equal(3, table.remove(a), '#list+1 == #list')
+        assert_list_equal({1}, a, 'the last element was erased')
+
+        assert_error('other position is invalid', handler2(table.remove, a, 3))
+    end
+
+    function testPack()
+        a = table.pack(1, 2, 3)
+        assert_list_equal({1, 2, 3}, a)
+        assert_equal(3, a.n)
+
+        p1, p2, p3 = table.unpack(a)
+        assert_equal(1, p1)
+        assert_equal(2, p2)
+        assert_equal(3, p3)
+    end
