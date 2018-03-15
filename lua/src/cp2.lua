@@ -3,7 +3,7 @@ require "lunit"
 -- Programming in Lua: Chapter2
 -- http://www.lua.org/pil/2.1.html
 
-module("cp2", lunit.testcase)
+module("cp2", lunit.testcase, package.seeall)
 
     function testNil()
         assert_nil(nil, 'const nil value')
