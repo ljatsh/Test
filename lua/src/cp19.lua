@@ -71,3 +71,65 @@ module("cp19", lunit.testcase, package.seeall)
         assert_equal(2, p2)
         assert_equal(3, p3)
     end
+
+-------------------------------------------------------------- TODO
+-- move following block to cp5.lua
+    function testVariableFunction()
+        local function test(...)
+            return select('#', ...), select(1, ...)
+        end
+
+        local count = test()
+        assert_equal(0, count, 'zero arguments')
+
+        count, p1 = test(1)
+        assert_equal(1, count, '1 arguments')
+        assert_equal(1, p1)
+
+        count, p1, p2 = test(1, 'a', 'b')
+        assert_equal(3, count, '3 arguments')
+        assert_equal(1, p1)
+        assert_equal('a', p2)
+    end
+
+    function testNamedArguments()
+        local function test(...)
+            return select(1, ...)
+        end
+
+        -- 1 special case for function call syntax:
+        -- if the function has only 1 single parameter, and this argument is either a literal string
+        -- or a table constructor, then the parentheses are optional.
+        assert_list_equal({1, 2, 3}, test{1, 2, 3}, 'named arguments are simulated by table constructor')
+    end
+
+-- move following block to cp6.lua
+    function testClosure()
+        function test1(t)
+            return function(x) table.insert(t, x) end
+        end
+
+        local t = {}
+        local c1 = test1(t)
+        local c2 = test1(t)
+        assert_list_equal({}, t)
+        c1(1)
+        c1(2)
+        assert_list_equal({1, 2}, t, 't was referred by the closure c1')
+        c2('a')
+        assert_list_equal({1, 2, 'a'}, t, 't was also referred by the closure c2')
+
+        function test2()
+            local t = {}
+            return function(x) table.insert(t, x); return t end
+        end
+
+        c1 = test2()
+        c2 = test2()
+
+        local t1 = c1(2)
+        local t2 = c2('a')
+
+        assert_list_equal({2}, t1, 't1 and t2 are different objects')
+        assert_list_equal({'a'}, t2, 't1 and t2 are different objects')
+    end
