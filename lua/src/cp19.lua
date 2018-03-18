@@ -133,3 +133,35 @@ module("cp19", lunit.testcase, package.seeall)
         assert_list_equal({2}, t1, 't1 and t2 are different objects')
         assert_list_equal({'a'}, t2, 't1 and t2 are different objects')
     end
+
+    function testNonGlobalFunctions()
+        local test1 = function(n)
+            if n == 0 then
+                return 1
+            else
+                return n * test1(n - 1)
+            end
+        end
+
+        local test2
+        test2 = function(n)
+            if n == 0 then
+                return 1
+            else
+                return n * test2(n - 1)
+            end
+        end
+
+        -- This is the way Lua expands its syntactic sugar for local functions
+        local function test3(n)
+            if n == 0 then
+                return 1
+            else
+                return n * test3(n - 1)
+            end
+        end
+
+        assert_error('recursive calling of test is global', handler1(test1, 10))
+        assert_pass('forward declarations can solve the recursive buggy', handler1(test2, 10))
+        assert_pass('the suggest way to solve the recursive buggy', handler1(test3, 10))
+    end
