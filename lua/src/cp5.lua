@@ -46,3 +46,31 @@ module ("cp5", lunit.testcase, package.seeall)
         assert_error('string.format complains there is no sufficient arguments', test1)
     end
 
+    function testVariableFunction()
+        local function func_test(...)
+            return select('#', ...), select(1, ...)
+        end
+
+        local count = func_test()
+        assert_equal(0, count, 'zero arguments')
+
+        count, p1 = func_test(1)
+        assert_equal(1, count, '1 arguments')
+        assert_equal(1, p1)
+
+        count, p1, p2 = func_test(1, 'a', 'b')
+        assert_equal(3, count, '3 arguments')
+        assert_equal(1, p1)
+        assert_equal('a', p2)
+    end
+
+    function testNamedArguments()
+        local function func_test(...)
+            return select(1, ...)
+        end
+
+        -- 1 special case for function call syntax:
+        -- if the function has only 1 single parameter, and this argument is either a literal string
+        -- or a table constructor, then the parentheses are optional.
+        test.assert_list_equal({1, 2, 3}, func_test{1, 2, 3}, 'named arguments are simulated by table constructor')
+    end
