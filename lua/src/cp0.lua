@@ -42,5 +42,8 @@ module("cp0", lunit.testcase, package.seeall)
 
         local t = {}
         for k, _ in pairs(config) do table.insert(t, k) end
+
+        -- pair traverse is not stable
+        table.sort(t)
         test.assert_list_equal({1, 3, 5}, t)
     end
