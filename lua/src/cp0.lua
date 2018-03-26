@@ -36,7 +36,7 @@ module("cp0", lunit.testcase, package.seeall)
             return k, v
         end
 
-        mt.__pairs = function(t, index)
+        mt.__pairs = function(t)
             return my_next, t, nil
         end
 

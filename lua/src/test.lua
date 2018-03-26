@@ -38,7 +38,7 @@ local function print_pattern_classes()
     s = string.char(table.unpack(chars))
 
     for _, pattern in ipairs({'%a+', '%c+', '%d+', '%g+', '%l+', '%p+', '%s+', '%u+', '%w+', '%x+'}) do
-        r = {}
+        local r = {}
         for c in string.gmatch(s, pattern) do table.insert(r, c) end
         print(pattern .. ': ' .. table.concat(r))
     end
@@ -138,5 +138,39 @@ function dump(value, description, nesting)
 end
 
 --dump(getmetatable(''))
-print(''..2)
+
+function readOnly (t)
+  local proxy = {}
+  local mt = {       -- create metatable
+    __index = t,
+    __newindex = function (t,k,v)
+      error("attempt to update a read-only table", 2)
+    end
+  }
+  setmetatable(proxy, mt)
+  return proxy
+end
+
+local t = {1, 2, name='ljatsh'}
+local t1 = readOnly(t)
+dump(t)
+
+loadstring("print (a, 'lj')")()
+
+function setfield (f, v)
+  local t = _G    -- start with the table of globals
+  for w, d in string.gmatch(f, "([%w_]+)(%.?)") do
+    if d == "." then      -- not last field?
+      t[w] = t[w] or {}   -- create table if absent
+      t = t[w]            -- get the table
+    else                  -- last field
+      t[w] = v            -- do the assignment
+    end
+  end
+end
+
+setfield("x.y.z", 10)
+--dump(_G)
+
+dump(package.config)
 

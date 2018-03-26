@@ -72,3 +72,28 @@ module("cp9", lunit.testcase, package.seeall)
         test.assert_list_equal({'x__end', 'y__end', 'z__end'},
                                consume(producer()))
     end
+
+    function test_wrap()
+        local function test_func(...)
+            return table.pack(...)
+        end
+
+        local f = coroutine.wrap(test_func)
+        test.assert_list_equal({1, 2, 'a'}, f(1, 2, 'a'))
+
+        local function test_func2(...)
+            a.b = 1
+        end
+        f = coroutine.wrap(test_func2)
+        assert_error('coroutine wrap propogates the error', f)
+    end
+
+    function test_iterator()
+        local function test_func(n)
+            for i=1, n do coroutine.yield(i * 2) end
+        end
+
+        local result = {}
+        for i in coroutine.wrap(test_func), 3 do table.insert(result, i) end
+        test.assert_list_equal({2, 4, 6}, result)
+    end
