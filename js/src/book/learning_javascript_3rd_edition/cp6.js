@@ -115,7 +115,7 @@ describe('Functions', function() {
 
         assert.deepEqual(test.apply(obj, [1, 'ljatsh']), [obj, 1, 'ljatsh']);
 
-        var test2 = test.bind(obj, 1)
+        var test2 = test.bind(obj, 1);
         assert.deepEqual(test2(2, 'ljatsh'), [obj, 1, 2, 'ljatsh']);
     });
 });

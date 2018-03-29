@@ -89,15 +89,20 @@ describe('Primitive types and Objects', function() {
             assert.equal(s.indexOf('ss'), -1);
             assert.equal(s.lastIndexOf('a'), 10);
             assert.equal(s.lastIndexOf('', 3), 3, 'if searchValue is empty string, the fromIndex is returned');
+        });
+
+        it('Split and Join', function() {
+            // TODO RegExp
+        });
+
+        it('Slice', function() {
+            var s = 'Hello, JavaScript!';
             assert.equal(s.substr(2, 3), 'llo');
             assert.equal(s.substr(-5), 'ript!', 'negative index starts counting from the end of the string');
             assert.equal(s.substring(2, 5), 'llo', 'indexEnd is exlcuded');
             assert.equal(s.substring(5, 2), 'llo', 'if indexStart is greater than indexEnd, two indexes were swapped');
             assert.equal(s.substring(2, 2), '');
-        });
-
-        it('Split and Join', function() {
-            // TODO RegExp
+            assert.equal(s.slice(), 'Hello, JavaScript!', 'a simple copy method');
         });
 
         // 1. null is object while undefined id undefined
