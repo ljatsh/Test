@@ -82,7 +82,7 @@ describe('Primitive types and Objects', function() {
     // 1. searchValue in lastIndexOf has special meaning
     describe('String', function() {
         it('Normal Operations', function() {
-            s = 'Hello, JavaScript!'
+            var s = 'Hello, JavaScript!'
             assert.equal(s.charAt(4), 'o', 'index begins from 0')
             assert.equal(s.charAt(100), '', 'empty string is returned if index is invalid')
             assert.equal(s.indexOf('o,'), 4)
@@ -107,7 +107,10 @@ describe('Primitive types and Objects', function() {
             assert.equal(typeof(undefined), 'undefined')
         })
 
-        
+        it('Template String(ES6 feature)', function() {
+            var a = 1, b = 1.2, c = 'ljatsh'
+            assert.equal(`${a}_${b}_${c}`, '1_1.2_ljatsh')
+        })
     })
 })
 
