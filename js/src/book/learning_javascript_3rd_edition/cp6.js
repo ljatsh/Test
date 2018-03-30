@@ -100,22 +100,21 @@ describe('Functions', function() {
     it('The call, apply and bind', function() {
         function test(...args) {
             var results = []
-            results[0] = this;
-
             for (var i=0; i<args.length; i++)
-                results[i+1] = args[i];
+                results.push(args[i]);
 
+            results.push(this);
             return results;
         }
 
         var obj = {};
         assert.deepEqual(test.call(obj), [obj]);
-        assert.deepEqual(test.call(obj, 1, 'ljatsh'), [obj, 1, 'ljatsh']);
-        assert.deepEqual(test.call(obj, ...[1, 'ljatsh']), [obj, 1, 'ljatsh']);
+        assert.deepEqual(test.call(obj, 1, 'ljatsh'), [1, 'ljatsh', obj]);
+        assert.deepEqual(test.call(obj, ...[1, 'ljatsh']), [1, 'ljatsh', obj]);
 
-        assert.deepEqual(test.apply(obj, [1, 'ljatsh']), [obj, 1, 'ljatsh']);
+        assert.deepEqual(test.apply(obj, [1, 'ljatsh']), [1, 'ljatsh', obj]);
 
         var test2 = test.bind(obj, 1);
-        assert.deepEqual(test2(2, 'ljatsh'), [obj, 1, 2, 'ljatsh']);
+        assert.deepEqual(test2(2, 'ljatsh'), [1, 2, 'ljatsh', obj]);
     });
 });

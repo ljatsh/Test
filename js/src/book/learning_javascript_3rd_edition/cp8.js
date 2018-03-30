@@ -4,6 +4,11 @@
 var assert = require('assert');
 
 // 1. Like memmove, Array.copyWithin can solve overlap issue
+// 2. Don't use for...in to traverses Array, because there are sparse Array and non-index enumerable properties(TODO) issue. Perfer forEach/some/every instead.
+// 3. Avoid to change array length during forEach.
+// 4. find/findIndex is not efficient for sparse Array
+// 5. Avoid to sort number Array by the default comparisionFunc
+// 6. Be careful that callback in map has 3 parameters! TODO: How to use Array.prototype.map
 describe('Arrays', function() {
     it('Creation', function() {
         var obj = {};
@@ -91,17 +96,56 @@ describe('Arrays', function() {
         assert.equal(a.indexOf(5), 3)
         assert.equal(a.lastIndexOf(5), 4)
         assert.equal(a.lastIndexOf(6), -1)
+
+        // find
+        //       0. 1. 2. 3.4. 5. 6. 7. 8 9
+        var b = [1, 1, 2, , 3, 3, 4, 4, , 5]
+        var c = []
+        function search(target, element, index) {
+            c.push(index);
+            if (target == element)
+                return true;
+
+            return false;
+        }
+
+        var result = b.find(search.bind(undefined, 3));
+        assert.equal(result, 3);
+        assert.deepEqual(c, [0, 1, 2, 3, 4]);
+
+        c.splice(0, c.length);
+        assert.equal(c.length, 0);
+        assert.equal(b.find(search.bind(undefined, 10)), undefined, 'failed to search');
+
+        // findIndex
+        c.splice(0, c.length);
+        result = b.findIndex(search.bind(undefined, 3));
+        assert.equal(result, 4);
+        assert.deepEqual(c, [0, 1, 2, 3, 4]);
+
+        c.splice(0, c.length);
+        assert.equal(b.findIndex(search.bind(undefined, 10)), -1, 'failed to search');
+
+        // some and every is much more efficient than find
     });
 
     it('Sort', function() {
-
+        var a = [80, 9, 7]
+        assert.deepEqual(a.sort(), [7, 80, 9])
+        assert.deepEqual(a.sort((a, b) => a - b), [7, 9, 80])
     });
 
     it('Traversal', function() {
+        var a = new Array(3).fill(9);
+        delete a[1]; // make a sparse array
 
+        var b = [];
+        a.forEach((element, index) => b.push(index));
+        assert.deepEqual(b, [0, 2]);
     });
 
     it('Map and Filter', function() {
-
+        assert.deepEqual([1, 4, 9].map(Math.sqrt), [1, 2, 3])
+        assert.deepEqual([1, 2, 4, 5].filter(x=> x%2 == 0), [2, 4])
     });
 });
