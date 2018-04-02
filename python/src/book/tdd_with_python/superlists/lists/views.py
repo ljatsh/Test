@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 
-from lists.models import Item
+from lists.models import Item, List
 
 
 def home_page(request):
@@ -9,7 +9,8 @@ def home_page(request):
 
 
 def new_list(request):
-    Item.objects.create(text=request.POST['item_text'])
+    list = List.objects.create()
+    Item.objects.create(text=request.POST['item_text'], list=list)
     return redirect('/lists/unique-url-in-the-world/')
 
 

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import resolve
 
 from lists.views import home_page
-from lists.models import Item
+from lists.models import Item, List
 
 
 class HomePageTest(TestCase):
@@ -33,24 +33,33 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response, 'list.html')
 
     def test_display_all_list_items(self):
-        Item.objects.create(text='item 1')
-        Item.objects.create(text='item 2')
+        list = List.objects.create()
+        Item.objects.create(text='item 1', list=list)
+        Item.objects.create(text='item 2', list=list)
 
         response = self.client.get('/lists/unique-url-in-the-world/')
         self.assertContains(response, 'item 1')
         self.assertContains(response, 'item 2')
 
 
-class ItemModelTest(TestCase):
+class ListItemModelTest(TestCase):
 
     def test_save_and_retrieve_items(self):
+        list = List()
+        list.save()
+
         first = Item()
         first.text = 'Item_1'
+        first.list = list
         first.save()
 
         second = Item()
         second.text = 'Item_2'
+        second.list = list
         second.save()
+
+        saved_list = List.objects.first()
+        self.assertEqual(saved_list, list)
 
         saved_items = Item.objects.all()
         self.assertEqual(saved_items.count(), 2)
