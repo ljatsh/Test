@@ -11,22 +11,19 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
-    def test_only_saves_items_when_necessary(self):
-        self.client.get('/')
-        self.assertEqual(Item.objects.count(), 0)
 
+class NewListTest(TestCase):
     def test_can_save_POST_request(self):
-        response = self.client.post('/', data={'item_text': 'A new item'})
+        response = self.client.post('/lists/new', data={'item_text': 'A new item'})
 
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new item')
 
     def test_can_redirect_after_POST(self):
-        response = self.client.post('/', data={'item_text': 'A new item'})
+        response = self.client.post('/lists/new', data={'item_text': 'A new item'})
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/lists/unique-url-in-the-world/')
+        self.assertRedirects(response, '/lists/unique-url-in-the-world/')
 
 
 class ListViewTest(TestCase):
