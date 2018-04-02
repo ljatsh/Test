@@ -1,10 +1,14 @@
 
 import unittest
 import time
+
+from django.test import LiveServerTestCase
+
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-class FunctionalTest(unittest.TestCase):
+
+class FunctionalTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
 
@@ -19,7 +23,7 @@ class FunctionalTest(unittest.TestCase):
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # I heard about a cool new onlin to-do app and then, went to check its home page.
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # I noticed its title contains 'TO-DO'
         self.assertIn('TO-DO', self.browser.title)
