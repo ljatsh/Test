@@ -22,7 +22,7 @@ class FunctionalTest(LiveServerTestCase):
                       f'New to-do item does not appear. Contents were:\n{to_do_table.text}')
 
     def test_can_start_a_list_and_retrieve_it_later(self):
-        # I heard about a cool new onlin to-do app and then, went to check its home page.
+        # I heard about a cool new online to-do app and then, went to check its home page.
         self.browser.get(self.live_server_url)
 
         # I noticed its title contains 'TO-DO'
@@ -53,12 +53,49 @@ class FunctionalTest(LiveServerTestCase):
         self.check_row_in_list_table('1. call my brother today')
         self.check_row_in_list_table('2. write today\'s diary')
 
-        # I noticed the site had generated a unique URL for me -- there was some explanatory text to that effect.
+    def test_multiple_user_can_start_lists_with_different_urls(self):
+        # I created 2 to-do items
+        self.browser.get(self.live_server_url)
+
+        text_box = self.browser.find_element_by_id('id_new_item')
+        text_box.send_keys('call my brother today')
+        text_box.send_keys(Keys.ENTER)
+        time.sleep(1)
+
+        self.check_row_in_list_table('1. call my brother today')
+
+        my_url = self.browser.current_url
+        self.assertRegex(my_url, '/lists/.+')
+
+        # Another user visit the same url, he should not see my to-do lists
+
+        ## close the browser firstly to clear cookie
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        print(self.live_server_url)
+        self.browser.get(self.live_server_url)
+
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('1. call my brother today', page_text)
+
+        text_box = self.browser.find_element_by_id('id_new_item')
+        text_box.send_keys('purchase milk')
+        text_box.send_keys(Keys.ENTER)
+        time.sleep(1)
+
+        self.check_row_in_list_table('1. purchase milk')
+
+        their_url = self.browser.current_url()
+        self.assertRegEx(their_url, 'lists/.+')
+
+        # He cannot see my to-do lists
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('1. call my brother today', page_text)
+
+        self.assertNotEqual(my_url, their_url)
+
         self.fail('Finished')
-
-        # I visited that URL and checked my to-do list was still there
-
-        # exit
 
 
 if __name__ == '__main__':
