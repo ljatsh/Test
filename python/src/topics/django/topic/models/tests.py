@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.db.utils import IntegrityError
 
 from models.models import CommonOptionalNull
+from models.models import CommonOptionalBlank
 
 # TODO:
 # avoid using null on string-based fileds, such as CharField and TextField
@@ -31,4 +32,8 @@ class FieldTest(TestCase):
         ## An error occurred in the current transaction. You can't execute queries until the end of the 'atomic' block.
         ## TODO: transaction
         self.assertRaises(IntegrityError, obj2.save, 'integrity error')
+
+    def test_common_optional_blank(self):
+
+        obj = CommonOptionalBlank()
 
