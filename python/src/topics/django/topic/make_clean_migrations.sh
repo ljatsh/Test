@@ -4,4 +4,4 @@ find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 
 python3 manage.py makemigrations
-python3 manage.py sqlmigrate testcase 0001
+python3 manage.py sqlmigrate models 0001
