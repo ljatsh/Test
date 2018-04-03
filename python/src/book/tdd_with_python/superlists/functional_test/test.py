@@ -19,7 +19,7 @@ class FunctionalTest(LiveServerTestCase):
         to_do_table = self.browser.find_element_by_id('id_to_do_list')
         rows = to_do_table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows],
-                      f'New to-do item does not appear. Contents were:\n{to_do_table.text}')
+                      'New to-do item does not appear. Contents were:\n{}'.format(to_do_table.text))
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # I heard about a cool new online to-do app and then, went to check its home page.
