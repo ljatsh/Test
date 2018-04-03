@@ -86,16 +86,14 @@ class FunctionalTest(LiveServerTestCase):
 
         self.check_row_in_list_table('1. purchase milk')
 
-        their_url = self.browser.current_url()
-        self.assertRegEx(their_url, 'lists/.+')
+        their_url = self.browser.current_url
+        self.assertRegex(their_url, 'lists/.+')
 
         # He cannot see my to-do lists
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('1. call my brother today', page_text)
 
         self.assertNotEqual(my_url, their_url)
-
-        self.fail('Finished')
 
 
 if __name__ == '__main__':

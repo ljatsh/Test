@@ -12,7 +12,7 @@ class HomePageTest(TestCase):
         self.assertTemplateUsed(response, 'home.html')
 
 
-class NewListTest(TestCase):
+class NewItemTest(TestCase):
     def test_can_save_POST_request(self):
         response = self.client.post('/lists/new', data={'item_text': 'A new item'})
 
@@ -23,23 +23,55 @@ class NewListTest(TestCase):
     def test_can_redirect_after_POST(self):
         response = self.client.post('/lists/new', data={'item_text': 'A new item'})
 
-        self.assertRedirects(response, '/lists/unique-url-in-the-world/')
+        list = List.objects.first()
+        self.assertRedirects(response, '/lists/{}/'.format(list.id))
 
+    def test_can_save_POST_request_to_existing_list(self):
+        list1 = List.objects.create()
+        list2 = List.objects.create()
+
+        response = self.client.post('/lists/{}/add_item'.format(list2.id), data={'item_text': 'A new item'})
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'A new item')
+        self.assertEqual(new_item.list, list2)
+
+    def test_redirects_to_list_view(self):
+        list1 = List.objects.create()
+        list2 = List.objects.create()
+
+        response = self.client.post('/lists/{}/add_item'.format(list2.id), data={'item_text': 'A new item'})
+        self.assertRedirects(response, '/lists/{}/'.format(list2.id))
 
 class ListViewTest(TestCase):
 
     def test_uses_list_template(self):
-        response = self.client.get('/lists/unique-url-in-the-world/')
+        list = List.objects.create()
+        response = self.client.get('/lists/{}/'.format(list.id))
         self.assertTemplateUsed(response, 'list.html')
 
-    def test_display_all_list_items(self):
-        list = List.objects.create()
-        Item.objects.create(text='item 1', list=list)
-        Item.objects.create(text='item 2', list=list)
+    def test_display_only_items_for_that_list(self):
+        list1 = List.objects.create()
+        Item.objects.create(text='item 1', list=list1)
+        Item.objects.create(text='item 2', list=list1)
 
-        response = self.client.get('/lists/unique-url-in-the-world/')
+        list2 = List.objects.create()
+        Item.objects.create(text='item 3', list=list2)
+        Item.objects.create(text='item 4', list=list2)
+
+        response = self.client.get('/lists/{}/'.format(list1.id))
         self.assertContains(response, 'item 1')
         self.assertContains(response, 'item 2')
+        self.assertNotContains(response, 'item 3')
+        self.assertNotContains(response, 'item 4')
+
+    def test_passes_correct_list_to_template(self):
+        list1 = List.objects.create()
+        list2 = List.objects.create()
+
+        response = self.client.get('/lists/{}/'.format(list2.id))
+        self.assertEqual(response.context['list'], list2)
 
 
 class ListItemModelTest(TestCase):
