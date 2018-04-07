@@ -16,6 +16,7 @@ from models.models import StringFields
 from models.models import BooleanFields
 from models.models import BinaryFields
 from models.models import TimeFields
+from models.models import ForeignKeyFields
 
 # TODO:
 # avoid using null on string-based filed, such as CharField and TextField
@@ -145,3 +146,8 @@ class FieldTest(TestCase):
         obj.save()
         self.assertEqual(obj.field_date, datetime.date.today())
         self.assertEqual(obj.field_datetime.date(), datetime.date.today())
+
+    def test_foreignkey_fields(self):
+        obj_string = StringFields.objects.create(field_char='12345')
+        obj_foreign_key = ForeignKeyFields.objects.create(field_foreign=obj_string)
+        ## TODO

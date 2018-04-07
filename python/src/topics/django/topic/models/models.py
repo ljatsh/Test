@@ -136,3 +136,13 @@ class TimeFields(models.Model):
             result.append('{}={!r}'.format(k, v))
 
         return '\n'.join(result)
+
+class ForeignKeyFields(models.Model):
+    field_foreign = models.ForeignKey(StringFields, on_delete=models.CASCADE)
+
+    def __str__(self):
+        result = []
+        for k, v in vars(self).items():
+            result.append('{}={!r}'.format(k, v))
+
+        return '\n'.join(result)
