@@ -33,7 +33,11 @@ describe('OOP', function() {
             // TODO
 
             // Object.create
-            // TODO
+            obj = Object.create(Object.prototype, {
+                x: {value:2, writeable:true, configurable:true}
+            });
+            assert.ok(obj instanceof Object, 'TODO: instanceof meaning');
+            assert.equal(obj.x, 2);
         });
 
         it('Property Query and Set', function() {
@@ -99,5 +103,47 @@ describe('OOP', function() {
             // write-ancessor
             assert.equal(obj.w, undefined, 'write-only ancessor evaluates undefined')
         });
+
+        it('Property Attributes', function() {
+            var obj = {x:1};
+            var descriptor = Object.getOwnPropertyDescriptor(obj, 'x');
+            //// the default attributes are true if the property is created with object literal
+            assert.ok(descriptor.writable)
+            assert.ok(descriptor.enumerable)
+            assert.ok(descriptor.configurable)
+
+            Object.defineProperty(obj, 'x', {value:2, writable:false});
+            Object.defineProperty(obj, 'y', {value:2});
+
+            /// If you are modifying an existing property, the attributes you omitted in definedProperty are left unchanged.
+            descriptor = Object.getOwnPropertyDescriptor(obj, 'x')
+            assert.equal(obj.x, 2)
+            assert.ok(!descriptor.writable)
+            //// TODO obj.x = 3 throws in restrict mode
+            obj.x = 3
+            assert.equal(obj.x, 2)
+            assert.ok(descriptor.enumerable)
+            assert.ok(descriptor.configurable)
+
+            //// If you are createing a new property, the attributes are false if they are omitted in definedProperty
+            descriptor = Object.getOwnPropertyDescriptor(obj, 'y')
+            assert.ok(!descriptor.wrirtable)
+            assert.ok(!descriptor.enumerable)
+            assert.ok(!descriptor.configurable)
+        });
+
+        it('Object Attributes', function() {
+            function classof(o) {
+                if (o === null) return "Null";
+                if (o === undefined) return "Undefined";
+                return Object.prototype.toString.call(o);
+            }
+
+            console.log(classof({}));
+
+            var o = {x:1, y:{z:[false,null,""]}};
+            var s = JSON.stringify(o);
+            console.log(s);
+        })
     });
 });
