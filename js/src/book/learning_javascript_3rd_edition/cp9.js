@@ -9,6 +9,10 @@ var assert = require('assert');
 // 3. The delete operator can only delete object's own property
 // 4. Prefer in than obj.x !== undefined, because in can distinguish between property missing and undefined property
 // 5. Getter and Setter is similar to C# Property
+// 6. Every object has constructor property. Object's prototype property cannot be accessed directy.
+//    It can be queried by Object.getPropertyOf or by obj.constructor.prototype. However, this does not work for objects
+//    crated by Object.create() and it also maybe failed. -- TODO
+// 7. Function prototype always contains constructor property pointing to the function itself. Adhere to this idiom.
 describe('OOP', function() {
     describe('Objects', function() {
         it('Object Creation', function() {
@@ -30,7 +34,8 @@ describe('OOP', function() {
             assert.deepEqual(objs, [{'count':2}, {'count':3}, {'count':4}]);
 
             // New constructor
-            // TODO
+            obj = new Array()
+            assert.equal(obj.length, 0);
 
             // Object.create
             obj = Object.create(Object.prototype, {
@@ -132,16 +137,41 @@ describe('OOP', function() {
             assert.ok(!descriptor.configurable);
         });
 
-        it('Object Attributes', function() {
-            //// it seems prototype attribute cannot be accessed directly
-            assert.equal(Object.getPrototypeOf({}), Object.prototype, 'Object literals use Object.prototype of their prototype');
-            assert.equal(Object.getPrototypeOf([1, 2]), Array.prototype, 'Array literals use Array.prototype of their prototype');
+        it('Object Attributes --- prototype', function() {
+            // object literal
+            var obj = {};
+            assert.equal(obj.constructor.prototype, Object.getPrototypeOf(obj), 'object.constructor.prototype is deprecated');
+            assert.equal(Object.getPrototypeOf(obj), Object.prototype, 'Object literals use Object.prototype of their prototype');
 
-            //// isPrototypeOf checks if an object exists in another object's prototype chain
-            assert.ok(Object.prototype.isPrototypeOf({}));
-            assert.ok(Object.prototype.isPrototypeOf(Array.prototype));
+            var array = [1, 2];
+            assert.equal(array.constructor.prototype, Object.getPrototypeOf(array), 'constructor.property is deprecated');
+            assert.equal(Object.getPrototypeOf(array), Array.prototype, 'Array literals use Array.prototype of their prototype');
 
+            // objects create by constructor
+            obj = {};
+            assert.equal(obj.constructor.prototype, Object.getPrototypeOf(obj), 'object.constructor.prototype is deprecated');
+            assert.equal(Object.getPrototypeOf(obj), Object.prototype, 'Object literals use Object.prototype of their prototype');
 
+            array = [1, 2];
+            assert.equal(array.constructor.prototype, Object.getPrototypeOf(array), 'constructor.property is deprecated');
+            assert.equal(Object.getPrototypeOf(array), Array.prototype, 'Array literals use Array.prototype of their prototype');
+
+            // objects create by Object.create
+            var prototype = {name:'ljatsh'};
+            obj = Object.create(prototype);
+            assert.equal(Object.getPrototypeOf(obj), prototype);
+            assert.ok(obj.constructor != null, 'objects created by Object.create also has constructor');
+            assert.ok(obj.constructor.prototype != Object.getPrototypeOf(obj));
+
+            // TODO: Object.create mechanism
+            assert.ok(obj instanceof obj.constructor)
+            assert.ok(obj.constructor.prototype.isPrototypeOf(obj));
+            var x = Object.getPrototypeOf(obj);
+            assert.ok(obj instanceof x.constructor)
+            assert.ok(x.isPrototypeOf(obj));
+        });
+
+        it('Object Attributes --- class', function() {
             //// default toString returns class attribute ---> [object class] in string format
             function classof(o) {
                 if (o === null) return "Null";
@@ -149,14 +179,64 @@ describe('OOP', function() {
                 return Object.prototype.toString.call(o).slice(8, -1);
             }
 
+            //// objects created by built in constructors contains detailed information
             assert.equal(classof({}), 'Object');
             assert.equal(classof([]), 'Array');
-            assert.equal(classof(Object.prototype), 'Object', 'TODO cannot understand yet');
-            assert.equal(classof(Array.prototype), 'Array', 'TODO cannot understand yet');
+            assert.equal(classof(""), 'String');
+            assert.equal(classof(true), 'Boolean');
+            assert.equal(classof(/./), 'RegExp');
+            assert.equal(classof(new Date()), 'Date');
 
-            // var o = {x:1, y:{z:[false,null,""]}};
-            // var s = JSON.stringify(o);
-            // console.log(s);
-        })
+            //// other objects is Object
+            var prototype = {name:'ljatsh'};
+            var obj = Object.create(prototype);
+            assert.equal(classof(obj), 'Object');
+
+            function F() {}
+            obj = new F;
+            assert.equal(classof(obj), 'Object');
+        });
+
+        it('Object & Constructor', function() {
+            function F() {}
+
+            var obj = new F;
+            assert.equal(F.prototype.constructor, F, 'function prototype always contains constructor property pointing to the function itself');
+            assert.equal(obj.constructor, F, 'object inherites the constructor property');
+        });
+
+        // function is object Function
+        it('Object & Function', function() {
+            function F() {}
+
+            assert.equal(Object.getPrototypeOf(F), Function.prototype);
+        });
+
+        it('instanceof operator and Object.isPrototypeOf', function() {
+            // instanceof operator checks whether the prototype of a constrctor appears anywhere
+            // in the prototype chain of an object. Left operand is the object and right is the
+            // constructor
+
+            function F() {}
+            var obj = new F;
+
+            assert.ok(obj instanceof F);
+            assert.ok(obj instanceof Object);
+            assert.ok(F.prototype instanceof Object);
+
+            var prototype = {};
+            obj = Object.create(prototype);
+            assert.ok(obj instanceof obj.constructor, 'TODO');
+
+            // Object.prototype.isPrototypeOf checks if an object exists in another object's prototype chain
+            function Object1() {}
+            function Object2() {}
+
+            Object2.prototype = Object.create(Object1.prototype);
+
+            obj = new Object2;
+            assert.ok(Object2.prototype.isPrototypeOf(obj));
+            assert.ok(Object1.prototype.isPrototypeOf(obj), 'prototype chain');
+        });
     });
 });
