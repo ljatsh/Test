@@ -11,6 +11,7 @@ var assert = require('assert');
 // 5. Closure has its own this variable different from this of its parent
 // 6. Array Notation binds this to the this of its caller
 // 7. Spread operator ... can be used in call
+// 8. function is a kind of object and contains prototype property. Function can be called as constructor, and this was bind to the new created object.
 describe('Functions', function() {
     it('Value and Reference passing', function() {
         var a = 1, b = 2, obj = {age : 10};
@@ -116,5 +117,22 @@ describe('Functions', function() {
 
         var test2 = test.bind(obj, 1);
         assert.deepEqual(test2(2, 'ljatsh'), [1, 2, 'ljatsh', obj]);
+    });
+
+    it('Constructor', function() {
+        function Test(out) {
+            out.push(this);
+        }
+
+        var array = [];
+        var obj = new Test(array);
+        assert.equal(array[0], obj);
+        assert.equal(Object.getPrototypeOf(obj), Test.prototype, 'Function is actually object and contains prototype object');
+
+        var obj2 = {method:Test};
+        array.splice(0);
+        obj = new obj2.method(array);
+        assert.equal(array[0], obj);
+        assert.ok(obj !== obj2, 'this binds to the new created object event if constructor was called as method');
     });
 });

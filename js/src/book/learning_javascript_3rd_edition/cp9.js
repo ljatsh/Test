@@ -92,58 +92,71 @@ describe('OOP', function() {
             }
 
             // read-write ancessor
-            assert.equal(obj.rw, 0)
-            obj.rw = 5
-            assert.equal(obj.rw, 5)
+            assert.equal(obj.rw, 0);
+            obj.rw = 5;
+            assert.equal(obj.rw, 5);
 
             // read-ancessor
-            assert.doesNotThrow(() => {obj.r = 2}, 'set a read-only ancessor does not throw')
-            assert.equal(obj.r, 1)
+            assert.doesNotThrow(() => {obj.r = 2}, 'set a read-only ancessor does not throw');
+            assert.equal(obj.r, 1);
 
             // write-ancessor
-            assert.equal(obj.w, undefined, 'write-only ancessor evaluates undefined')
+            assert.equal(obj.w, undefined, 'write-only ancessor evaluates undefined');
         });
 
         it('Property Attributes', function() {
             var obj = {x:1};
             var descriptor = Object.getOwnPropertyDescriptor(obj, 'x');
             //// the default attributes are true if the property is created with object literal
-            assert.ok(descriptor.writable)
-            assert.ok(descriptor.enumerable)
-            assert.ok(descriptor.configurable)
+            assert.ok(descriptor.writable);
+            assert.ok(descriptor.enumerable);
+            assert.ok(descriptor.configurable);
 
             Object.defineProperty(obj, 'x', {value:2, writable:false});
             Object.defineProperty(obj, 'y', {value:2});
 
             /// If you are modifying an existing property, the attributes you omitted in definedProperty are left unchanged.
-            descriptor = Object.getOwnPropertyDescriptor(obj, 'x')
-            assert.equal(obj.x, 2)
-            assert.ok(!descriptor.writable)
+            descriptor = Object.getOwnPropertyDescriptor(obj, 'x');
+            assert.equal(obj.x, 2);
+            assert.ok(!descriptor.writable);
             //// TODO obj.x = 3 throws in restrict mode
-            obj.x = 3
-            assert.equal(obj.x, 2)
-            assert.ok(descriptor.enumerable)
-            assert.ok(descriptor.configurable)
+            obj.x = 3;
+            assert.equal(obj.x, 2);
+            assert.ok(descriptor.enumerable);
+            assert.ok(descriptor.configurable);
 
             //// If you are createing a new property, the attributes are false if they are omitted in definedProperty
-            descriptor = Object.getOwnPropertyDescriptor(obj, 'y')
-            assert.ok(!descriptor.wrirtable)
-            assert.ok(!descriptor.enumerable)
-            assert.ok(!descriptor.configurable)
+            descriptor = Object.getOwnPropertyDescriptor(obj, 'y');
+            assert.ok(!descriptor.wrirtable);
+            assert.ok(!descriptor.enumerable);
+            assert.ok(!descriptor.configurable);
         });
 
         it('Object Attributes', function() {
+            //// it seems prototype attribute cannot be accessed directly
+            assert.equal(Object.getPrototypeOf({}), Object.prototype, 'Object literals use Object.prototype of their prototype');
+            assert.equal(Object.getPrototypeOf([1, 2]), Array.prototype, 'Array literals use Array.prototype of their prototype');
+
+            //// isPrototypeOf checks if an object exists in another object's prototype chain
+            assert.ok(Object.prototype.isPrototypeOf({}));
+            assert.ok(Object.prototype.isPrototypeOf(Array.prototype));
+
+
+            //// default toString returns class attribute ---> [object class] in string format
             function classof(o) {
                 if (o === null) return "Null";
                 if (o === undefined) return "Undefined";
-                return Object.prototype.toString.call(o);
+                return Object.prototype.toString.call(o).slice(8, -1);
             }
 
-            console.log(classof({}));
+            assert.equal(classof({}), 'Object');
+            assert.equal(classof([]), 'Array');
+            assert.equal(classof(Object.prototype), 'Object', 'TODO cannot understand yet');
+            assert.equal(classof(Array.prototype), 'Array', 'TODO cannot understand yet');
 
-            var o = {x:1, y:{z:[false,null,""]}};
-            var s = JSON.stringify(o);
-            console.log(s);
+            // var o = {x:1, y:{z:[false,null,""]}};
+            // var s = JSON.stringify(o);
+            // console.log(s);
         })
     });
 });
