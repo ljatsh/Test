@@ -41,7 +41,6 @@ describe('OOP', function() {
             obj = Object.create(Object.prototype, {
                 x: {value:2, writeable:true, configurable:true}
             });
-            assert.ok(obj instanceof Object, 'TODO: instanceof meaning');
             assert.equal(obj.x, 2);
         });
 
