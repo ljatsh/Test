@@ -75,7 +75,7 @@ describe('Functions', function() {
             function inner() { return this; }
 
             return [this, inner()];
-        };
+        }
 
         obj.test2 = test2;
         var [s1, s2] = obj.test2();
@@ -100,7 +100,7 @@ describe('Functions', function() {
 
     it('The call, apply and bind', function() {
         function test(...args) {
-            var results = []
+            var results = [];
             for (var i=0; i<args.length; i++)
                 results.push(args[i]);
 

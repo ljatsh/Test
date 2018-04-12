@@ -26,15 +26,16 @@ describe('OOP', function() {
             //// Property name can contain blank, -
             var obj = {'his-name': 'ljatsh', 'the sex': 'm'};
             var objs = [];
-            for (var i=0; i<3; i++) {
-                objs.push({'count':nextValue()});
+            var i;
+            for (i=0; i<3; i++) {
+                objs.push({count:nextValue()});
             }
 
             //// The value of each property is evaluated each time the literal is evaluated.
-            assert.deepEqual(objs, [{'count':2}, {'count':3}, {'count':4}]);
+            assert.deepEqual(objs, [{count:2}, {count:3}, {count:4}]);
 
             // New constructor
-            obj = new Array()
+            obj = new Array(); // jshint ignore: line
             assert.equal(obj.length, 0);
 
             // Object.create
@@ -61,21 +62,21 @@ describe('OOP', function() {
 
             assert.equal(obj.x, undefined);
             assert.equal(obj.toString, Object.prototype.toString);
-        })
+        });
 
         it('Property Test', function() {
             // in operator
-            var obj = {x:1, y:1, '1':'ljatsh'}
+            var obj = {x:1, y:1, '1':'ljatsh'};
             //// in expects string value on its left side
-            assert.ok('x' in obj)
-            assert.ok(1 in obj, '1 was converted to "1" implicitly') // TODO. implicit value conversion
-            assert.ok('toString' in obj, 'in also checks inherited properties')
+            assert.ok('x' in obj);
+            assert.ok(1 in obj, '1 was converted to "1" implicitly'); // TODO. implicit value conversion
+            assert.ok('toString' in obj, 'in also checks inherited properties');
 
             // hasOwnProperty
-            assert.ok(obj.hasOwnProperty('x'))
-            assert.ok(obj.hasOwnProperty(1))
-            assert.ok(!obj.hasOwnProperty(2))
-            assert.ok(!obj.hasOwnProperty('toString'))
+            assert.ok(obj.hasOwnProperty('x'));
+            assert.ok(obj.hasOwnProperty(1));
+            assert.ok(!obj.hasOwnProperty(2));
+            assert.ok(!obj.hasOwnProperty('toString'));
         });
 
         it('Property Enumerable', function() {
@@ -93,8 +94,8 @@ describe('OOP', function() {
                 get r() { return this.$r; },
 
                 $w: 2,
-                set w(value) { this.$w = value; }
-            }
+                set w(value) { this.$w = value; } // jshint ignore: line
+            };
 
             // read-write ancessor
             assert.equal(obj.rw, 0);
@@ -102,7 +103,7 @@ describe('OOP', function() {
             assert.equal(obj.rw, 5);
 
             // read-ancessor
-            assert.doesNotThrow(() => {obj.r = 2}, 'set a read-only ancessor does not throw');
+            assert.doesNotThrow(() => {obj.r = 2;}, 'set a read-only ancessor does not throw');
             assert.equal(obj.r, 1);
 
             // write-ancessor
@@ -164,10 +165,10 @@ describe('OOP', function() {
             assert.ok(obj.constructor.prototype != Object.getPrototypeOf(obj));
 
             // TODO: Object.create mechanism
-            assert.ok(obj instanceof obj.constructor)
+            assert.ok(obj instanceof obj.constructor);
             assert.ok(obj.constructor.prototype.isPrototypeOf(obj));
             var x = Object.getPrototypeOf(obj);
-            assert.ok(obj instanceof x.constructor)
+            assert.ok(obj instanceof x.constructor);
             assert.ok(x.isPrototypeOf(obj));
         });
 
@@ -193,14 +194,14 @@ describe('OOP', function() {
             assert.equal(classof(obj), 'Object');
 
             function F() {}
-            obj = new F;
+            obj = new F();
             assert.equal(classof(obj), 'Object');
         });
 
         it('Object & Constructor', function() {
             function F() {}
 
-            var obj = new F;
+            var obj = new F();
             assert.equal(F.prototype.constructor, F, 'function prototype always contains constructor property pointing to the function itself');
             assert.equal(obj.constructor, F, 'object inherites the constructor property');
         });
@@ -218,7 +219,7 @@ describe('OOP', function() {
             // constructor
 
             function F() {}
-            var obj = new F;
+            var obj = new F();
 
             assert.ok(obj instanceof F);
             assert.ok(obj instanceof Object);
@@ -234,7 +235,7 @@ describe('OOP', function() {
 
             Object2.prototype = Object.create(Object1.prototype);
 
-            obj = new Object2;
+            obj = new Object2();
             assert.ok(Object2.prototype.isPrototypeOf(obj));
             assert.ok(Object1.prototype.isPrototypeOf(obj), 'prototype chain');
         });

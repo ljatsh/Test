@@ -1,0 +1,14 @@
+{
+  "predef":[
+    "require",
+    "it",
+    "describe",
+    "console"
+  ],
+  "undef": true,
+  "unused": true,
+  "esversion": 6,
+  "elision": true,
+  "white": true,
+  "indent": 2
+}

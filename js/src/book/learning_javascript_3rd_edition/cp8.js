@@ -17,7 +17,7 @@ describe('Arrays', function() {
         assert.equal(a.length, 3);
 
         // 2. Constructor
-        var b = new Array();
+        var b = new Array(); // jshint ignore: line
         assert.equal(b.length, 0);
         assert.equal(b[0], undefined, 'access an index larger than the array does not change the array size');
         b[1] = 3;
@@ -91,16 +91,16 @@ describe('Arrays', function() {
     });
 
     it('Search', function() {
-        var a = [1, 1, 2, 5, 5, 7]
-        assert.equal(a.indexOf(5, 4), 4)
-        assert.equal(a.indexOf(5), 3)
-        assert.equal(a.lastIndexOf(5), 4)
-        assert.equal(a.lastIndexOf(6), -1)
+        var a = [1, 1, 2, 5, 5, 7];
+        assert.equal(a.indexOf(5, 4), 4);
+        assert.equal(a.indexOf(5), 3);
+        assert.equal(a.lastIndexOf(5), 4);
+        assert.equal(a.lastIndexOf(6), -1);
 
         // find
         //       0. 1. 2. 3.4. 5. 6. 7. 8 9
-        var b = [1, 1, 2, , 3, 3, 4, 4, , 5]
-        var c = []
+        var b = [1, 1, 2, , 3, 3, 4, 4, , 5];
+        var c = [];
         function search(target, element, index) {
             c.push(index);
             if (target == element)
@@ -130,9 +130,9 @@ describe('Arrays', function() {
     });
 
     it('Sort', function() {
-        var a = [80, 9, 7]
-        assert.deepEqual(a.sort(), [7, 80, 9])
-        assert.deepEqual(a.sort((a, b) => a - b), [7, 9, 80])
+        var a = [80, 9, 7];
+        assert.deepEqual(a.sort(), [7, 80, 9]);
+        assert.deepEqual(a.sort((a, b) => a - b), [7, 9, 80]);
     });
 
     it('Traversal', function() {
@@ -145,7 +145,7 @@ describe('Arrays', function() {
     });
 
     it('Map and Filter', function() {
-        assert.deepEqual([1, 4, 9].map(Math.sqrt), [1, 2, 3])
-        assert.deepEqual([1, 2, 4, 5].filter(x=> x%2 == 0), [2, 4])
+        assert.deepEqual([1, 4, 9].map(Math.sqrt), [1, 2, 3]);
+        assert.deepEqual([1, 2, 4, 5].filter(x=> x%2 == 0), [2, 4]);
     });
 });

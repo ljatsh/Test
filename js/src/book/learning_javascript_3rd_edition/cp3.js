@@ -23,8 +23,8 @@ describe('Primitive types and Objects', function() {
             assert.ok(isNaN({}));
             assert.ok(isNaN('blabla'));
 
-            assert.ok(!(NaN == NaN), 'Nan == Nan is false');
-            assert.ok(!(NaN === NaN), 'Nan === Nan is false');
+            assert.ok(!(NaN == NaN), 'Nan == Nan is false'); // jshint ignore: line
+            assert.ok(!(NaN === NaN), 'Nan === Nan is false'); // jshint ignore: line
 
             assert.ok(Number.isNaN(NaN));
             assert.ok(Number.isNaN(Number.NaN));
@@ -54,7 +54,7 @@ describe('Primitive types and Objects', function() {
         });
 
         it('The valueOf', function() {
-            var numObj = new Number(11);
+            var numObj = new Number(11); // jshint ignore: line
             var num = numObj.valueOf();
             assert.equal(num, 11);
             assert.equal(typeof(numObj), 'object');
@@ -72,7 +72,7 @@ describe('Primitive types and Objects', function() {
             assert.ok(!'');
             assert.ok(!false);
 
-            assert.ok(new Boolean(false), 'any object is truthy, including objects whose valueOf returns false');
+            assert.ok(new Boolean(false), 'any object is truthy, including objects whose valueOf returns false'); // jshint ignore: line
             assert.ok([], 'array is truthy, event it is empty');
             assert.ok(' ', 'non empty string is truthy');
             assert.ok('false');
@@ -108,13 +108,13 @@ describe('Primitive types and Objects', function() {
         // 1. null is object while undefined id undefined
         // 2. prefer null when unsure
         it('The null and undefined', function() {
-            assert.equal(typeof(null), 'object')
-            assert.equal(typeof(undefined), 'undefined')
-        })
+            assert.equal(typeof(null), 'object');
+            assert.equal(typeof(undefined), 'undefined');
+        });
 
         it('Template String(ES6 feature)', function() {
-            var a = 1, b = 1.2, c = 'ljatsh'
-            assert.equal(`${a}_${b}_${c}`, '1_1.2_ljatsh')
-        })
-    })
-})
+            var a = 1, b = 1.2, c = 'ljatsh';
+            assert.equal(`${a}_${b}_${c}`, '1_1.2_ljatsh');
+        });
+    });
+});
