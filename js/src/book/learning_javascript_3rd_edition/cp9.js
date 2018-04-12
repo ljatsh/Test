@@ -79,7 +79,8 @@ describe('OOP', function() {
         });
 
         it('Property Enumerable', function() {
-            // Nothing to do
+            var obj = {x:1, y:2};
+            assert.deepEqual(Object.keys(obj), ['x', 'y']);
         });
 
         it('Property Getter and Setter', function() {
