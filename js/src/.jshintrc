@@ -3,10 +3,12 @@
     "require",
     "it",
     "describe",
-    "console"
+    "console",
+    "setTimeout",
+    "setImmediate"
   ],
   "undef": true,
-  "unused": true,
+  "unused": false,
   "esversion": 6,
   "elision": true,
   "white": true,
