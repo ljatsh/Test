@@ -1,6 +1,6 @@
 
 // Learning JavaScript, 3rd Edition.
-// Chapter 4. Asynchronous Programming
+// Chapter 14. Asynchronous Programming
 
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
@@ -14,7 +14,7 @@ var assert = chai.assert;
 //   1. Callback will never to be called before the completion of the current run of the JavaScript event loop.
 //   2. Callback added withn then can be called even the promise was settled.
 //   3. Multile callbacks can be added with then several times to be executed independently in insertion order
-
+  
 //   Chain:
 //   1. Returned non-promise value from the callback will be propogated.
 //   2. Promise value of the returned resolved promise from the callback will be propogated.
