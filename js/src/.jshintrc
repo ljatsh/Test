@@ -3,7 +3,12 @@
     "require",
     "it",
     "describe",
+    "before",
+    "after",
+    "beforeEach",
+    "afterEach",
     "console",
+    "process",
     "setTimeout",
     "setImmediate"
   ],
