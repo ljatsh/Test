@@ -12,6 +12,9 @@ Reference: http://jkorpela.fi/chars.html
    of characters into sequences of octets. One purpose of encoding is to save space.
 
 4. Code point is independent with coding algorithm.
+5. The most important tip for writing unicode-aware program is:
+   Software should only work with unicode strings internally, decode the input as soon as possible and encode the output
+   at the end.
 
 """
 
