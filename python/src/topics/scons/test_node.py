@@ -31,8 +31,7 @@ main()
 """
 
 
-
-class SimpleTest(unittest.TestCase):
+class NodeTest(unittest.TestCase):
     def setUp(self):
         self.working_dir = tempfile.mkdtemp()
         self.file_scons = os.path.join(self.working_dir, 'SConstruct')
@@ -53,9 +52,12 @@ class SimpleTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         shutil.rmtree(self.working_dir)
 
-    def test_glob(self):
+    def test_builder_return_node(self):
         with open(self.file_scons, 'w') as f:
-            f.write("Program(target = 'hello', source = Glob('*.c'))")
+            f.write("""file_objects = Object(source = ['helper.c', 'main.c'])\n""" +
+                    """print('{!r}'.format(file_objects))\n"""
+                    """print('names of the node:', ' '.join(x.name for x in file_objects))\n"""
+                    """Program(target = 'hello', source = file_objects)""")
 
         result = subprocess.run(self.command, cwd=self.working_dir, shell=True)
         self.assertEqual(result.returncode, 0)
@@ -68,6 +70,27 @@ class SimpleTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertEqual(result.stdout.decode().strip(), '3')
 
+    def test_create_node_explicitly(self):
+        with open(self.file_scons, 'w') as f:
+            f.write("""file_objects = Object(source = [File('helper.c'), Entry('main.c')])\n""" +
+                    """print('{!r}'.format(file_objects))\n"""
+                    """Program(target = 'hello', source = file_objects)""")
+
+        result = subprocess.run(self.command, cwd=self.working_dir, shell=True)
+        self.assertEqual(result.returncode, 0)
+
+        file_exe = os.path.join(self.working_dir, 'hello')
+        result = subprocess.run(file_exe,
+                                stdout=subprocess.PIPE,
+                                cwd=self.working_dir,
+                                shell=True)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout.decode().strip(), '3')
+
+    def test_build_path(self):
+        pass
+
+        # TODO
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

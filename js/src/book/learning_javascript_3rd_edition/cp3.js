@@ -116,5 +116,13 @@ describe('Primitive types and Objects', function() {
             var a = 1, b = 1.2, c = 'ljatsh';
             assert.equal(`${a}_${b}_${c}`, '1_1.2_ljatsh');
         });
+
+        it('Unicode', function() {
+            var s = '\u4e2d\u534e\u4eba\u6c11\u5171\u548c\u56fd';
+            assert.equal(s, '中华人民共和国');
+
+            assert.equal(String.fromCharCode(0x4e2d, 0x534e, 0x4eba, 0x6c11, 0x5171, 0x548c, 0x56fd), '中华人民共和国');
+            assert.equal(String.fromCodePoint(0x4e2d, 0x534e, 0x4eba, 0x6c11, 0x5171, 0x548c, 0x56fd), '中华人民共和国');
+        });
     });
 });
