@@ -96,8 +96,8 @@ class CBuilderTest(SconsTestBase):
             self.run_command('scons -C {} -c -Q'.format(self.working_dir))
         shutil.rmtree(self.working_dir)
 
-    def build(self):
-        result = self.run_command('scons -C {} -Q'.format(self.working_dir))
+    def build(self, target=None):
+        result = self.run_command('scons -C {} -Q {}'.format(self.working_dir, target or ''))
         return [line.strip() for line in result.split('\n') if line.strip()]
 
     def check_built_target(self, target):
@@ -317,6 +317,46 @@ class CBuilderTest(SconsTestBase):
                                 "// This is just a comment")
         result = self.build()
         self.check_file_was_compiled('helper.c', result)
+
+    def test_dependency_ignore(self):
+        """
+        Ignore breaks the dependency between target and source. It can also prevents generated files from
+        being built by default. But the file will still be built if the user specifically requests the
+        target on scons command line.
+        """
+        SconsTestBase.createFile(self.file_scons,
+                                 "file_object = Object(['helper.c', 'main.c'])",
+                                 "target = Program(target = 'hello', source = file_object)",
+                                 "generates = target",
+                                 "generates.extend(file_object)",
+                                 "Ignore('.', generates)")
+
+        result = self.build()
+        self.check_file_was_not_compiled('helper.c', result)
+        self.check_file_was_not_compiled('main.c', result)
+
+        result = self.build(target='hello')
+
+        self.check_program_was_linked('hello', result)
+
+    def test_dependency_order_only(self):
+        """
+        Requires only makes sure the dependencies are built prior to the target. It does not require the
+        target should be rebuilt when the dependencies are rebuilt.
+        """
+        SconsTestBase.createFile(self.file_scons,
+                                 "helper = Object(source = ['helper.c'])",
+                                 "target = Program(target = 'hello', source = ['main.c'], LINKFLAGS=str(helper[0]))",
+                                 "Requires(target, helper)"
+                                 )
+
+        self.check_program_building_without_shared_library()
+
+        self.appendContent2File(os.path.join(self.working_dir, 'helper.c'),
+                                "// This is just a comment")
+        result = self.build(target='hello')
+        self.check_file_was_compiled('helper.c', result)
+        self.check_program_was_not_linked('hello', result)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
