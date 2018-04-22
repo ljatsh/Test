@@ -8,7 +8,37 @@ import subprocess
 import time
 
 """
+Reference: https://scons.org/doc/3.0.1/HTML/scons-user/
 1. Always choose MD5 decider. It seems timestamp is not reliable(TODO)
+2. Regarding Environment:
+   1) Avoids to use external Environment. The relationship between the external environment and DefaultEnvironment or
+      another Construction Environment is confusion.
+   1) Useful method of Construction Environment: Clone, Replace, SetDefault, Append, AppendUnique, Prepend, PrependUnique
+   2) Execution environment overrides the environment itself.
+   
+3. How to get default Builder relevant construction variables?
+   1. env.ParseFlags
+   
+3. C Builder relevant construction variables(http://pages.cs.wisc.edu/~driscoll/software/scons/variables.html):
+   1. C and C++ compiling
+      1) CCFLAGS: It is passed as part of the command line for compiling C and C++ files.
+      2) CFLAGS, CXXFLAGS: flags passed to the C compiler (but not C++ compiler) and vice versa, respectively.
+      3) CPPDEFINES: a collection of preprocessor definition flags. It can be a single string, a list, or a dictionary.
+         For the dictionary, it should have a form similar to {'FOO' : 'foo', 'BAR' : None} which will get translated
+         to the flags -DBAR -DFOO=foo or /DBAR /DFOO=foo depending on the compiler.
+      4) CPPPATH: a list of directories that should be searched for include files (both by the compiler,
+         via the -I flag or similar, and by SCons when scanning implicit dependencies).
+      5) CC, CXX: the C and C++ compiler to use
+      
+   2. Linking
+      1) LINKFLAGS: flags to pass to the linker
+      2) RPATH: a list of directories to -Wl,-rpath into the program; using this requires not overwriting $LINKFLAGS
+         completely.
+      3) LIBPATH: a list of directories that should be search for libraries (both by the linker, via the -L flag or
+         similar, and by SCons when scanning for changes).
+      4) LIBS: a list of libraries to link against (gets translated to a series of -l flags to GCC). Don't include the
+         lib prefix on Linux or .so or .lib suffix.
+      5) LINK: the name of the linker
 """
 
 
@@ -73,6 +103,30 @@ class SconsTestBase(unittest.TestCase):
                 f.writelines(line)
                 f.write('\n')
 
+    def check_key_word_exists(self, word, output):
+        found = False
+
+        for line in output:
+            if word in line:
+                found = True
+                break
+
+        if not found:
+            print(output)
+        self.assertTrue(found)
+
+    def check_key_word_not_exist(self, word, output):
+        found = False
+
+        for line in output:
+            if word in line:
+                found = True
+                break
+
+        if found:
+            print(output)
+        self.assertFalse(found)
+
 
 class CBuilderTest(SconsTestBase):
     def run_command(self, command):
@@ -103,30 +157,6 @@ class CBuilderTest(SconsTestBase):
     def check_built_target(self, target):
         result = self.run_command(os.path.join(self.working_dir, target))
         self.assertEqual(result.strip(), '3')
-
-    def check_key_word_exists(self, word, output):
-        found = False
-
-        for line in output:
-            if word in line:
-                found = True
-                break
-
-        if not found:
-            print(output)
-        self.assertTrue(found)
-
-    def check_key_word_not_exist(self, word, output):
-        found = False
-
-        for line in output:
-            if word in line:
-                found = True
-                break
-
-        if found:
-            print(output)
-        self.assertFalse(found)
 
     def check_program_building_without_shared_library(self):
         result = self.build()
@@ -357,6 +387,135 @@ class CBuilderTest(SconsTestBase):
         result = self.build(target='hello')
         self.check_file_was_compiled('helper.c', result)
         self.check_program_was_not_linked('hello', result)
+
+
+class EnvironmentTest(SconsTestBase):
+
+        def setUp(self):
+            self.working_dir = tempfile.mkdtemp()
+            self.file_scons = os.path.join(self.working_dir, 'SConstruct')
+
+        def tearDown(self):
+            shutil.rmtree(self.working_dir)
+
+        def run_command(self, command):
+            result = subprocess.run(command,
+                                    cwd=self.working_dir,
+                                    stdout=subprocess.PIPE,
+                                    shell=True)
+            self.assertEqual(result.returncode, 0)
+            return result.stdout.decode()
+
+        def build(self, target=None):
+            result = self.run_command('scons -C {} -Q {}'.format(self.working_dir, target or ''))
+            return [line.strip() for line in result.split('\n') if line.strip()]
+
+        @unittest.skip('avoid to use external environment')
+        def test_external_environment(self):
+            SconsTestBase.createFile(self.file_scons,
+                                     "env = DefaultEnvironment()",
+                                     "print(env.subst('$CCFLAGS') or 'empty')"
+                                     )
+
+            result = self.build()
+            print(result)
+
+            os.environ['CCFLAGS'] = '-O2 -g'
+            #self.appendContent2File(self.file_scons, 'import os')
+            SconsTestBase.createFile(self.file_scons,
+                                     "import os",
+                                     "print(os.environ['CCFLAGS'])",
+                                     #"env = DefaultEnvironment(CCFLAGS=os.environ['CCFLAGS'])",
+                                     #"print(env.subst('$CCFLAGS') or 'empty')",
+                                     "Program('main.c')"
+                                     )
+
+            SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
+                                    "int main() { return 0; }")
+
+            result = self.build()
+            print(result)
+
+        def test_environment_construction_environment(self):
+            SconsTestBase.createFile(self.file_scons,
+                                     "env=Environment(CC = 'gcc',",
+                                     "                CCFLAGS = '-O2 -g')",
+                                     "print('CC = {}'.format(env['CC']))",
+                                     "print('CCFLAGS = {}'.format(env.subst('$CCFLAGS')))")
+
+            result = self.build()
+            self.check_key_word_exists('CC = gcc', result)
+            self.check_key_word_exists('CCFLAGS = -O2 -g', result)
+
+        def test_environment_value_expansion_exception(self):
+            SconsTestBase.createFile(self.file_scons,
+                                     "env=Environment()",
+                                     "print('InvalidValue = {}_Placeholder'.format(env.subst('$InvalidValue')))")
+
+            result = self.build()
+            self.check_key_word_exists('InvalidValue = _Placeholder', result)
+
+            # AllowSubstExceptions must be put in the front of SConstruct
+            self.appendContent2File(self.file_scons, "AllowSubstExceptions()")
+            self.check_key_word_exists('InvalidValue = _Placeholder', result)
+
+            SconsTestBase.createFile(self.file_scons,
+                                     "AllowSubstExceptions()",
+                                     "env=Environment()",
+                                     "print('InvalidValue = {}_Placeholder'.format(env.subst('$InvalidValue')))")
+            result = subprocess.run('scons -C {} -Q'.format(self.working_dir),
+                                    cwd=self.working_dir,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    shell=True)
+            self.assertNotEqual(result.returncode, 0)
+
+        def test_environment_execution_environment(self):
+            SconsTestBase.createFile(self.file_scons,
+                                     "env = Environment(CCFLAGS = '-O1 -g')",
+                                     "env.Program('main.c', CCFLAGS = '-O2')")
+
+            SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
+                                     "int main() { return 0; }")
+
+            result = self.build()
+            self.check_key_word_exists('-O2 main.c', result)
+            self.check_key_word_not_exist('-O1 -g main.c', result)
+
+        @unittest.skip('find construction variables regarding default Builder')
+        def test_environment_get_construction_variables(self):
+            SconsTestBase.createFile(self.file_scons,
+                                     "for k, v in sorted(DefaultEnvironment().Dictionary().items()):",
+                                     "    if v:",
+                                     "        print(k, v)")
+
+            result = self.build()
+            print(result)
+
+        def test_environment_parse_and_merge_flags(self):
+            """
+            If you do not known how to find relevant construction variables regarding builders, you can ask for help
+            from env.ParseFlags
+            """
+
+            SconsTestBase.createFile(self.file_scons,
+                                     "env = Environment()",
+                                     "d = env.ParseFlags('-I/tmp/include -g -O2 -L/tmp -lm -L/usr/local/lib -w')",
+                                     "for k, v in sorted(d.items()):",
+                                     "    if v:",
+                                     "        print(k, v)",
+                                     "env.MergeFlags(d)",
+                                     "env.Program('main.c')")
+
+            SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
+                                     "int main() { return 0; }")
+
+            result = self.build()
+            self.check_key_word_exists("'CCFLAGS', ['-g', '-O2', '-w']", result)
+            self.check_key_word_exists("'CPPPATH', ['/tmp/include']", result)
+            self.check_key_word_exists("'LIBPATH', ['/tmp', '/usr/local/lib']", result)
+            self.check_key_word_exists("'LIBS', ['m']", result)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
