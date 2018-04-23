@@ -45,7 +45,10 @@ Reference: https://scons.org/doc/3.0.1/HTML/scons-user/
    1. Use Install with Alias together. Don't install files under the Sconscript directory.
    2. Avoid to reference the path related to top-level SConsturct directory.(#path)
    3. Avoid to use the imported environment directly. Clone it firstly.
-   4. Avoid to set variant build information in SConscirpt. Set them in top-level SConstruct instead.
+   4. Avoid to set variant build information in SConscript. Set them in top-level SConstruct instead.
+   5. Prefer Builders created with a generator. The generator can return command string a another action. It is much
+      more flexible. Construction Variable Substitution is very powerful in command string.
+   6. Python Action does not check target after building.
 """
 
 
@@ -524,6 +527,81 @@ class EnvironmentTest(SconsTestBase):
         self.check_key_word_exists("'LIBS', ['m']", result)
 
 
+class CustomizedBuilderTest(SconsTestBase):
+    def setUp(self):
+        self.working_dir = tempfile.mkdtemp()
+        self.file_scons = os.path.join(self.working_dir, 'SConstruct')
+
+        self.other_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.working_dir)
+        shutil.rmtree(self.other_dir)
+
+    def run_command(self, command):
+        result = subprocess.run(command,
+                                cwd=self.working_dir,
+                                stdout=subprocess.PIPE,
+                                shell=True)
+        self.assertEqual(result.returncode, 0)
+        return result.stdout.decode()
+
+    def build(self, target=None):
+        result = self.run_command('scons -C {} -Q {}'.format(self.working_dir, target or ''))
+        return [line.strip() for line in result.split('\n') if line.strip()]
+
+    def test_builder_execute_external_command(self):
+        """
+        This test cannot run on Windows
+        """
+        SconsTestBase.createFile(self.file_scons,
+                                 "builder_cp = Builder(action = 'cp $SOURCE $TARGET',",
+                                 "                     suffix = 'out',",
+                                 "                     prefix = 'build_',",
+                                 "                     src_suffix = 'in')",
+                                 "env = Environment()",
+                                 "env.Append(BUILDERS = {'cp': builder_cp})",
+                                 "env.cp('test')")
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'test.in'))
+
+        result = self.build()
+        self.check_key_word_exists('cp test.in build_test.out', result)
+
+    def test_builder_execute_function(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "def echo(target, source, env):",
+                                 "    pass",
+                                 "builder_echo = Builder(action = echo,",
+                                 "                       suffix = 'out',",
+                                 "                       src_suffix = 'in')",
+                                 "env = Environment()",
+                                 "env.Append(BUILDERS = {'echo': builder_echo})",
+                                 "env.echo('test')")
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'test.in'))
+
+        result = self.build()
+        self.check_key_word_exists('echo(["test.out"], ["test.in"])', result)
+
+    def test_builder_execute_generator(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "def cp(target, source, env, for_signature):",
+                                 "    return 'cp {} {}'.format(source[0], target[0])",
+                                 #"    return 'cp $SOURCE $TARGET'", Construction Variable Substitution
+                                 "builder_cp = Builder(generator = cp,",
+                                 "                     suffix = 'out',",
+                                 "                     src_suffix = 'in')",
+                                 "env = Environment()",
+                                 "env.Append(BUILDERS = {'cp': builder_cp})",
+                                 "env.cp('test')")
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'test.in'))
+
+        result = self.build()
+        print(result)
+
+
 class GoodPracticeTest(SconsTestBase):
     def setUp(self):
         self.working_dir = tempfile.mkdtemp()
@@ -595,14 +673,12 @@ class GoodPracticeTest(SconsTestBase):
         self.check_key_word_exists(' -g ', result)
 
     def test_variant(self):
-        # SconsTestBase.createFile(self.file_scons,
-        #                          "SConscript('prog1/SConscript', variant_dir = '{}')".format(
-        #                              os.path.join(self.other_dir, 'prog1')),
-        #                          "SConscript('prog2/SConscript', variant_dir = '{}')".format(
-        #                              os.path.join(self.other_dir, 'prog2')))
-
+        """
+        It seems scons cannot work if variant_dir is other directory.
+        """
         SconsTestBase.createFile(self.file_scons,
-                                "SConscript('prog1/SConscript')")
+                                 "SConscript('prog1/SConscript', variant_dir = 'build/prog1', duplicate = 0)",
+                                 "SConscript('prog2/SConscript', variant_dir = 'build/prog2', duplicate = 0)")
 
         # prog１
         SconsTestBase.createFile(os.path.join(self.working_dir, 'prog1/SConscript'),
@@ -619,7 +695,7 @@ class GoodPracticeTest(SconsTestBase):
                                  'int main() { return 0; }')
 
         result = self.build()
-        print(result)
+        self.check_key_word_exists('main.c', result)
 
 
 if __name__ == '__main__':
