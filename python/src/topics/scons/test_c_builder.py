@@ -18,8 +18,9 @@ Reference: https://scons.org/doc/3.0.1/HTML/scons-user/
    
 3. How to get default Builder relevant construction variables?
    1. env.ParseFlags
+   2. Print relevant Construction Vairables.
    
-3. C Builder relevant construction variables(http://pages.cs.wisc.edu/~driscoll/software/scons/variables.html):
+4. C Builder relevant construction variables(http://pages.cs.wisc.edu/~driscoll/software/scons/variables.html):
    1. C and C++ compiling
       1) CCFLAGS: It is passed as part of the command line for compiling C and C++ files.
       2) CFLAGS, CXXFLAGS: flags passed to the C compiler (but not C++ compiler) and vice versa, respectively.
@@ -39,6 +40,12 @@ Reference: https://scons.org/doc/3.0.1/HTML/scons-user/
       4) LIBS: a list of libraries to link against (gets translated to a series of -l flags to GCC). Don't include the
          lib prefix on Linux or .so or .lib suffix.
       5) LINK: the name of the linker
+      
+5. Good Practices:
+   1. Use Install with Alias together. Don't install files under the Sconscript directory.
+   2. Avoid to reference the path related to top-level SConsturct directory.(#path)
+   3. Avoid to use the imported environment directly. Clone it firstly.
+   4. Avoid to set variant build information in SConscirpt. Set them in top-level SConstruct instead.
 """
 
 
@@ -391,130 +398,228 @@ class CBuilderTest(SconsTestBase):
 
 class EnvironmentTest(SconsTestBase):
 
-        def setUp(self):
-            self.working_dir = tempfile.mkdtemp()
-            self.file_scons = os.path.join(self.working_dir, 'SConstruct')
+    def setUp(self):
+        self.working_dir = tempfile.mkdtemp()
+        self.file_scons = os.path.join(self.working_dir, 'SConstruct')
 
-        def tearDown(self):
-            shutil.rmtree(self.working_dir)
+    def tearDown(self):
+        shutil.rmtree(self.working_dir)
 
-        def run_command(self, command):
-            result = subprocess.run(command,
-                                    cwd=self.working_dir,
-                                    stdout=subprocess.PIPE,
-                                    shell=True)
-            self.assertEqual(result.returncode, 0)
-            return result.stdout.decode()
+    def run_command(self, command):
+        result = subprocess.run(command,
+                                cwd=self.working_dir,
+                                stdout=subprocess.PIPE,
+                                shell=True)
+        self.assertEqual(result.returncode, 0)
+        return result.stdout.decode()
 
-        def build(self, target=None):
-            result = self.run_command('scons -C {} -Q {}'.format(self.working_dir, target or ''))
-            return [line.strip() for line in result.split('\n') if line.strip()]
+    def build(self, target=None):
+        result = self.run_command('scons -C {} -Q {}'.format(self.working_dir, target or ''))
+        return [line.strip() for line in result.split('\n') if line.strip()]
 
-        @unittest.skip('avoid to use external environment')
-        def test_external_environment(self):
-            SconsTestBase.createFile(self.file_scons,
-                                     "env = DefaultEnvironment()",
-                                     "print(env.subst('$CCFLAGS') or 'empty')"
-                                     )
+    @unittest.skip('avoid to use external environment')
+    def test_external_environment(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "env = DefaultEnvironment()",
+                                 "print(env.subst('$CCFLAGS') or 'empty')"
+                                 )
 
-            result = self.build()
-            print(result)
+        result = self.build()
+        print(result)
 
-            os.environ['CCFLAGS'] = '-O2 -g'
-            #self.appendContent2File(self.file_scons, 'import os')
-            SconsTestBase.createFile(self.file_scons,
-                                     "import os",
-                                     "print(os.environ['CCFLAGS'])",
-                                     #"env = DefaultEnvironment(CCFLAGS=os.environ['CCFLAGS'])",
-                                     #"print(env.subst('$CCFLAGS') or 'empty')",
-                                     "Program('main.c')"
-                                     )
+        os.environ['CCFLAGS'] = '-O2 -g'
+        #self.appendContent2File(self.file_scons, 'import os')
+        SconsTestBase.createFile(self.file_scons,
+                                 "import os",
+                                 "print(os.environ['CCFLAGS'])",
+                                 #"env = DefaultEnvironment(CCFLAGS=os.environ['CCFLAGS'])",
+                                 #"print(env.subst('$CCFLAGS') or 'empty')",
+                                 "Program('main.c')"
+                                 )
 
-            SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
-                                    "int main() { return 0; }")
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
+                                "int main() { return 0; }")
 
-            result = self.build()
-            print(result)
+        result = self.build()
+        print(result)
 
-        def test_environment_construction_environment(self):
-            SconsTestBase.createFile(self.file_scons,
-                                     "env=Environment(CC = 'gcc',",
-                                     "                CCFLAGS = '-O2 -g')",
-                                     "print('CC = {}'.format(env['CC']))",
-                                     "print('CCFLAGS = {}'.format(env.subst('$CCFLAGS')))")
+    def test_environment_construction_environment(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "env=Environment(CC = 'gcc',",
+                                 "                CCFLAGS = '-O2 -g')",
+                                 "print('CC = {}'.format(env['CC']))",
+                                 "print('CCFLAGS = {}'.format(env.subst('$CCFLAGS')))")
 
-            result = self.build()
-            self.check_key_word_exists('CC = gcc', result)
-            self.check_key_word_exists('CCFLAGS = -O2 -g', result)
+        result = self.build()
+        self.check_key_word_exists('CC = gcc', result)
+        self.check_key_word_exists('CCFLAGS = -O2 -g', result)
 
-        def test_environment_value_expansion_exception(self):
-            SconsTestBase.createFile(self.file_scons,
-                                     "env=Environment()",
-                                     "print('InvalidValue = {}_Placeholder'.format(env.subst('$InvalidValue')))")
+    def test_environment_value_expansion_exception(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "env=Environment()",
+                                 "print('InvalidValue = {}_Placeholder'.format(env.subst('$InvalidValue')))")
 
-            result = self.build()
-            self.check_key_word_exists('InvalidValue = _Placeholder', result)
+        result = self.build()
+        self.check_key_word_exists('InvalidValue = _Placeholder', result)
 
-            # AllowSubstExceptions must be put in the front of SConstruct
-            self.appendContent2File(self.file_scons, "AllowSubstExceptions()")
-            self.check_key_word_exists('InvalidValue = _Placeholder', result)
+        # AllowSubstExceptions must be put in the front of SConstruct
+        self.appendContent2File(self.file_scons, "AllowSubstExceptions()")
+        self.check_key_word_exists('InvalidValue = _Placeholder', result)
 
-            SconsTestBase.createFile(self.file_scons,
-                                     "AllowSubstExceptions()",
-                                     "env=Environment()",
-                                     "print('InvalidValue = {}_Placeholder'.format(env.subst('$InvalidValue')))")
-            result = subprocess.run('scons -C {} -Q'.format(self.working_dir),
-                                    cwd=self.working_dir,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    shell=True)
-            self.assertNotEqual(result.returncode, 0)
+        SconsTestBase.createFile(self.file_scons,
+                                 "AllowSubstExceptions()",
+                                 "env=Environment()",
+                                 "print('InvalidValue = {}_Placeholder'.format(env.subst('$InvalidValue')))")
+        result = subprocess.run('scons -C {} -Q'.format(self.working_dir),
+                                cwd=self.working_dir,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                shell=True)
+        self.assertNotEqual(result.returncode, 0)
 
-        def test_environment_execution_environment(self):
-            SconsTestBase.createFile(self.file_scons,
-                                     "env = Environment(CCFLAGS = '-O1 -g')",
-                                     "env.Program('main.c', CCFLAGS = '-O2')")
+    def test_environment_execution_environment(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "env = Environment(CCFLAGS = '-O1 -g')",
+                                 "env.Program('main.c', CCFLAGS = '-O2')")
 
-            SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
-                                     "int main() { return 0; }")
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
+                                 "int main() { return 0; }")
 
-            result = self.build()
-            self.check_key_word_exists('-O2 main.c', result)
-            self.check_key_word_not_exist('-O1 -g main.c', result)
+        result = self.build()
+        self.check_key_word_exists('-O2 main.c', result)
+        self.check_key_word_not_exist('-O1 -g main.c', result)
 
-        @unittest.skip('find construction variables regarding default Builder')
-        def test_environment_get_construction_variables(self):
-            SconsTestBase.createFile(self.file_scons,
-                                     "for k, v in sorted(DefaultEnvironment().Dictionary().items()):",
-                                     "    if v:",
-                                     "        print(k, v)")
+    @unittest.skip('find construction variables regarding default Builder')
+    def test_environment_get_construction_variables(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "for k, v in sorted(DefaultEnvironment().Dictionary().items()):",
+                                 "    if v:",
+                                 "        print(k, v)")
 
-            result = self.build()
-            print(result)
+        result = self.build()
+        print(result)
 
-        def test_environment_parse_and_merge_flags(self):
-            """
-            If you do not known how to find relevant construction variables regarding builders, you can ask for help
-            from env.ParseFlags
-            """
+    def test_environment_parse_and_merge_flags(self):
+        """
+        If you do not known how to find relevant construction variables regarding builders, you can ask for help
+        from env.ParseFlags
+        """
 
-            SconsTestBase.createFile(self.file_scons,
-                                     "env = Environment()",
-                                     "d = env.ParseFlags('-I/tmp/include -g -O2 -L/tmp -lm -L/usr/local/lib -w')",
-                                     "for k, v in sorted(d.items()):",
-                                     "    if v:",
-                                     "        print(k, v)",
-                                     "env.MergeFlags(d)",
-                                     "env.Program('main.c')")
+        SconsTestBase.createFile(self.file_scons,
+                                 "env = Environment()",
+                                 "d = env.ParseFlags('-I/tmp/include -g -O2 -L/tmp -lm -L/usr/local/lib -w')",
+                                 "for k, v in sorted(d.items()):",
+                                 "    if v:",
+                                 "        print(k, v)",
+                                 "env.MergeFlags(d)",
+                                 "env.Program('main.c')")
 
-            SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
-                                     "int main() { return 0; }")
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
+                                 "int main() { return 0; }")
 
-            result = self.build()
-            self.check_key_word_exists("'CCFLAGS', ['-g', '-O2', '-w']", result)
-            self.check_key_word_exists("'CPPPATH', ['/tmp/include']", result)
-            self.check_key_word_exists("'LIBPATH', ['/tmp', '/usr/local/lib']", result)
-            self.check_key_word_exists("'LIBS', ['m']", result)
+        result = self.build()
+        self.check_key_word_exists("'CCFLAGS', ['-g', '-O2', '-w']", result)
+        self.check_key_word_exists("'CPPPATH', ['/tmp/include']", result)
+        self.check_key_word_exists("'LIBPATH', ['/tmp', '/usr/local/lib']", result)
+        self.check_key_word_exists("'LIBS', ['m']", result)
+
+
+class GoodPracticeTest(SconsTestBase):
+    def setUp(self):
+        self.working_dir = tempfile.mkdtemp()
+        self.file_scons = os.path.join(self.working_dir, 'SConstruct')
+
+        self.other_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.working_dir)
+        shutil.rmtree(self.other_dir)
+
+    def run_command(self, command):
+        result = subprocess.run(command,
+                                cwd=self.working_dir,
+                                stdout=subprocess.PIPE,
+                                shell=True)
+        self.assertEqual(result.returncode, 0)
+        return result.stdout.decode()
+
+    def build(self, target=None):
+        result = self.run_command('scons -C {} -Q {}'.format(self.working_dir, target or ''))
+        return [line.strip() for line in result.split('\n') if line.strip()]
+
+    def test_install(self):
+        """
+        Don't use install files under current directory. It seems install is designed for another directory.
+        Use Install function with Alias together.
+        """
+
+        SconsTestBase.createFile(self.file_scons,
+                                 "env = Environment()",
+                                 "hello = env.Program(target = 'hello', source = 'main.c')",
+                                 "env.Install('{}', hello)".format(self.other_dir),
+                                 "env.Alias('install', '{}')".format(self.other_dir))
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'main.c'),
+                                 'int main() { return 0; }')
+
+        result = self.build()
+        self.check_key_word_not_exist('Install file:', result)
+
+        result = self.build('install')
+        self.check_key_word_exists('Install file:', result)
+
+    def test_hierarchical(self):
+        SconsTestBase.createFile(self.file_scons,
+                                 "env_debug = Environment(CPPFLAGS = '-g')",
+                                 "Export('env_debug')",
+                                 "SConscript(['prog1/SConscript', 'prog2/SConscript'])")
+
+        # prog１
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog1/SConscript'),
+                                 "Import('env_debug')",
+                                 "env = env_debug.Clone()",
+                                 "env.Program('prog1', 'main.c')")
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog1/main.c'),
+                                 'int main() { return 0; }')
+
+        # prog２
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog2/SConscript'),
+                                 "Program('prog1', 'main.c')")
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog2/main.c'),
+                                 'int main() { return 0; }')
+
+
+        result = self.build()
+        self.check_key_word_exists(' -g ', result)
+
+    def test_variant(self):
+        # SconsTestBase.createFile(self.file_scons,
+        #                          "SConscript('prog1/SConscript', variant_dir = '{}')".format(
+        #                              os.path.join(self.other_dir, 'prog1')),
+        #                          "SConscript('prog2/SConscript', variant_dir = '{}')".format(
+        #                              os.path.join(self.other_dir, 'prog2')))
+
+        SconsTestBase.createFile(self.file_scons,
+                                "SConscript('prog1/SConscript')")
+
+        # prog１
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog1/SConscript'),
+                                 "Program('prog1', 'main.c')")
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog1/main.c'),
+                                 'int main() { return 0; }')
+
+        # prog２
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog2/SConscript'),
+                                 "Program('prog1', 'main.c')")
+
+        SconsTestBase.createFile(os.path.join(self.working_dir, 'prog2/main.c'),
+                                 'int main() { return 0; }')
+
+        result = self.build()
+        print(result)
 
 
 if __name__ == '__main__':
