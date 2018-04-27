@@ -46,7 +46,7 @@ Reference: https://scons.org/doc/3.0.1/HTML/scons-user/
    2. Avoid to reference the path related to top-level SConsturct directory.(#path)
    3. Avoid to use the imported environment directly. Clone it firstly.
    4. Avoid to set variant build information in SConscript. Set them in top-level SConstruct instead.
-   5. Prefer Builders created with a generator. The generator can return command string a another action. It is much
+   5. Prefer Builders created with a generator. The generator can return command string or another action. It is much
       more flexible. Construction Variable Substitution is very powerful in command string.
    6. Python Action does not check target after building.
 """
