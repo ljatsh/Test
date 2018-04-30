@@ -14,12 +14,14 @@ Reference: https://docs.python.org/3/howto/regex.html#regex-howto
 5. End of the span(matched object) is a invalid index.
 6. \w also contains underscore!
 7. Index of every matched object are based from the beginning of the string.
-
-Hints:
-1. Repetition is greedy.
+8. Separator component is always surrounded by split components.
+9. Repetition match is greedy by default. *?, +?, ??, or {m,n}? is non-greedy qualifiers
 
 Best Practice:
 1. Avoid to match multiple lines if you can. Be careful with meta character '.' and '$'
+
+TODO:
+Non cpaturing and re.match(r'([abc])+', 'abc') group(1) == ('c',) ??
 
 """
 
@@ -192,6 +194,53 @@ lj like logs
 
         matched = re.search(r'(\b\w+)\s+\1', 'Paris in the the spring')
         self.assertEqual(matched.group(), 'the the', 'You can reference capture in the pattern')
+
+    def test_split(self):
+        result = re.split(r'\W+', ' Words, words, words')
+        self.assertEqual(result, ['', 'Words', 'words', 'words'], 'separator occurs at the front')
+
+        result = re.split(r'\W+', 'Words, words, words.')
+        self.assertEqual(result, ['Words', 'words', 'words', ''], 'separator occurs at the end')
+
+        result = re.split(r'\W+', ' Words, words, words.')
+        self.assertEqual(result, ['', 'Words', 'words', 'words', ''], 'separator occurs at the front and end')
+
+        result = re.split(r'(\W+)', ' Words, words, words.')
+        self.assertEqual(result, ['', ' ', 'Words', ', ', 'words', ', ', 'words', '.', ''],
+                         'split components does not be affected by cpatured separator')
+
+        result = re.split(r'\W+', 'Words, words, words.', maxsplit=1)
+        self.assertEqual(result, ['Words', 'words, words.'])
+
+        result = re.split(r'\W+', ' Words, words, words.', maxsplit=2)
+        self.assertEqual(result, ['', 'Words', 'words, words.'])
+
+    @unittest.skip('split does not split on empty match')
+    def test_split_empty_match(self):
+        result = re.split(r'x*', 'axbc')
+        self.assertEqual(result, ['a', 'bc'])
+
+    def test_sub(self):
+        def sub_by_dict(dict):
+            def sub(match_obj):
+                return dict.get(match_obj.group(1), "")
+
+            return sub
+
+        s = 'name=$name, age=$age'
+        v = {'name':'lj@sh', 'age':'33'}
+        result = re.sub(r'\$(\w+)', sub_by_dict(v), s)
+        self.assertEqual(result, 'name=lj@sh, age=33')
+
+    def test_non_greedy(self):
+        s = 'one|two|three|four'
+        self.assertEqual(re.search(r'\|.*\|', s).group(),
+                         '|two|three|',
+                         '* is matched greedyly')
+        self.assertEqual(re.search(r'\|.*?\|', s).group(),
+                         '|two|',
+                         '*?, +?, ??, or {m,n}? is non-greedy qualifiers')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
