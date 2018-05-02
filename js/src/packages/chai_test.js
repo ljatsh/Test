@@ -1,6 +1,7 @@
 
 // Chai Practice
 // http://www.chaijs.com/
+// Assert Styple API: http://www.chaijs.com/api/assert/
 
 var chai = require('chai');
 var assert = chai.assert;
