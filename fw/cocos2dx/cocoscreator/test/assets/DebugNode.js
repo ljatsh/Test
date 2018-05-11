@@ -33,7 +33,8 @@ cc.Class({
     anchorPointColor: cc.color(255, 0, 0),
     borderColor: cc.color(255, 0, 0),
     anchorPointRadius: 5.0,
-    borderWidth: 1.0
+    borderWidth: 1.0,
+    ignoreScale: true
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -48,12 +49,19 @@ cc.Class({
     var anchorPoint = this.node.getAnchorPoint();
     var anchorPointPosition = cc.p(size.width * anchorPoint.x, size.height * anchorPoint.y);
 
-    this.drawNode.drawSegment(cc.pSub(cc.p(0, 0), anchorPointPosition), cc.pSub(cc.p(size.width, 0), anchorPointPosition), this.borderWidth, this.borderColor);
-    this.drawNode.drawSegment(cc.pSub(cc.p(size.width, 0), anchorPointPosition), cc.pSub(cc.p(size.width, size.height), anchorPointPosition), this.borderWidth, this.borderColor);
-    this.drawNode.drawSegment(cc.pSub(cc.p(size.width, size.height), anchorPointPosition), cc.pSub(cc.p(0, size.height), anchorPointPosition), this.borderWidth, this.borderColor);
-    this.drawNode.drawSegment(cc.pSub(cc.p(0, size.height), anchorPointPosition), cc.pSub(cc.p(0, 0), anchorPointPosition), this.borderWidth, this.borderColor);
+    var points = [cc.p(0, 0), cc.p(size.width, 0), cc.p(size.width, size.height), cc.p(0, size.height), cc.p(0, 0)];
+    for (var i=0; i<4; i++) {
+      var from = cc.pSub(points[i+1], anchorPointPosition);
+      var to = cc.pSub(points[i], anchorPointPosition);
+
+      this.drawNode.drawSegment(from, to, this.borderWidth, this.borderColor);
+    }
 
     this.drawNode.drawDot(anchorPoint, this.anchorPointRadius, this.anchorPointColor);
+
+    if (!this.ignoreScale) {
+      this.drawNode.setScale(1/this.node.scaleX, 1/this.node.scaleY);
+    }
   },
 
   // update (dt) {
