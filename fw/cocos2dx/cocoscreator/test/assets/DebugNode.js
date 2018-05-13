@@ -45,6 +45,37 @@ cc.Class({
     this.drawNode = new cc.DrawNode();
     this.node._sgNode.addChild(this.drawNode);
 
+    this.draw();
+
+    var self = this;
+
+    // register several events
+    // http://www.cocos2d-x.org/docs/creator/manual/en/scripting/internal-events.html?h=event
+    this.node.on('size-changed', function(event) {
+      self.draw();
+      //console.log('size-changed');
+    });
+    this.node.on('anchor-changed', function(event) {
+      self.draw();
+      //console.log('anchor-changed');
+    });
+    this.node.on('scale-changed', function(event) {
+      self.draw();
+      //console.log('scale-changed');
+    });
+    this.node.on('rotation-changed', function(event) {
+      self.draw();
+      //console.log('rotation-changed');
+    });
+    this.node.on('position-changed', function(event) {
+      self.draw();
+      //console.log('position-changed');
+    });
+  },
+
+  draw: function() {
+    this.drawNode.clear();
+
     var size = this.node.getContentSize();
     var anchorPoint = this.node.getAnchorPoint();
     var anchorPointPosition = cc.p(size.width * anchorPoint.x, size.height * anchorPoint.y);
@@ -62,7 +93,7 @@ cc.Class({
     if (!this.ignoreScale) {
       this.drawNode.setScale(1/this.node.scaleX, 1/this.node.scaleY);
     }
-  },
+  }
 
   // update (dt) {
 
