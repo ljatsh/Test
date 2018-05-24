@@ -98,7 +98,7 @@
     ```
 * 表示与另一段上下文有关的内容，并被突出显示[mask](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-mark-element)
   - ```css
-    mask { background-color: yellow; color: black; }
+    mask { background-color: yellow; color: black; }
     ```
 * 表示添加的内容[ins](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins)和删除的内容[del](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del)
   - ```css
