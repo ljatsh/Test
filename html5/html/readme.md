@@ -4,6 +4,74 @@
 * [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Content_categories#Flow_content)
 * [relevant portions of the HTML specification](https://html.spec.whatwg.org/multipage/dom.html#kinds-of-content)
 
+### Grouping Content ###
+
+* 表示段落[p](https://html.spec.whatwg.org/multipage/grouping-content.html#the-p-element)
+  - ```css
+    p { display: block; margin-before: 1em; marge-after: 1em; margin-start:0; margin-end: 0; }
+    ```
+* 应用全局属性到一片内容上，可是不表示任何内容分组[div](https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element)
+  - 最后的选择，　优先考虑语义元素
+  - ```css
+    div { display: block; }
+    ```
+* 保留ＨＴＭＬ文档中的布局[pre](https://html.spec.whatwg.org/multipage/grouping-content.html#the-pre-element)
+  - ｐｒｅ阻止渲染时候空白符的合并
+  - ```css
+    pre { display: block; font-family: monospace; white-space: pre; margin: 1em 0; }
+    ```
+* 表示引自他处的内容[blockquote](https://html.spec.whatwg.org/multipage/grouping-content.html#the-blockquote-element)
+  - 相比**q**, blockquote通常用在需要引用更多内容情况下
+  - ```css
+    blockquote { display: block; margin-before: 1em; margin-after: 1em; margin-start: 40px; margin-end: 40px; }
+    ```
+* 表示段落级别的主题转换[hr](https://html.spec.whatwg.org/multipage/grouping-content.html#the-hr-element)
+  - ```css
+    hr { display: block; margin-before: 0.5em; margin-after: 0.5em; margin-start: auto; margin-end: auto;
+         border-style: inset; border-width: 1px; }
+    ```
+* 有序列表[ol](https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element)
+  - 可以通过ｔｙｐｅ属性设置标号类型
+    - 1 十进制（默认）
+    - a 小写拉丁字母
+    - A 大写拉丁字母
+    - i 小写罗马数字
+    - Ｉ 大写罗马数字
+  - 可以通过start属性设置首项编号值，另外可以通过ｌｉ的ｖａｌｕｅ强行指定某一项的值编号
+  - reversed属性指定标号降序排列
+  - ```css
+    ol { display: block; list-style-type: decimal; margin-before: 1em; margin-after: 1em;
+         margin-start: 0; margin-end: 0; padding-start: 40px;
+       }
+    ```
+* 无序列表[ul](https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element)
+  - ```css
+    ul { display: block; list-style-type: disc; margin-before: 1em; margin-after: 1em;
+         margin-start: 0; margin-end: 0; padding-start: 40px;
+       }
+    ```
+* 说明列表[dl](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element)
+  - **dl**需要配合属于[dt](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dt-element)和定义[dd](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dd-element])
+  - ```css
+     dl { display: block; margin-before: 1em; margin-after: 1em; margin-start: 0; margin-end: 0; }
+     dt { display: block; }
+     dd { display: block; margin-start: 40px; }
+     ```
+* 表示插图[figure](https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element)
+  - ```html
+    <figure>
+      <figcaption>Listing 23. Using the code element</figcaption>
+      <code>var fruits = ["apples", "oranges", "mangoes", "cherries"];<br>
+      document.writeln("I like " + fruits.length + " fruits");
+      </code>
+    </figure>
+    ```
+  -  ![上例渲染样式](doc/group_figure_01.png)
+  - ```css
+    figure { display: block; margin-before: 1em; margin-after-after: 1em; margin-start: 40px; margin-after: 40px; }
+    figcaption { display: block; }
+    ```
+
 #### Text Element ####
 * 生成到其他文档的超级链接或者到本文档某元素的超级链接[a](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element)
   - ```css
@@ -113,4 +181,3 @@
     <p>The concert took place on <time
     datetime="2001-05-15T19:00">May 15</time>.</p>
     ```
-
