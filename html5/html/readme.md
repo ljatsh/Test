@@ -93,6 +93,30 @@
     I like apples and oranges.
     ```
   - ![上例渲染样式](doc/section_hgroup_01.png)
+* 表示一个重要的主题或者概念[section](https://html.spec.whatwg.org/multipage/sections.html#the-section-element)
+  - section的样式默认并无特别之处，而且各浏览器section里面标题的处理不一致。因此section主要用于语义上的结构支持，样式上如果有需要，需要自定义CSS
+  - ```css
+    section { display: block; }
+    ```
+* 表示首部[header](https://html.spec.whatwg.org/multipage/sections.html#the-header-element)和尾部[footer](https://html.spec.whatwg.org/multipage/sections.html#the-footer-element)
+  - header和footer的父元素可以是任何可以包含流元素的元素，重在语义，样式默认无特殊
+  - ```html
+    <p>
+      <header>
+        <hgroup>
+          <h1>Things I like</h1>
+          <h2>by Adam Freeman</h2>
+        </hgroup>
+      </header>
+
+      You can see other fruits I like <a href="fruitlist.html">here</a>.
+    </p>
+    ```
+  - ![上例渲染样式](doc/section_header_01.png)
+  - ```css
+    header { display: block; }
+    footer { display: block; }
+    ```
 
 ### Text Element ###
 * 生成到其他文档的超级链接或者到本文档某元素的超级链接[a](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element)
