@@ -16,7 +16,7 @@
     div { display: block; }
     ```
 * 保留ＨＴＭＬ文档中的布局[pre](https://html.spec.whatwg.org/multipage/grouping-content.html#the-pre-element)
-  - ｐｒｅ阻止渲染时候空白符的合并
+  - pre阻止渲染时候空白符的合并
   - ```css
     pre { display: block; font-family: monospace; white-space: pre; margin: 1em 0; }
     ```
@@ -108,7 +108,6 @@
           <h2>by Adam Freeman</h2>
         </hgroup>
       </header>
-
       You can see other fruits I like <a href="fruitlist.html">here</a>.
     </p>
     ```
@@ -116,6 +115,109 @@
   - ```css
     header { display: block; }
     footer { display: block; }
+    ```
+* 表示集中连接的导航区[nav](https://html.spec.whatwg.org/multipage/sections.html#the-nav-element)
+  - ```html
+    <header>
+      <hgroup>
+        <h1>Things I like</h1>
+        <h2>by Adam Freeman</h2>
+      </hgroup>
+      <nav>
+          <h1>Contents</h1>
+          <ul>
+            <li><a href="#fruitsilike">Fruits I Like</a></li>
+            <ul>
+                <li><a href="#morefruit">Additional Fruits</a></li>
+            </ul>
+            <li><a href="#activitiesilike">Activities I Like</a></li>
+            <ul>
+                <li><a href="#tritypes">Kinds of Triathlon</a></li> 234
+                <li><a href="#mytri">The kind of triathlon I am aiming for</a></li>
+            </ul>
+          </ul>
+      </nav>
+    </header>
+    ```
+  - ![渲染样式](doc/section_nav_01.png)
+  - ```css
+    nav { display: block; }
+    ```
+* 表示一篇可以独立发布的主题文章[article](https://html.spec.whatwg.org/multipage/sections.html#the-article-element)
+  - ```css
+    article { display: block; }
+    ```
+* 用来对某些内容的说明[aside](https://html.spec.whatwg.org/multipage/sections.html#the-aside-element)
+  - ```html
+    <article>
+      <header>
+        <hgroup>
+            <h1 id="fruitsilike">Fruits I Like</h1>
+            <h2>How I Learned to Love Citrus</h2>
+        </hgroup>
+      </header>
+      <aside>
+        <h1>Why Fruit is Healthy</h1>
+        <section>
+          Here are three reasons why everyone should eat more fruit:
+          <ol>
+            <li>Fruit contains lots of vitamins</li>
+            <li>Fruit is a source of fibre</li>
+            <li>Fruit contains few calories</li>
+          </ol>
+        </section>
+      </aside>
+        I like apples and oranges.
+        <section>
+          <h1 id="morefruit">Additional fruits</h1>
+          I also like bananas, mangoes, cherries, apricots, plums,
+          peaches and grapes. In geometry, the tangent line (or simply tangent) to a plane curve at a given point is the straight line that "just touches" the curve at that point. Leibniz defined it as the line through a pair of infinitely close points on the curve.[1] More precisely, a straight line is said to be a tangent of a curve y = f(x) at a point x = c on the curve if the line passes through the point (c, f(c)) on the curve and has slope f '​(c) where f '​ is the derivative of f. A similar definition applies to space curves and curves in n-dimensional Euclidean space.
+          <section>
+            <h1>More information</h1>
+            You can see other fruits I like <a href="fruitlist.html">here</a>
+          </section>
+        </section>
+        <footer>
+          <nav>
+            More Information:
+            <a href="http://fruit.org">Learn More About Fruit</a>
+          </nav>
+        </footer>
+    </article>
+  - ![渲染样式](doc/section_aside_01.png)
+    ```
+  - *aside元素承接一个渲染区，但是本身不占用渲染位置*
+  - ```css
+    aside { display: block; }
+    ```
+* 表示文档的联系信息[address](https://html.spec.whatwg.org/multipage/sections.html#the-address-element)
+  - 除去元素h1–h6, section, header, footer, nav, article, and aside外，其他流元素都可以被包含
+  - ```html
+    <address>
+      Questions and comments? <a href="mailto:adam@myboringblog.com">Email me</a>
+    </address>
+    ```
+  - ```css
+    aside { display: block; font-style: italic; }
+    ```
+* 表示可以展开获取更多信息[details](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element)
+  - *details*通常和[summary](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-summary-element)一起使用
+  - ```html
+    <details>
+      <summary>Kinds of Triathlon</summary>
+      There are different kinds of triathlon - sprint, Olympic and so on.
+      I am aiming for Olympic, which consists of the following:
+      <ol>
+        <li>1.5km swim</li>
+        <li>40km cycle</li>
+        <li>10km run</li>
+      </ol>
+    </details>
+    ```
+  - ![渲染样式](doc/section_detail_01.png)
+  - ```css
+    details { display: block; }
+    summary { display: block; }
     ```
 
 ### Text Element ###
