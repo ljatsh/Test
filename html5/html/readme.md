@@ -71,8 +71,30 @@
     figure { display: block; margin-before: 1em; margin-after-after: 1em; margin-start: 40px; margin-after: 40px; }
     figcaption { display: block; }
     ```
+### Section Element ###
+* HTML文档内容的开始[body](https://html.spec.whatwg.org/multipage/sections.html#the-body-element)
+  - ```css
+    body { display: block; margin: 8px; }
+    body:focus { outline: none; }
+    ```
+* 常用标题[h1-h3](https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements)
+  - ```css
+    h1 { display: block; font-size: 2em; margin-before: 0.67em; margin-after: 0.67em;
+        margin-start: 0; margin-end: 0; font-weight: bold;
+       }
+    ```
+* 表示一组标题, 其中只有一个可以出现在文档大纲中[hgroup](https://html.spec.whatwg.org/multipage/sections.html#the-hgroup-element)
+  - hgroup主要用来解决子标题的问题
+  - ```html
+    <hgroup>
+      <h1>Fruits I Like</h1>
+      <h2>How I Learned to Love Citrus</h2>
+    </hgroup>
+    I like apples and oranges.
+    ```
+  - ![上例渲染样式](doc/section_hgroup_01.png)
 
-#### Text Element ####
+### Text Element ###
 * 生成到其他文档的超级链接或者到本文档某元素的超级链接[a](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element)
   - ```css
     a:link, a:visited {
