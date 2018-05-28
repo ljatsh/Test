@@ -223,6 +223,82 @@
 
 ### Table Element ###
 * 生成基本的表格[table](https://html.spec.whatwg.org/multipage/tables.html#the-table-element), 行[tr](https://html.spec.whatwg.org/multipage/tables.html#the-tr-element)和表格单元[td](https://html.spec.whatwg.org/multipage/tables.html#the-td-element)
+  - [colspan]和[rowspan]控制形成不规则表格
+  - ```html
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th><th>Name</th><th>Color</th>
+          <th colspan="2">Size & Votes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Favorite:</th><td>Apples</td><td>Green</td><td>Medium</td><td>500</td>
+        </tr>
+        <tr>
+          <th>2nd Favorite:</th><td>Oranges</td><td>Orange</td><td>Large</td><td>450</td>
+        </tr>
+        <tr>
+          <th>3rd Favorite:</th><td>Pomegranate</td>
+          <td colspan="2" rowspan="2">
+                        Pomegranates and cherries can both come in a range of colors
+                        and sizes.
+          </td>
+          <td>203</td>
+        </tr>
+        <tr>
+          <th rowspan="2">Joint 4th:</th> <td>Cherries</td>
+          <td rowspan="2">75</td>
+        </tr>
+        <tr>
+          <td>Pineapple</td>
+          <td>Brown</td>
+          <td>Very Large</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="5">&copy; 2011 Adam Freeman Fruit Data Enterprises</th>
+        </tr>
+      </tfoot>
+    </table>
+    ```
+  - ![渲染样式](doc/table_01.png)
+  - td的属性[header]可以绑定th(横向、纵向可以一起指定)，用于其他工具的语义分析
+    ```html
+      <table>
+        <thead>
+          <tr>
+            <th id="rank">Rank</th>
+            <th id="name">Name</th>
+            <th id="color">Color</th>
+            <th id="sizeAndVotes" colspan="2">Size & Votes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th id="first" headers="rank">Favorite:</th>
+            <td headers="name first">Apples</td>
+            <td headers="color first">Green</td>
+            <td headers="sizeAndVote first">Medium</td>
+            <td headers="sizeAndVote first">500</td>
+          </tr>
+          <tr>
+            <th id="second" headers="rank">2nd Favorite:</th>
+            <td headers="name second">Oranges</td>
+            <td headers="color second">Orange</td>
+            <td headers="sizeAndVote second">Large</td>
+            <td headers="sizeAndVote second">450</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5">&copy; 2011 Adam Freeman Fruit Data Enterprises</th>
+          </tr>
+        </tfoot>
+      </table>
+    ```
   - ```css
     table { display: table; border-collapse: separate; border-spacing: 2px; border-color: gray; }
     tr { display: table-row; vertical-align: inherit; border-color: inherit; }
@@ -231,6 +307,30 @@
 * 表头单元格[th](https://html.spec.whatwg.org/multipage/tables.html#the-th-element)
   - ```css
     th { display: table-cell; vertical-align: inherit; font-weight: bold; text-align: center; }
+    ```
+* 可以区分表头的上级元素，表头[thead](https://html.spec.whatwg.org/multipage/tables.html#the-thead-element)，表体[tbody](https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element)和表脚[tfoot](https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element)
+  - 如果不显示指定tbody，有些浏览器会强制添加tbody；这三个元素存在的意义貌似更多在语义上
+  - 如果不指定thead，第一行的tr元素从属于tbody
+  - 虽然这三个元素的书写顺序无关紧要，但是遵从thead > tbody > tfoot的顺序
+  - ```css
+    thead { display: table-header-group; vertical-align: middle; border-color: inherit; }
+    tbody { display: table-header-group; vertical-align: middle; border-color: inherit; }
+    tfoot { display: table-footer-group; vertical-align: middle; border-color: inherit; }
+    ```
+* 表示表头[caption](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)，属于table
+  - caption不必放在最前面，但是遵从caption > thead的顺序
+  - ```html
+    <table>
+      <caption>Results of the 2011 Fruit Survey</caption>
+      <tfoot>
+        <tr>
+          <th colspan="5">&copy; 2011 Adam Freeman Fruit Data Enterprises</th>
+        </tr>
+      </tfoot>
+    </table>
+    ```
+  - ```css
+    caption { display: table-caption; text-align: center; }
     ```
 
 ### Text Element ###
