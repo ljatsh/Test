@@ -116,7 +116,7 @@
     header { display: block; }
     footer { display: block; }
     ```
-* 表示集中连接的导航区[nav](https://html.spec.whatwg.org/multipage/sections.html#the-nav-element)
+* 表示导航元素集合[nav](https://html.spec.whatwg.org/multipage/sections.html#the-nav-element)
   - ```html
     <header>
       <hgroup>
@@ -143,11 +143,11 @@
   - ```css
     nav { display: block; }
     ```
-* 表示一篇可以独立发布的主题文章[article](https://html.spec.whatwg.org/multipage/sections.html#the-article-element)
+* 表示可独立发布的重要主题或者概念[article](https://html.spec.whatwg.org/multipage/sections.html#the-article-element)
   - ```css
     article { display: block; }
     ```
-* 用来对某些内容的说明[aside](https://html.spec.whatwg.org/multipage/sections.html#the-aside-element)
+* 表示周边内容的一些沾边话题[aside](https://html.spec.whatwg.org/multipage/sections.html#the-aside-element)
   - ```html
     <article>
       <header>
@@ -200,8 +200,9 @@
   - ```css
     aside { display: block; font-style: italic; }
     ```
-* 表示可以展开获取更多信息[details](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element)
+* 生成一个区域，用户可将其展开以了解更多信息[details](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element)
   - *details*通常和[summary](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-summary-element)一起使用
+  - 并非所有的浏览器都支持detail元素
   - ```html
     <details>
       <summary>Kinds of Triathlon</summary>
@@ -218,6 +219,18 @@
   - ```css
     details { display: block; }
     summary { display: block; }
+    ```
+
+### Table Element ###
+* 生成基本的表格[table](https://html.spec.whatwg.org/multipage/tables.html#the-table-element), 行[tr](https://html.spec.whatwg.org/multipage/tables.html#the-tr-element)和表格单元[td](https://html.spec.whatwg.org/multipage/tables.html#the-td-element)
+  - ```css
+    table { display: table; border-collapse: separate; border-spacing: 2px; border-color: gray; }
+    tr { display: table-row; vertical-align: inherit; border-color: inherit; }
+    td { display: table-cell; vertical-align: inherit; }
+    ```
+* 表头单元格[th](https://html.spec.whatwg.org/multipage/tables.html#the-th-element)
+  - ```css
+    th { display: table-cell; vertical-align: inherit; font-weight: bold; text-align: center; }
     ```
 
 ### Text Element ###
