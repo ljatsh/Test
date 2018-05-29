@@ -1,4 +1,6 @@
 
+### [CSS](doc/css.md) ###
+
 ### Element Categories ###
 
 * [MDN Reference](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Content_categories#Flow_content)
@@ -265,7 +267,7 @@
     </table>
     ```
   - ![渲染样式](doc/table_01.png)
-  - td的属性[header]可以绑定th(横向、纵向可以一起指定)，用于其他工具的语义分析
+  - td, th的属性[header]可以绑定th(横向、纵向可以一起指定)，用于其他工具的语义分析
     ```html
       <table>
         <thead>
@@ -332,6 +334,14 @@
   - ```css
     caption { display: table-caption; text-align: center; }
     ```
+* 指定列范围以应用样式[colgroup](https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element)和[col](https://html.spec.whatwg.org/multipage/tables.html#the-col-element)
+  - colgroup可以通过span来指定包含的列数，也可以通过col元素具体指定列数
+  - colgroup没有box，样式可以应用到thead，tbody,tfoot的cell，但是优先级低；在浏览器调试工具中，也看不到cell从colgroup继承下来的css样式(至少在Safari中如此)
+  - ```css
+    colgroup { display: table-column-group; }
+    col { display: table-column; }
+    ```
+
 
 ### Text Element ###
 * 生成到其他文档的超级链接或者到本文档某元素的超级链接[a](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element)
