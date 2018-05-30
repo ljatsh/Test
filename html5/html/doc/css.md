@@ -221,7 +221,7 @@
     ```
   - ![实例图](css_selector_combining_child_01.png)
 
-* *[adjacent silbing selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_selectors) matches elements that match the 2nd element and immediately follow an element that matches the 1st selector  
+* [*adjacent silbing selector*](https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_selectors) matches elements that match the 2nd element and immediately follow an element that matches the 1st selector  
   [general silbing selector](https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_selectors) matches elemments that match the 2nd element and follow an element that matches the 1st selector
   - ```
     <selector1> + <selector2> { style properties }
@@ -268,7 +268,7 @@
 * [::first-letter](https://developer.mozilla.org/en-US/docs/Web/CSS/::first-letter) matches the the first letter of first line of a block-level element
 * :before and :after
 
-### Pseudo-Class Selector ###
+### Pseudo-Class Selector (TODO 孩子节点的选取顺序机制等学些DOM后再回头了解。每条例子都有疑问) ###
 
 * [:root](https://developer.mozilla.org/en-US/docs/Web/CSS/:root) matches the root element of the document, usually html element
 * child selector matches single element that are directly contained inside other elements
@@ -308,7 +308,7 @@
      ```
   - ![实例图](css_selector_pseudo_class_child_02.png)
 
-* the nth-child selector allow you to sepecify an index to match elements in a paticular position
+* the nth-child series selector allow you to sepecify an index to match elements in a paticular position
   - [:nth-child(n)](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child) matches elements based on their position among a group of silbings
     - ```
         :nth-child(<nth> [ of <selector>#]?)
@@ -408,6 +408,39 @@
         </html>
       ```
     - ![实例图](css_selector_pseudo_class_nth_child_01.png)
+  - [nth-last-child(n)](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child) just like nth-child(n), but counting from the end
+    - ```html
+        <html>
+        <head> <title>Example</title> <style type="text/css">
+            /* Odd paragraphs */
+            p:nth-of-type(2n+1) {
+            color: red;
+            }
+
+            /* Even paragraphs */
+            p:nth-of-type(2n) {
+            color: blue;
+            }
+
+            /* First paragraph */
+            p:nth-of-type(1) {
+            font-weight: bold;
+            }</style>
+        </head>
+        <body>
+            <div>
+            <div>This element isn't counted.</div>
+            <p>1st paragraph.</p>
+            <p>2nd paragraph.</p>
+            <div>This element isn't counted.</div>
+            <p>3rd paragraph.</p>
+            <p>4th paragraph.</p>
+            </div>
+        </body>
+        </html>
+        ```
+    - ![实例图](css_selector_pseudo_class_nth_child_02.png)
+  - [nth-of-type(n) TODO](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type)
 
 ## References ##
 
