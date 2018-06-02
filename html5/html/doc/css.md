@@ -442,6 +442,26 @@
     - ![实例图](css_selector_pseudo_class_nth_child_02.png)
   - [nth-of-type(n) TODO](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type)
 
+## Box Model ##
+
+* 总则
+  - ![BoxModel](box_model.png)
+  - 元素可以分为4个盒子，从外到内依次为margin-box, border-box, padding-box, content-box
+  - 指定宽度盒高度的百分比，是相对于父元素的content-box的宽和高
+  - 指定padding, margin的值， 可以通过值复制记忆  
+    ![ValueReplicating](value_replicating.png)
+
+* [padding](https://developer.mozilla.org/en-US/docs/Web/CSS/padding), 在conteng-box和border之间留空白，一般是为了防止内容区会覆盖border的情况下，譬如圆角
+  - 可以分别指定padding-top, padding-bottom, padding-left和padding-right的属性
+* [margin](https://developer.mozilla.org/en-US/docs/Web/CSS/margin), 在border-box和它周围的元素之间留空白
+  - 可以分别指定margin-top, margin-bottom, margin-left和margin-right的属性
+* [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width)指定元素的宽度
+  - 可以通过[box-sizing](https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing)来设定目标盒子，默认设置content-box
+  - 值可以取绝对单位、相对单位和关键字，或者关键字auto。auto是默认值
+  - 可以和min-width和max-width配合使用
+* [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height)类似，但是谨慎使用
+
+
 ## References ##
 
 * [CSS Specification?](https://drafts.csswg.org/selectors/#syntax)
