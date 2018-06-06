@@ -460,6 +460,19 @@
   - 值可以取绝对单位、相对单位和关键字，或者关键字auto。auto是默认值
   - 可以和min-width和max-width配合使用
 * [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height)类似，但是谨慎使用
+* [overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)设置元素内容的溢出处理方式
+  - ```
+    [visible | hidden | scroll | auto] {1, 2}
+    ```
+  - In order for overflow to have an effect, the block level container must have ethier a set height(heigth or max-height) or [white-space](https://developer.mozilla.org/en-US/docs/Web/CSS/white-space) set to nowrap
+* 设置元素的显示类型[display](https://developer.mozilla.org/en-US/docs/Web/CSS/display)：
+  - 设置元素的显示类型并不改变元素的语义盒子类型。譬如`<span style="display: block"> <p style="display: inline"> Hello </p> </span>`并非是合法的HTML
+  - block: [MANY TODO](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block) [MANY TODO](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context)
+  - inline:
+* 将元素移动到起包含块的边界，或者另外一个浮动元素的边界[float](https://developer.mozilla.org/en-US/docs/Web/CSS/float)
+* [clear](https://developer.mozilla.org/en-US/docs/Web/CSS/clear)
+  - MANY TODO
+
 
 
 ## References ##
