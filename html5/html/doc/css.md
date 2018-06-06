@@ -496,14 +496,14 @@
         </div>
       </body>
       ```
-    - ![border-width](css_border_width_01.png.png)
+    - ![border-width](css_border_width_01.png)
   - [border-style](https://developer.mozilla.org/en-US/docs/Web/CSS/border-style)
     - ```
       <br-style>{1,4}
       where 
       <br-style> = none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset
       ```
-    - ![border-style](css_border_style_01.png.png)
+    - ![border-style](css_border_style_01.png)
   - [border-color](https://developer.mozilla.org/en-US/docs/Web/CSS/border-color)
     - 关于[color](https://developer.mozilla.org/en-US/docs/Web/HTML/Applying_color)的rgba值，倾向于关键字和#rrggbb[aa]的格式
   - 通过border-{top|right|bottom|left}-{width|style|color}的形式单独设置每条边的样式
@@ -513,6 +513,82 @@
       每个值都可以不写，不写会有缺省值
       ```
     - 相应的border-{top|right|bottom|left}也可以简写
+* 设置元素的背景图像
+  - [background-image](https://developer.mozilla.org/en-US/docs/Web/CSS/background-image)可以设置多个图像
+  - [background-size](https://developer.mozilla.org/en-US/docs/Web/CSS/background-size)设置图像的大小
+    - ```
+      <bg-size>#
+      where 
+      <bg-size> = [ <length-percentage> | auto ]{1,2} | cover | contain
+
+      where 
+      <length-percentage> = <length> | <percentage>
+      ```
+    - cover和contain都尽最大可能等比例缩放， 至少有一维和元素的宽或者高匹配，contain留黑边，cover裁剪
+    - TODO 关于*Intrinsic dimensions and proportions*， 和图片的格式有关
+  - [background-repeat](https://developer.mozilla.org/en-US/docs/Web/CSS/background-repeat)设置图像的重复样式
+    - ```
+      <repeat-style>#
+      where
+      <repeat-style> = repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}
+      ```
+    - x方向和y方向可以分开设置
+      - repeat-x == repeat no-repeat
+      - repeat-y == no-repeat repeat
+    - space影响到了位置布局，在image不裁剪情况下，均匀布局
+    - round暂不研究[TODO]
+  - [background-origin](https://developer.mozilla.org/en-US/docs/Web/CSS/background-origin)设置背景的原点
+    - ```
+      <box>#
+      where 
+      <box> = border-box | padding-box | content-box
+      ```
+    - ```html
+      <head>
+        <style>
+          p {
+            display: inline-block;
+            border: 10px double black;
+            background-color: yellow;
+            background-image: url(img/11.png);
+            background-size: 40px 40px;
+            background-repeat: repeat;
+            background-position: top left;
+            width: 80px;
+            height: 40px;
+            box-sizing: content-box;
+            padding: 10px;
+            margin-right: 10px;
+          }
+          #p1 {
+            background-origin: border-box;
+          }
+          #p2 {
+            background-origin: padding-box;
+          }
+          #p3 {
+            background-origin: content-box;
+          }
+        </style>
+      </head>
+
+      <body>
+        <p id=p1> border-box </p>
+        <p id=p2> pading-box </p>
+        <p id=p3> content-box </p>
+      </body>
+      ```
+    - ![background-origin](css_background_origin_01.png)
+  - [background-clip](https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip)控制背景显示范围
+    - ```
+      <box>#
+      where 
+      <box> = border-box | padding-box | content-box
+      ```
+    - ![background-clip](css_background_clip_01.png)
+  - [background-position](https://developer.mozilla.org/en-US/docs/Web/CSS/background-position)用来设置图像左上角的初始位置
+    - 如果仅仅指定一个关键字top,right,bottom,left,center指定，另外一个值取center
+    - 关键字(center除外)可以理解为边，边可以带off-set值，我想默认值应该是0吧
 
 ## References ##
 
