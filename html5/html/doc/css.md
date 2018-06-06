@@ -473,7 +473,46 @@
 * [clear](https://developer.mozilla.org/en-US/docs/Web/CSS/clear)
   - MANY TODO
 
-
+* 设置border样式
+  - [border-width](https://developer.mozilla.org/en-US/docs/Web/CSS/border-width)
+    - ```
+      <br-width> {1, 4}
+      where br-width = <length> | thin | medium | thick
+      ```
+    - 值复制的顺序通padding、margin的值复制顺序相同
+    - ```html
+      <head>
+        <style>
+          #test {
+            width: 50%;
+            border-width: thin medium thick;
+            border-style: solid;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="test">
+          <p> Border-Width </p>
+        </div>
+      </body>
+      ```
+    - ![border-width](css_border_width_01.png.png)
+  - [border-style](https://developer.mozilla.org/en-US/docs/Web/CSS/border-style)
+    - ```
+      <br-style>{1,4}
+      where 
+      <br-style> = none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset
+      ```
+    - ![border-style](css_border_style_01.png.png)
+  - [border-color](https://developer.mozilla.org/en-US/docs/Web/CSS/border-color)
+    - 关于[color](https://developer.mozilla.org/en-US/docs/Web/HTML/Applying_color)的rgba值，倾向于关键字和#rrggbb[aa]的格式
+  - 通过border-{top|right|bottom|left}-{width|style|color}的形式单独设置每条边的样式
+  - [border](https://developer.mozilla.org/en-US/docs/Web/CSS/border)适合描述4条变样式相同的元素
+    - ```
+      <br-width> || <br-style> || <color>
+      每个值都可以不写，不写会有缺省值
+      ```
+    - 相应的border-{top|right|bottom|left}也可以简写
 
 ## References ##
 
