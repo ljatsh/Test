@@ -590,6 +590,37 @@
     - 如果仅仅指定一个关键字top,right,bottom,left,center指定，另外一个值取center
     - 关键字(center除外)可以理解为边，边可以带off-set值，我想默认值应该是0吧
 
+## 布局 ##
+* [position](https://developer.mozilla.org/en-US/docs/Web/CSS/position)
+  - ```
+    static | relative | absolute | sticky | fixed
+    ```
+  - *staitc* -- The element is laid out as normal (this is the default value)
+  - *relative* -- The element is positioned relative to its normal position.
+  - *absolute* -- The element is positioned relative to its first ancestor that has a position value other than static
+  - *fixed* -- The element is positioned relative to the browser window
+- [Multicolumn](https://developer.mozilla.org/en-US/docs/Web/CSS/column-count)多列显示[TOOD]
+  - ```html
+    <head>
+      <style>
+        p {
+          column-count: 3;
+        }
+      </style>
+    </head>
+    <body>
+      <p class="content-box">
+        This is a bunch of text split into three columns
+        using the CSS `column-count` property. The text
+        is equally distributed over the columns.
+      </p>
+    </body>
+    ```
+  - ![MultiColumn](css_layout_01.png)
+- [flexbox](https://en.wikipedia.org/wiki/CSS_flex-box_layout)暂时不看，直接参考bootstrap
+
+## 文本 ##
+
 ## References ##
 
 * [CSS Specification?](https://drafts.csswg.org/selectors/#syntax)
