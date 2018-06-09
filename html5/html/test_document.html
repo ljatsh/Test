@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head id='head'>
+  <title> This is a HTML Test </title>
+  <meta charset="UTF-8"> </meta>
+
+  <link rel="stylesheet" href="./node_modules/mocha/mocha.css">
+</head>
+
+<body>
+  <div id="mocha"></div>
+  <script src="./node_modules/mocha/mocha.js"></script>
+  <script src="./node_modules/chai/chai.js"></script>
+  <script>mocha.setup('bdd')</script>
+  <script>assert = chai.assert</script>
+
+  
+
+  <!-- <script src="./test_document.js"> </script> -->
+  <script>
+    describe('Document', function () {
+      it('Meta relevant information', function () {
+        assert.strictEqual(document.title, "This is a HTML Test", 'document title strips white spaces');
+
+        assert.strictEqual(document.characterSet, 'UTF-8', 'TODO. characterSet may be different from the encoding specified by the page-->https://developer.mozilla.org/en-US/docs/Web/API/Document/characterSet');
+        assert.strictEqual(document.charset, 'UTF-8', 'charset is alias of characterSet. Prefer characterSet');
+
+        // See following outout from console
+        console.log('defaultCharset = ' + document.defaultCharset);
+        console.log('dir = ' + document.dir);
+        console.log('readyState = ' + document.readyState);
+      });
+
+      it('Location', function() {
+        var location = document.location;
+        assert.strictEqual(location.protocol, 'http:');
+
+        console.log(document.location);
+      });
+
+      it('Implementation', function() {
+        var impl = document.implementation;
+
+        var features = ['Core', 'HTML', 'CSS', 'Selectors-API'];
+        var levels = ['1.0', '2.0', '3.0'];
+
+        // Arrow functions seems not work on Safari 9.1.2(11601.7.7)
+        features.forEach((feature, j) => {
+          levels.forEach((level, k) => {
+            assert.isOk(impl.hasFeature(feature, level));
+          });
+        });
+
+        console.log(impl);
+      });
+
+      it('Body', function() {
+
+        console.log(document.body);
+      });
+
+      it('Head', function() {
+        var head = document.head;
+        assert.strictEqual(head.id, 'head');
+
+        console.log(head);
+      });
+    });
+  </script>
+
+  <script>
+    mocha.run();
+  </script>
+</body>
+
+</html>
