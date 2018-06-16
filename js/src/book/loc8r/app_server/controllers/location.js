@@ -36,7 +36,34 @@ module.exports.locationInfo = function(req, res) {
       address: '125 High Street, Reading, RG6 1PS',
       rating: 2,
       facilities: ['Food', 'Premium wifi'],
-      distance: '250m'
+      distance: '250m',
+      openingTimes: [ {
+        days: 'Monday - Friday',
+        opening: '7:00am',
+        closing: '7:00pm',
+        closed: false
+      }, {
+        days: 'Saturday',
+        opening: '8:00am',
+        closing: '5:00pm',
+        closed: false
+        }, {
+          days: 'Sunday',
+          closed: true
+        }
+      ],
+      reviews: [ {
+        author: 'lj@sh',
+        rating: 5,
+        reviewText: 'What\'s a greate place! I can sit here to enjoy reading.',
+        createdOn: '2018-06-15 18:31:05'
+      }, {
+        author: 'anoymous',
+        rating: 3,
+        reviewText: 'Not so good',
+        createdOn: '2018-06-17 14:07:09'
+      }
+      ]
     } // end of location
   });
 };

@@ -1,7 +1,7 @@
 
 var mongoose = require('mongoose');
 
-var dbUrl = 'mongodb://localhost/Loc85';
+var dbUrl = 'mongodb://localhost/Loc8r';
 mongoose.connect(dbUrl);
 
 mongoose.connection.on('connected', function() {
