@@ -12,7 +12,7 @@ var assert = chai.assert;
 // Promise:
 //   Gurantee:
 //   1. Callback will never to be called before the completion of the current run of the JavaScript event loop.
-//   2. Callback added withn then can be called even the promise was settled.
+//   2. Callback added with then can be called even the promise was settled.
 //   3. Multile callbacks can be added with then several times to be executed independently in insertion order
   
 //   Chain:
