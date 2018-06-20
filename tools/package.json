@@ -1,0 +1,11 @@
+{
+  "name": "gitlab_repository_preview",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./gitlab_repository_preview"
+  },
+  "dependencies": {
+    "jade": "~1.11.0"
+  }
+}

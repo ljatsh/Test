@@ -10,7 +10,8 @@
       "console",
       "process",
       "setTimeout",
-      "setImmediate"
+      "setImmediate",
+      "Buffer"
     ],
     "undef": true,
     "unused": false,

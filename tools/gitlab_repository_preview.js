@@ -2,9 +2,10 @@ var http = require('http');
 var parse = require('url').parse;
 var join = require('path').join;
 var querystring = require('querystring');
+var jade = require('jade');
 
 var gitlab_ip = '192.168.0.130';
-var gitlab_port = 81;
+var gitlab_port = 80;
 var private_key = 'iWE9x7kSQcFNSa-zidH7'; // 从个人资料设置拿到
 var project_id = 4;
 
@@ -18,6 +19,11 @@ function get(path) {
     };
 
     var req = http.request(options, function(res) {
+      if (res.statusCode != 200) {
+        reject(new Error('Invalid http response code: ' + res.statusCode));
+        return;
+      }
+
       var _data = '';
       res.on('data', function(chunk) {
         _data += chunk;
@@ -33,96 +39,84 @@ function get(path) {
   });
 }
 
-function fetch_tree() {
+function parse_tree(data) {
   return new Promise((resolve, reject) => {
-    var options = {
-      host: gitlab_ip,
-      port: gitlab_port,
-      path: `/api/v3/projects/${project_id}/repository/tree?private_token=${private_key}`,
-      method: 'GET'
-    };
+    try {
+      var obj = JSON.parse(data);
 
-    var req = http.request(options, function(res) {
-      var _data='';
-      res.on('data', function(chunk){
-        _data += chunk;
-      });
-      res.on('end', function(){
-        console.log("\n--->>\nresult:",_data);
-        });
-      res.on('error', function() {
+      if ((obj instanceof Array) && obj.length == 0) {
+        reject(new Error('Invalid folder path'));
+      }
 
-      });
-    });
-    req.end();
+      resolve(obj);
+    }
+    catch(err) {
+      reject(err);
+    }
   });
 }
 
-get(`/api/v3/projects/${project_id}/repository/tree?private_token=${private_key}`)
-.then((data) => { console.log(data); })
-.catch((err) => { console.log(err); });
+function parse_file(data) {
+  return new Promise((resolve, reject) => {
+    try {
+      var obj = JSON.parse(data);
+      var content = Buffer.from(obj.content, 'base64');
 
-// https://nodejs.org/api/http.html#http_class_http_clientrequest
-// https://blog.csdn.net/tiramisu_ljh/article/details/78749926
+      resolve(content);
+    }
+    catch(err) {
+      reject(err);
+    }
+  });
+}
 
-// function post_to_git(path, data, callback) {
-//   var content=querystring.stringify(data);
+function generate_tree_html(path, json, res) {
+  var items = [];
+  json.forEach((item) => {
+    if (item.type == 'tree') {
+      items.push({'tree': true, 'name': item.name});
+    }
+    else if (item.type == 'blob') {
+      items.push({'tree': false, 'name': item.name});
+    }
+  });
 
-//   var options = {
-//       host: git_ip,
-//       port: 80,
-//       path: path,
-//       method: 'POST',
-//       headers:{
-//       'Content-Type':'application/x-www-form-urlencoded',
-//       'Content-Length':content.length
-//       }
-//     };
+  var fn = jade.compileFile('tree.jade');
 
-//     var req = http.request(options, function(res) {
-//       console.log("statusCode: ", res.statusCode);
-//       console.log("headers: ", res.headers);
-//       var _data='';
-//       res.on('data', function(chunk){
-//          _data += chunk;
-//       });
-//       res.on('end', function(){
-//          console.log("\n--->>\nresult:",_data)
-//          callback(_data);
-//        });
-//     });
+  res.statusCode = 200;
+  res.end(fn({
+    tree: {
+      name: path,
+      items: items
+    },
+  }));
+}
 
-//     req.write(content);
-//     req.end();
-// }
+function handler(req, res) {
+  var url = parse(req.url);
+  var path = url.pathname.substring(1, url.pathname.length);
 
-// function get_from_git(path) {
-//   var options = {
-//       host: git_ip,
-//       port: 80,
-//       path: path,
-//       method: 'GET'
-//     };
+  get(`/api/v3/projects/${project_id}/repository/tree?private_token=${private_key}&path=${path}`)
+    .then((data) => { return parse_tree(data); })
+    .then((tree) => { generate_tree_html(path, tree, res); })
+    .catch((err) => {
+      //console.log(err);
 
-//     var req = http.request(options, function(res) {
-//       var _data='';
-//       res.on('data', function(chunk){
-//         _data += chunk;
-//       });
-//       res.on('end', function(){
-//          console.log("\n--->>\nresult:",_data);
-//         });
-//     });
-//     req.end();
-// }
+      get(`/api/v3/projects/${project_id}/repository/files?private_token=${private_key}&ref=master&file_path=${path}`)
+        .then((data) => { return parse_file(data); })
+        .then((content) => {
+          res.statusCode = 200;
+          res.end(content);
+        })
+        .catch((err) => {
+          res.statusCode = 404;
+          res.end('Not Found');
+        });
+    });
+}
 
-// var server = http.createServer(handler);
-// server.listen(8000);
+var server = http.createServer(handler);
+server.listen(8010);
 
-// post_to_git('/api/v3/session', {email:email, password:password}, function(data) {
-//   console.log('...ok...');
-//   //get_from_git('/api/v3/projects/xgame/repository/doc/design/demo/index.html?private_token=iWE9x7kSQcFNSa-zidH7');
-//   //get_from_git('/api/v3/projects?private_token=iWE9x7kSQcFNSa-zidH7');
-//   //get_from_git('/api/v3/projects/4/repository/tree?private_token=iWE9x7kSQcFNSa-zidH7');
-//   get_from_git('/api/v3/projects/4/repository/files?private_token=iWE9x7kSQcFNSa-zidH7&file_path=doc/design/demo/index.html&ref=master');
-// });
+// TODO jade template performance optimization
+// error category
