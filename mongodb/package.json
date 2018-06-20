@@ -1,0 +1,12 @@
+{
+  "name": "mongodb_test",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "mocha --check-leaks ."
+  },
+  "dependencies": {
+    "chai": "^4.1.2",
+    "mongodb": "^3.0.10"
+  }
+}
