@@ -43,11 +43,11 @@ describe('MongoDbDriverTuturial', function() {
     
   });
 
-  it('InsertTest', function(done) {
-    _collection_test1.insert({
+  it('InsertOneTest', function(done) {
+    _collection_test1.insertOne({
       name: 'lj@sh',
       age: 34
-    }, function(err, doc) {
+    }, function(err, result) {
       assert.isNull(err);
       
       _collection_test1.find({name: 'lj@sh'}).toArray(function(err, docs) {
@@ -61,6 +61,18 @@ describe('MongoDbDriverTuturial', function() {
         done();
       });
     });
+  });
+
+  it('InsertManyTest', function(done) {
+    _collection_test1.insertMany([
+      {name: 'lj@sh', age: 34},
+      {name: 'lj@bj', age: 40}
+    ], function(err, results) {
+      assert.isNull(err);
+      assert.strictEqual(2, results.insertedCount);
+
+      done();
+    } );
   });
 
   it('Test2', function() {
