@@ -1,0 +1,10 @@
+{
+  "name": "dom_test",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "mocha": "~5.2.0",
+    "chai": "~4.1.2"
+  }
+}

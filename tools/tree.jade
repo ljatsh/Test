@@ -1,0 +1,13 @@
+doctype html
+html(lang="en")
+  head
+    meta(http-equiv="Content-Type", content="text/html; charset=utf-8")
+    title Directory listing for #{tree.name}
+  body
+    h1 Directory listing for #{tree.name}
+    hr
+    ul
+      each item in tree.items
+        li
+          a(href="#{item.name}")= item.name
+    hr

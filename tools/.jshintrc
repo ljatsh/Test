@@ -1,0 +1,23 @@
+{
+    "predef":[
+      "require",
+      "it",
+      "describe",
+      "before",
+      "after",
+      "beforeEach",
+      "afterEach",
+      "console",
+      "process",
+      "setTimeout",
+      "setImmediate",
+      "Buffer"
+    ],
+    "undef": true,
+    "unused": false,
+    "esversion": 6,
+    "elision": true,
+    "white": true,
+    "indent": 2
+  }
+  
