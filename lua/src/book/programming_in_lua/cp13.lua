@@ -145,7 +145,7 @@ module("cp13", lunit.testcase, package.seeall)
         obj.age = nil
         setmetatable(obj, mt)
         obj.age = 10
-        assert_equal(10, mt.__newindex.age, 'assignment was forward to __index table')
+        assert_equal(10, mt.__newindex.age, 'assignment was forward to __newindex table')
         assert_nil(obj.age)
 
         local result
