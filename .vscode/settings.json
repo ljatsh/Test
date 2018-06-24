@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.jade": "jade",
+        "stdio.h": "c",
+        "cdefs.h": "c"
+    }
+}

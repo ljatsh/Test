@@ -1,0 +1,11 @@
+
+import os
+
+env = Environment()
+
+env.AppendUnique(CPPFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall'],
+                 CPPPATH = [os.path.realpath('../../../../third/lua-5.3.4/include')],
+                 LIBPATH = [os.path.realpath('../../../../third/lua-5.3.4/lib/mac')],
+                 LIBS = ['lua'])
+
+env.Program('intepreter', 'intepreter.c')
