@@ -96,13 +96,15 @@ function handler(req, res) {
   var url = parse(req.url);
   var path = url.pathname.substring(1, url.pathname.length);
 
-  get(`/api/v3/projects/${project_id}/repository/tree?private_token=${private_key}&path=${path}`)
+  get(`/api/v4/projects/${project_id}/repository/tree?private_token=${private_key}&path=${path}`)
     .then((data) => { return parse_tree(data); })
     .then((tree) => { generate_tree_html(path, tree, res); })
     .catch((err) => {
       //console.log(err);
 
-      get(`/api/v3/projects/${project_id}/repository/files?private_token=${private_key}&ref=master&file_path=${path}`)
+      path = querystring.escape(path);
+
+      get(`/api/v4/projects/${project_id}/repository/files/${path}?private_token=${private_key}&ref=master`)
         .then((data) => { return parse_file(data); })
         .then((content) => {
           res.statusCode = 200;
