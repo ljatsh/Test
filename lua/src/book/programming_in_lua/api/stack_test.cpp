@@ -37,9 +37,9 @@ class LuaTest : public ::testing::Test {
     }
 
     const char* getName() {
-      //ASSERT_EQ(LUA_TFUNCTION, lua_getglobal(_L, "getName"));
+      //ASSERT_EQ(LUA_TFUNCTION, lua_getglobal(_L, "getName")); // TODO fatal compile error
       lua_getglobal(_L, "getName");
-      
+
       pcall(0, 1, 0);
       //ASSERT_TRUE(lua_isstring(_L, -1));
       const char* name = lua_tostring(_L, -1);

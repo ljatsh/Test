@@ -3,7 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/lua/third/googletest-1.8.0/include",
+                "${workspaceFolder}/lua/third/lua-5.3.4/include"
             ],
             "defines": [],
             "macFrameworkPath": [
@@ -12,7 +13,7 @@
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
-            "cppStandard": "c++17",
+            "cppStandard": "c++11",
             "intelliSenseMode": "clang-x64"
         }
     ],
