@@ -11,9 +11,6 @@
 --    will print their values. However, in older versions, you need to precede these
 --    expressions with an equal sign.
 
-------------------------------------------------------------------------------------
--- 
-
 lu = require('luaunit')
 
 ------------------------------------------------------------------------------------
@@ -69,9 +66,4 @@ TestBoolean = {}
     lu.assertEquals('hi', false or 'hi')
     lu.assertEquals(false, nil or false)
   end
-
 -- end of table TestBoolean
-
-
-
-
