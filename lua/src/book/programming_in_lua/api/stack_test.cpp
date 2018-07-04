@@ -2,6 +2,21 @@
 #include "lua.hpp"
 #include "gtest/gtest.h"
 
+int simpleTest1(lua_State* L) {
+  int size1 = lua_gettop(L);
+
+  int v = luaL_checknumber(L, -1);
+
+  lua_pushinteger(L, v * 2);
+
+  int size2 = lua_gettop(L);
+
+  lua_pushinteger(L, size1);
+  lua_pushinteger(L, size2);
+
+  return 3;
+}
+
 class LuaTest : public ::testing::Test {
   public:
     LuaTest() {
@@ -15,9 +30,13 @@ class LuaTest : public ::testing::Test {
     virtual void SetUp() {
       _L = luaL_newstate();
 
+      // register C functions
+      luaL_openlibs(_L);
+      lua_pushcfunction(_L, simpleTest1);
+      lua_setglobal(_L, "simpleTest1");
+
       ASSERT_EQ(0, luaL_loadfile(_L, "test.lua"));
       pcall(0, 0, 0);
-      lua_pop(_L, 1);
     }
 
     virtual void TearDown() {
@@ -27,7 +46,7 @@ class LuaTest : public ::testing::Test {
     }
 
     void pcall(int args, int results, int msgh) {
-      int error = lua_pcall(_L, 0, 1, 0);
+      int error = lua_pcall(_L, args, results, msgh);
       const char* err_string = NULL;
       if (error) {
         err_string = lua_tostring(_L, -1);
@@ -37,11 +56,19 @@ class LuaTest : public ::testing::Test {
     }
 
     const char* getName() {
-      //ASSERT_EQ(LUA_TFUNCTION, lua_getglobal(_L, "getName")); // TODO fatal compile error
       lua_getglobal(_L, "getName");
 
+      if (!lua_isfunction(_L, -1))
+        return NULL;
+
       pcall(0, 1, 0);
-      //ASSERT_TRUE(lua_isstring(_L, -1));
+
+      if (lua_gettop(_L) != 1)
+        return NULL;
+
+      if (!lua_isstring(_L, -1))
+        return NULL;
+
       const char* name = lua_tostring(_L, -1);
       lua_pop(_L, -1);
 
@@ -258,4 +285,17 @@ TEST_F(LuaTest, TestGlobalVariable) {
   ASSERT_EQ(0, lua_gettop(_L));
 
   ASSERT_STRCASEEQ("lj@bj", getName());
+}
+
+TEST_F(LuaTest, TestLuaCallC) {
+  lua_getglobal(_L, "callC");
+  ASSERT_TRUE(lua_isfunction(_L, -1));
+
+  lua_pushinteger(_L, 3);
+  pcall(1, 3, 0);
+
+  ASSERT_EQ(3, lua_gettop(_L));
+  ASSERT_EQ(6, lua_tointeger(_L, 1));
+  ASSERT_EQ(1, lua_tointeger(_L, 2));
+  ASSERT_EQ(2, lua_tointeger(_L, 3));
 }
