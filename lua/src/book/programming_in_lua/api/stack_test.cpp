@@ -299,3 +299,61 @@ TEST_F(LuaTest, TestLuaCallC) {
   ASSERT_EQ(1, lua_tointeger(_L, 2));
   ASSERT_EQ(2, lua_tointeger(_L, 3));
 }
+
+TEST_F(LuaTest, TestRegistry) {
+  // prefer to use lightuserdata as th key
+  static char cKey = '1';
+
+  lua_pushlightuserdata(_L, &cKey);
+  lua_pushinteger(_L, 10);
+  lua_settable(_L, LUA_REGISTRYINDEX);
+
+  lua_pushlightuserdata(_L, &cKey);
+  lua_gettable(_L, LUA_REGISTRYINDEX);
+
+  ASSERT_TRUE(lua_isnumber(_L, 1));
+  ASSERT_EQ(10, lua_tonumber(_L, 1));
+
+  lua_pop(_L, 1);
+
+  // from Lua5.2, more convinient API lua_rawsetp and lua_rawgetp are provided.
+
+  lua_pushboolean(_L, true);
+  lua_rawsetp(_L, LUA_REGISTRYINDEX, &cKey);
+
+  lua_rawgetp(_L, LUA_REGISTRYINDEX, &cKey);
+
+  ASSERT_TRUE(lua_isboolean(_L, 1));
+  ASSERT_TRUE(lua_toboolean(_L, 1));
+
+  // TODO. Lua manual says any lua value can be used as the key of the global table
+  // registry. How to understand this?
+}
+
+// integer keys of table registry are used to reference lua value
+TEST_F(LuaTest, TestReference) {
+  int ref = luaL_ref(_L, LUA_REGISTRYINDEX);
+  ASSERT_EQ(LUA_REFNIL, ref) << "a special use case";
+
+  // get the function
+  lua_getglobal(_L, "getFunc");
+  lua_pushinteger(_L, 4);
+  pcall(1, 1, 0);
+
+  ASSERT_EQ(1, lua_gettop(_L));
+  ASSERT_TRUE(lua_isfunction(_L, 1));
+  ref = luaL_ref(_L, LUA_REGISTRYINDEX);
+  ASSERT_EQ(0, lua_gettop(_L));
+
+  // ... do other sutffs
+
+  // pickup the function
+  lua_rawgeti(_L, LUA_REGISTRYINDEX, ref);
+  ASSERT_TRUE(lua_isfunction(_L, 1));
+  pcall(0, 1, 0);
+
+  ASSERT_EQ(1, lua_gettop(_L));
+  ASSERT_TRUE(lua_isinteger(_L, 1));
+  ASSERT_EQ(8, lua_tonumber(_L, 1));
+  lua_pop(_L, 1);
+}
