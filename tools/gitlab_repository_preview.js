@@ -4,7 +4,7 @@ var join = require('path').join;
 var querystring = require('querystring');
 var jade = require('jade');
 
-var gitlab_ip = '192.168.0.130';
+var gitlab_ip = 'gitlab';
 var gitlab_port = 80;
 var private_key = 'iWE9x7kSQcFNSa-zidH7'; // 从个人资料设置拿到
 var project_id = 4;
@@ -118,7 +118,7 @@ function handler(req, res) {
 }
 
 var server = http.createServer(handler);
-server.listen(8010);
+server.listen(80);
 
 // TODO jade template performance optimization
 // error category
