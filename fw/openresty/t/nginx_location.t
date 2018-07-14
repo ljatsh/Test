@@ -1,4 +1,5 @@
 use Test::Nginx::Socket 'no_plan';
+no_root_location();
 run_tests()
 
 __DATA__
@@ -47,7 +48,8 @@ location = /xyz/ {
   
   200,
   404,
-  404]
+  404
+]
 
 
 === Test 2: No Modifier
@@ -243,18 +245,18 @@ location ~* ^/document$ {
 === Test 8: Search order and priority
 
 --- config
-location /test/ {
-  echo "test";
+location / {
+  echo "root";
 }
 
-location /test/git {
+location /git {
   echo "git";
 }
 
 --- pipelined_requests eval
 [
-  "GET /test/git",
-  "GET /test/git/a",
+  "GET /git",
+  "GET /git/a",
 ]
 
 --- response_body_like eval

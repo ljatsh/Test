@@ -14,4 +14,6 @@ yum install -y which cpan make gcc
 cpan -f -i Test::Nginx
 ```
 
+### 参考
 
+* >[cpan源](http://www.361way.com/change-cpan-default-mirror/5094.html)
