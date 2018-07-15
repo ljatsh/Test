@@ -18,6 +18,9 @@ our $http_config = <<'_EOC_';
 
     location /header_test {
       content_by_lua_block {
+        ngx.header.Server = 'unix_socket'
+        ngx.header.X_name = 'ljatsh'
+
         local h, err = ngx.req.get_headers()
 
         for k, v in pairs(h) do
@@ -76,22 +79,27 @@ location /t1 {
 
 location /t2 {
   proxy_pass http://unix:/tmp/nginx.sock:/header_test;
+
+  proxy_pass_header Server;
+  proxy_hide_header X-name;
 }
 
 --- pipelined_requests eval
 [
-  "GET /t1 HTTP/1.1\r\nHello, Nginx",
-  "GET /t1 HTTP/1.1\r\nHello, Nginx"
+  "GET /t1 HTTP/1.1\r\nHello, Nginx",                       # Header Server, Date... from the proxied server are not passed to the client
+  "GET /t1 HTTP/1.1\r\nHello, Nginx",                       # Check the customized header X-name
+
+  "GET /t2 HTTP/1.1\r\nHello, Nginx",                       # Pass the header Server
+  "GET /t2 HTTP/1.1\r\nHello, Nginx"                        # Skip the header X-name
 ]
 
---- more_headers
-x-name: ljatsh
-x-age: 34
-
---- response_body_like eval
+--- response_headers_like eval
 [
-  "x-name: ljatsh",
-  "x-age: 34"
+  "Server: openresty/.*",
+  "X-name: ljatsh",
+
+  "Server: unix_socket",
+  "X-name: "
 ]
 
 # http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_hide_header
