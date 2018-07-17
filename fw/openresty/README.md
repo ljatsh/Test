@@ -17,3 +17,5 @@ cpan -f -i Test::Nginx
 ### 参考
 
 * >[cpan源](http://www.361way.com/change-cpan-default-mirror/5094.html)
+* >https://cmake.org/install/
+* >http://mongoc.org/libmongoc/current/installing.html
