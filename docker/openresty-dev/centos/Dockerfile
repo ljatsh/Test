@@ -45,7 +45,30 @@ RUN yum-config-manager --add-repo https://openresty.org/package/${RESTY_IMAGE_BA
     && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
     && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
 
-RUN yum install -y which make gcc wget cpan \
+# build cmake 3.12.0
+RUN yum install -y which make gcc gcc-c++ \
+    cd /tmp \
+    && curl -fSL https://cmake.org/files/v3.12/cmake-3.12.0.tar.gz -o cmake-3.12.0.tar.gz \
+    && tar xvzf cmake-3.12.0.tar.gz \
+    && cd cmake-3.12.0 \
+    && ./bootstrap --prefix=/usr -- -DCMAKE_BUILD_TYPE:STRING=Release \
+    && make install \
+    && cd .. \
+    && rm -fr cmake-3.12.0 cmake-3.12.tar.gz
+
+# build libbson
+RUN curl -fSL https://github.com/mongodb/mongo-c-driver/releases/download/1.11.0/mongo-c-driver-1.11.0.tar.gz -o mongo-c-driver-1.11.0.tar.gz \
+    && tar xvzf mongo-c-driver-1.11.0.tar.gz \
+    && cd mongo-c-driver-1.11.0 \
+    && mkdir cmake-build \
+    && cd cmake-build \
+    && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local/openresty/bson -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_BSON=ONLY .. \
+    && make install \
+    && cd ../.. \
+    && rm -fr mongo-c-driver-1.11.0 mongo-c-driver-1.11.0.tar.gz
+
+# install cpan
+RUN yum install -y wget cpan \
     && mkdir -p /root/.cpan/CPAN \
     && yum clean all
 
