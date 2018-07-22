@@ -67,6 +67,17 @@ RUN curl -fSL https://github.com/mongodb/mongo-c-driver/releases/download/1.11.0
     && cd ../.. \
     && rm -fr mongo-c-driver-1.11.0 mongo-c-driver-1.11.0.tar.gz
 
+RUN curl -fSL https://github.com/isage/lua-cbson/archive/master.zip -o lua-cbson.zip \
+    && unzip lua-cbson.zip -d . \
+    && cd lua-cbson-master \
+    && mkdir build \
+    && cd build \
+    && cmake -DLIBBSON_INCLUDE_DIR:PATH=/usr/local/openresty/bson/include/libbson-1.0 -DLIBBSON_LIBRARY:FILEPATH=/usr/local/openresty/bson/lib64/libbson-1.0.so .. \
+    && make \
+    && cp cbson.so /usr/local/openresty/lualib \
+    && cd ../.. \
+    && rm -fr lua-cbson.zip lua-cbson-master
+
 # install cpan
 RUN yum install -y wget cpan \
     && mkdir -p /root/.cpan/CPAN \

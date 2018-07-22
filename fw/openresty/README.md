@@ -15,6 +15,12 @@ Components
   * [cjson](https://www.kyne.com.au/~mark/software/lua-cjson-manual.html)
   * [lua-resty-cjson](https://github.com/openresty/lua-cjson)
 
+### lua-resty-moongoo
+
+* reference
+  * [bson](http://bsonspec.org)
+  * [lua-cbson](https://github.com/isage/lua-cbson)
+
 [Test::Nginx](https://metacpan.org/pod/Test::Nginx)的安装
 --------------------------------------------------------
 
@@ -60,6 +66,7 @@ cpan -f -i Test::Nginx
 curl -fSL https://github.com/isage/lua-cbson/archive/master.zip -o lua-cbson.zip
 unzip lua-cbson.zip -d .
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local/openresty/lualib -DLIBBSON_INCLUDE_DIR:PATH=/usr/local/openresty/bson/include/libbson-1.0 -DLIBBSON_LIBRARY:FILEPATH=/usr/local/openresty/bson/lib64/libbson-1.0.so ..
+cp cbson.so /usr/local/openresty/lualib
 ```
 
 ### 参考
