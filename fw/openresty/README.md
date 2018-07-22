@@ -1,4 +1,20 @@
 
+OpenResty
+=========
+
+Components
+----------
+
+### lua-resty-cjson
+
+* Infinity and Nan is not allowed in JSON specification
+* Sparse array is always encoded as json array
+* Excessively sparse array encoding can be enabled/disabled
+* reference
+  * [json](http://www.json.org/)
+  * [cjson](https://www.kyne.com.au/~mark/software/lua-cjson-manual.html)
+  * [lua-resty-cjson](https://github.com/openresty/lua-cjson)
+
 [Test::Nginx](https://metacpan.org/pod/Test::Nginx)的安装
 --------------------------------------------------------
 
