@@ -17,9 +17,12 @@ Components
 
 ### lua-resty-moongoo
 
+* 考虑到不了解MoongoDb，外加不熟悉bson的规范，cosocket，先不考虑在openresty环境中使用moongo
 * reference
+  * [lua-resty-moongoo](https://github.com/isage/lua-resty-moongoo)
   * [bson](http://bsonspec.org)
   * [lua-cbson](https://github.com/isage/lua-cbson)
+  * [bson-tools](https://json-bson-converter.appspot.com/)
 
 [Test::Nginx](https://metacpan.org/pod/Test::Nginx)的安装
 --------------------------------------------------------

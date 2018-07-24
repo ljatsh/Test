@@ -50,10 +50,11 @@ TestBson = {}
     local bdata = cbson.encode(o)
     print (cbson.to_json(bdata))
     local o2 = cbson.decode(bdata)
-    for k, v in pairs(o2) do print(k, '= ', o2[k]) end
+    for k, v in pairs(o2) do print(type(k), '= ', o2[k]) end
     print(o2[1])
     print(o2[2])
     print(o2[3])
+    print(o2[4])
     --lu.assertEquals(cbson.decode(bdata), o)
 
     bdata = cbson.from_json('[1,2,3,4]')
