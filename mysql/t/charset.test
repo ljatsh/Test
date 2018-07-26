@@ -1,0 +1,11 @@
+
+SELECT * 
+FROM information_schema.CHARACTER_SETS
+WHERE CHARACTER_SET_NAME = 'utf8';
+
+SELECT *
+FROM information_schema.COLLATIONS
+WHERE CHARACTER_SET_NAME = 'utf8';
+
+SHOW CHARACTER SET WHERE Charset = 'utf8';
+SHOW COLLATION WHERE Charset = 'utf8';
