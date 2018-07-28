@@ -6,4 +6,5 @@ docker run --name openresty --detach \
 -v $dir/conf.d:/etc/nginx/conf.d \
 -v $dir:/opt/dev \
 -p 8010:80 \
+--link mysql \
 openresty-dev:latest

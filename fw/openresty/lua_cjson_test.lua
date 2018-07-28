@@ -2,7 +2,7 @@
 local lu = require('luaunit')
 local json = require('cjson')
 
-TestCJson = {}
+local TestCJson = {}
 
   function TestCJson:testEncode()
     -- simple types
@@ -129,5 +129,4 @@ TestCJson = {}
 
 -- end of table TestCJson
 
---ngx.say(lu.LuaUnit.run())
-os.exit(lu.LuaUnit.run())
+return TestCJson
