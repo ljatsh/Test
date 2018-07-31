@@ -7,4 +7,5 @@ docker run --name openresty --detach \
 -v $dir:/opt/dev \
 -p 8010:80 \
 --link mysql \
+--link redis \
 openresty-dev:latest
