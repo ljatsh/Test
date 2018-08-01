@@ -8,88 +8,94 @@ describe('redis', function()
   setup(function()
     self.redis = redis:new()
     self.redis:set_timeout(1000)
+  end)
 
+  teardown(function()
+
+  end)
+
+  before_each(function()
     local ok, err = self.redis:connect('172.17.0.5', 6379)
     assert.truthy(ok, err)
   end)
 
-  teardown(function()
+  after_each(function()
     local ok, err = self.redis:set_keepalive(5000, 100)
-    assert.are.equal(ok, 1, err)
+    assert.are.same(1, ok, err)
   end)
 
   it('testMissingKeyValue', function()
     local res, err = self.redis:get('visits:0:totals')
-    assert.are.equal(res, ngx.null, 'value of the missing key is ngx.null')
+    assert.are.same(ngx.null, res, 'value of the missing key is ngx.null')
   end)
 
   it('testCounter', function()
     self.redis:del('visits:1:totals')
 
     local ok, err = self.redis:set('visits:1:totals', 100)
-    assert.are.equal('OK', ok, err)
+    assert.are.same(ok, 'OK', err)
 
     local res, err = self.redis:get('visits:1:totals')
-    assert.are.equal(res, '100', 'the value by set should be string')
+    assert.are.same('100', res, 'the value by set should be string')
 
     res, err = self.redis:incr('visits:1:totals')
-    assert.are.equal(res, 101, 'incr returns integer')
+    assert.are.same(101, res, 'incr returns integer')
 
     res, err = self.redis:decr('visits:1:totals')
-    assert.are.equal(res, 100, 'decr also returns integer')
+    assert.are.same(100, res, 'decr also returns integer')
 
     res, err = self.redis:incrby('visits:1:totals', 10)
-    assert.are.equal(res, 110, 'incrby returns integer')
+    assert.are.same(110, res, 'incrby returns integer')
 
     res, err = self.redis:incrby('visits:1:totals', "5")
-    assert.are.equal(res, 115, 'incrby params can be string')
+    assert.are.same(115, res, 'incrby params can be string')
 
     res, err = self.redis:incrby('visits:1:totals', -10)
-    assert.are.equal(res, 105, 'negative param')
+    assert.are.same(105, res, 'negative param')
 
     res, err = self.redis:del('visits:1:totals')
-    assert.are.equal(res, 1, err) -- 1 key should be removed
+    assert.are.same(1, res, err) -- 1 key should be removed
   end)
 
   it('testHashset', function()
     self.redis:del('users:lj')
 
     local res, err = self.redis:hset('users:lj', 'name', 'ljatsh')
-    assert.are.equal(1, res, 'field name was created')
+    assert.are.same(res, 1, 'field name was created')
     res, err = self.redis:hset('users:lj', 'age', 34)
-    assert.are.equal(1, res, 'field age was created')
+    assert.are.same(res, 1, 'field age was created')
 
     -- hget
     res, err = self.redis:hget('users:lj', 'name')
-    assert.are.equal(res, 'ljatsh')
+    assert.are.same('ljatsh', res)
     res, err = self.redis:hget('users:lj', 'age')
-    assert.are.equal(res, '34', 'hget returns string')
+    assert.are.same('34', res, 'hget returns string')
 
     -- hdel
     res, err = self.redis:hdel('users:lj', 'missing')
-    assert.are.equal(0, res, '0 fields was removed')
+    assert.are.same(0, res, '0 fields was removed')
 
     res, err = self.redis:hset('users:lj', 'missing', 'missing')
     res, err = self.redis:hdel('users:lj', 'missing')
-    assert.are.equal(1, res)
+    assert.are.same(1, res)
 
     res, err = self.redis:hexists('users:lj', 'missing')
-    assert.are.equal(res, 0)
+    assert.are.same(0, res)
 
     res, err = self.redis:hexists('users:lj', 'age')
-    assert.are.equal(res, 1)
+    assert.are.same(1, res)
 
     -- hkeys
     res, err = self.redis:hkeys('users:lj')
-    assert.are.equal(#res, 2)
+    assert.are.same({'name', 'age'}, res)
 
     -- hvals
     res, err = self.redis:hvals('users:lj')
-    assert.are.equal(#res, 2)
+    assert.are.same({'ljatsh', '34'}, res)
 
     -- hgetall
     res, err = self.redis:hgetall('users:lj')
-    assert.are.equal(#res, 4)
+    assert.are.same({'name', 'ljatsh', 'age', '34'}, res)
 
     self.redis:del('users:lj')
   end)
