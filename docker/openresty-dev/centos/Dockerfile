@@ -79,10 +79,10 @@ RUN curl -fSL https://github.com/isage/lua-cbson/archive/master.zip -o lua-cbson
     && rm -fr lua-cbson.zip lua-cbson-master
 
 # install lua-resty-busted
-RUN yum -y git \
-    && luarocks install lua-resty-busted \
-    && luarocks install busted 2.0.rc12-1 \
-    && luarocks remove --force busted 2.0.rc11-0
+RUN yum install -y git \
+    && /usr/local/openresty/luajit/bin/luarocks install lua-resty-busted \
+    && /usr/local/openresty/luajit/bin/luarocks install busted 2.0.rc12-1 \
+    && /usr/local/openresty/luajit/bin/luarocks remove --force busted 2.0.rc11-0
 
 # install cpan
 RUN yum install -y wget cpan \
