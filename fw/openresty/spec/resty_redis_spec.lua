@@ -101,6 +101,44 @@ describe('redis', function()
   end)
 
   it('testSets', function()
+    self.redis:del('circle:lj:family')
+    self.redis:del('circle:sj:family')
 
+    -- sadd/smembers/scard
+    local res, err = self.redis:sadd('circle:lj:family', 'users:1', 'users:2')
+    assert.are.same(2, res)
+
+    res, err = self.redis:sadd('circle:lj:family', 'users:1', 'users:3')
+    assert.are.same(1, res)
+
+    res, err = self.redis:smembers('circle:lj:family')
+    table.sort(res)
+    assert.are.same({'users:1', 'users:2', 'users:3'}, res)
+
+    res, err = self.redis:scard('circle:lj:family')
+    assert.are.same(3, res)
+
+    -- srem
+    res, err = self.redis:srem('circle:lj:family', 'users:0')
+    assert.are.same(0, res)
+
+    res, err = self.redis:srem('circle:lj:family', 'users:2')
+    assert.are.same(1, res)
+
+    res, err = self.redis:scard('circle:lj:family')
+    assert.are.same(2, res)
+
+    -- sinter/sunion
+    res, err = self.redis:sadd('circle:sj:family', 'users:1', 'users:3', 'users:4')
+    res, err = self.redis:sinter('circle:lj:family', 'circle:sj:family')
+    table.sort(res)
+    assert.are.same({'users:1', 'users:3'}, res)
+
+    res, err = self.redis:sunion('circle:lj:family', 'circle:sj:family')
+    table.sort(res)
+    assert.are.same({'users:1', 'users:3', 'users:4'}, res)
+
+    self.redis:del('circle:lj:family')
+    self.redis:del('circle:sj:family')
   end)
 end)
