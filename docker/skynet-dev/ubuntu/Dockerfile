@@ -4,7 +4,7 @@ FROM ubuntu:xenial
 MAINTAINER ljatsh@test.com
 
 RUN apt-get update \
-    && apt-get install -y curl unzip make git libreadline-dev autoconf gcc
+    && apt-get install -y curl unzip make libreadline-dev autoconf gcc gdb vim
 
 RUN apt-get install -y 
 
