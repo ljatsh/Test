@@ -1,9 +1,9 @@
-root = "./"
-luaservice = root.."service/?.lua;"..root.."mytest/?.lua;"
-lualoader = root .. "lualib/loader.lua"
-lua_path = root.."lualib/?.lua;"..root.."lualib/?/init.lua;"..root.."mytest/?.lua"
-lua_cpath = root .. "luaclib/?.so"
-snax = root.."mytest/?.lua;"
+
+luaservice = "/usr/local/skynet/service/?.lua;/opt/dev/?.lua"
+lualoader = "/usr/local/skynet/lualib/loader.lua"
+lua_path = "/usr/local/skynet/lualib/?.lua;/usr/local/skynet/lualib/?/init.lua;/usr/local/skynet/lua/share/lua/5.3/?.lua;/usr/local/skynet/lua/share/lua/5.3/?/init.lua"
+lua_cpath = "/usr/local/skynet/luaclib/?.so;/usr/local/skynet/lua/lib/lua/5.3/?.so"
+snax = "/opt/dev/?.lua"
 
 thread = 1
 logger = nil
@@ -11,4 +11,4 @@ logpath = "."
 harbor = 0
 start = "test"	-- main script
 bootstrap = "snlua bootstrap"	-- The service for bootstrap
-cpath = root.."cservice/?.so"
+cpath = "/usr/local/skynet/cservice/?.so"

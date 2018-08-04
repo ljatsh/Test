@@ -2,7 +2,8 @@
 
 dir=$(cd `dirname $0`; pwd)
 
-docker run --name skynet -it \
--v $dir:/tmp/skynet-1.1.0/mytest \
+docker run --name skynet -it --rm \
+-v $dir:/opt/dev \
+-w /opt/dev \
 --cap-add=SYS_PTRACE \
 skynet-dev:latest
