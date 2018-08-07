@@ -9,6 +9,6 @@ thread = 1
 logger = nil
 logpath = "."
 harbor = 0
-start = "test"	-- main script
+start = "busted"	-- main script
 bootstrap = "snlua bootstrap"	-- The service for bootstrap
 cpath = "/usr/local/skynet/cservice/?.so"
