@@ -1,7 +1,6 @@
 
 local skynet = require('skynet')
 
-local args = {...}
-
 skynet.start(function()
+  require 'busted.runner'({ standalone = false })
 end)

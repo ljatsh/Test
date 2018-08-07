@@ -11,4 +11,8 @@ describe('skynet', function()
 
     print('t1 ended')
   end)
+  
+  it('service', function()
+    skynet.newservice('test', 'hello skynet..')
+  end)
 end)
