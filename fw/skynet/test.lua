@@ -6,7 +6,7 @@ local handlers = require('test_handler')
 local handle = ...
 
 skynet.start(function()
-  skynet.register('test_' .. handle)
+  skynet.register('.test_' .. handle)
 
   local handler = handlers[handle]
   assert (handler ~= nil)
