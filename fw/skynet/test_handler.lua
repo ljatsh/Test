@@ -12,4 +12,13 @@ function h1.exit()
   skynet.exit()
 end
 
-return {h1=h1}
+local h2 = {}
+
+h2.text_protocol = {
+  name = 'text',
+  id = skynet.PTYPE_TEXT,
+  pack = function(...) end,
+  unpack = skynet.tostring
+}
+
+return {h1=h1, h2=h2}

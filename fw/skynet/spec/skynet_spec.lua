@@ -1,7 +1,14 @@
 
 local skynet = require('skynet')
+local handler = require('test_handler')
 
 describe('skynet', function()
+  local text_protocol = handler.h2.text_protocol
+
+  before_each(function()
+    handler.h2.text_protocol = text_protocol
+  end)
+
   it('timer', function()
     local now = skynet.now()
     skynet.sleep(1)
@@ -36,5 +43,36 @@ describe('skynet', function()
 
     -- call cannot be used here. Response message is depend on the test service
     skynet.send(test, 'lua', 'exit')
+  end)
+
+  -- caller and called both should register text protocol
+  it('protocol text', function()
+    local test = skynet.newservice('test', 'h2')
+    assert.has.error(function() skynet.send(test, 'text', 'hello, skynet') end, nil, 'cannot send text protocol by default')
+
+    -- pack was called in caller service
+    local protocol = handler.h2.text_protocol
+    skynet.register_protocol(protocol)
+    spy.on(protocol, 'pack')
+
+    assert.has.error(function() skynet.send(test, 'text', 'hello, skynet') end)
+    assert.spy(protocol.pack).was.called(1)
+    assert.spy(protocol.pack).was.called_with('hello, skynet')
+
+    -- pack should return string or userdata, size
+    local s = stub.new(protocol, "pack")
+    s.returns('packed')
+    spy.on(protocol, 'unpack')
+    assert.has.no.error(function() skynet.send(test, 'text', 'hello, skynet') end)
+    assert.stub(s).was.called_with('hello, skynet')
+
+    -- unpack was called in the callee service
+    skynet.sleep(1)
+    assert.spy(protocol.unpack).was.called(0)
+
+    local ret = skynet.call(test, 'text', '')
+    assert.are.same('packed', ret)
+
+    s:revert()
   end)
 end)
