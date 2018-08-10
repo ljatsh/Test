@@ -1,5 +1,7 @@
 
 local skynet = require('skynet')
+local dns = require('skynet.dns')
+local httpc = require('http.httpc')
 local handler = require('test_handler')
 
 describe('skynet', function()
@@ -74,5 +76,28 @@ describe('skynet', function()
     assert.are.same('packed', ret)
 
     s:revert()
+    skynet.send(test, 'lua', 'exit')
+  end)
+
+  it('dns', function()
+    local server = dns.server()
+    assert.is.string(server, 'server from /etc/resolver.conf should be configured')
+    assert.has.match('^%d+%.%d+%.%d+%.%d+$', server)
+
+    local ip, ips = dns.resolve "github.com"
+    assert.has.match('^%d+%.%d+%.%d+%.%d+$', ip)
+    assert.is.truthy(#ips >= 1)
+    assert.are.same(ip, ips[1], 'the 1st candidate ip is the 1st returned value')
+
+    for k, v in ipairs(ips) do
+      assert.has.match('^%d+%.%d+%.%d+%.%d+$', v)
+    end
+  end)
+
+  it('http', function()
+    httpc.timeout = 200 -- 2 seconds
+    local status, body = httpc.get("github.com", "/", {}, {})
+    print(status)
+    print(body)
   end)
 end)

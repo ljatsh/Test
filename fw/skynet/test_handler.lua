@@ -21,4 +21,8 @@ h2.text_protocol = {
   unpack = skynet.tostring
 }
 
+function h2.exit()
+  skynet.exit()
+end
+
 return {h1=h1, h2=h2}
