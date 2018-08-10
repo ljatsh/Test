@@ -9,6 +9,8 @@ describe('skynet', function()
 
   before_each(function()
     handler.h2.text_protocol = text_protocol
+
+    httpc.dns()
   end)
 
   it('timer', function()
@@ -47,7 +49,7 @@ describe('skynet', function()
     skynet.send(test, 'lua', 'exit')
   end)
 
-  -- caller and called both should register text protocol
+  -- caller and callee both should register text protocol
   it('protocol text', function()
     local test = skynet.newservice('test', 'h2')
     assert.has.error(function() skynet.send(test, 'text', 'hello, skynet') end, nil, 'cannot send text protocol by default')
@@ -84,7 +86,7 @@ describe('skynet', function()
     assert.is.string(server, 'server from /etc/resolver.conf should be configured')
     assert.has.match('^%d+%.%d+%.%d+%.%d+$', server)
 
-    local ip, ips = dns.resolve "github.com"
+    local ip, ips = dns.resolve("github.com")
     assert.has.match('^%d+%.%d+%.%d+%.%d+$', ip)
     assert.is.truthy(#ips >= 1)
     assert.are.same(ip, ips[1], 'the 1st candidate ip is the 1st returned value')
@@ -92,12 +94,24 @@ describe('skynet', function()
     for k, v in ipairs(ips) do
       assert.has.match('^%d+%.%d+%.%d+%.%d+$', v)
     end
+
+    -- error test
+    server = dns.server('8.8.8.8')
+    assert.has.error(function() dns.resolve('not_exist_site') end)
+    assert.has.no.error(function() pcall(dns.resolve, 'not_exist_site') end)
   end)
 
   it('http', function()
-    httpc.timeout = 200 -- 2 seconds
-    local status, body = httpc.get("github.com", "/", {}, {})
-    print(status)
-    print(body)
+    httpc.timeout = 100 -- 1 seconds
+    local response_headers = {}
+    local status, body = httpc.get("baidu.com", "/", response_headers)
+    assert.are.same(200, status)
+    assert.is.string(body)
+    --assert.is.truthy(#response_headers > 0)
+
+    -- error test
+    httpc.timeout = 10 -- 0.1 seconds
+    assert.has.error(function() httpc.get('8.8.8.8', '/', response_headers) end)
+    assert.has.no.error(function() pcall(httpc.get, '8.8.8.8', '/', response_headers) end)
   end)
 end)
