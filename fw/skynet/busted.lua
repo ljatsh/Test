@@ -1,5 +1,6 @@
 
 local skynet = require('skynet')
+local socket = require('skynet.socket') -- busted cleared package.loaded. however, sevaral files cannot be loaded again in skynet.
 require "skynet.manager"
 
 skynet.start(function()
