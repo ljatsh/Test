@@ -11,21 +11,19 @@
 --    will print their values. However, in older versions, you need to precede these
 --    expressions with an equal sign.
 
-lu = require('luaunit')
-
 ------------------------------------------------------------------------------------
--- Nil
-TestNil = {}
-  function TestNil:testNilType()
-    lu.assertEquals(type(nil), "nil")
-    lu.assertIsNil(nil)
-    lu.assertIsNil(missing_var)     -- TODO local variable name style
+-- nil
+describe('data type - nil', function()
+  it('general', function()
+    assert.are.same('nil', type(nil))
+    assert.is_nil(nil)
+    assert.is_nil(missing_var)
     local missing_var = 1
-    lu.assertNotNil(missing_var)
+    assert.is.not_nil(missing_var)
     missing_var = nil
-    lu.assertIsNil(missing_var)
-  end
--- end of table TestNil
+    assert.is_nil(missing_var)
+  end)
+end)
 
 ------------------------------------------------------------------------------------
 -- 1. boolean values do not hold a monopoly of condition values. In Lua, and value 
@@ -38,32 +36,33 @@ TestNil = {}
 --    * or result: 1st value if the 1st value is true, otherwise the 2nd value
 --    * Avoid to use 'x and y or z'. It is equivalent to C expression 'x ? y : z', 
 --    * but provided that y is true condition value.
-TestBoolean = {}
-  function TestBoolean:testBooleanType()
-    for _, v in ipairs({true, false}) do
-      lu.assertEquals(type(v), "boolean")
-      lu.assertIsBoolean(v)
-    end
-  end
 
-  function TestBoolean:testConditionValue()
+describe('data type - boolean', function()
+  it('general', function()
+    for _, v in ipairs({true, false}) do
+      assert.are.same('boolean', type(v))
+      assert.is.boolean(v)
+    end
+  end)
+
+  it('condition value', function()
     -- false condition values
-    lu.assertTrue(not false)
-    lu.assertTrue(not nil)
+    assert.is.falsy(false)
+    assert.is.falsy(nil)
 
     -- true condition values
-    lu.assertFalse(not true)
-    lu.assertFalse(not 0, '0 is a true condition value')
-    lu.assertFalse(not '', 'empty string is a true condition value')
-  end
+    assert.is.truthy(true)
+    assert.is.truthy(0, '0 is a true condition value')
+    assert.is.truthy('', 'empty string is a true condition value')
+  end)
 
-  function TestBoolean:testLogicOperator()
-    lu.assertEquals(5, 4 and 5)
-    lu.assertEquals(nil, nil and 13)
-    lu.assertEquals(false, false and 13)
+  it('logic operator', function()
+    assert.are.same(5, 4 and 5)
+    assert.is_nil(nil and 13)
+    assert.is_false(false, false and 13)
 
-    lu.assertEquals(0, 0 or 5)
-    lu.assertEquals('hi', false or 'hi')
-    lu.assertEquals(false, nil or false)
-  end
--- end of table TestBoolean
+    assert.are.same(0, 0 or 5)
+    assert.are.same('hi', false or 'hi')
+    assert.is_false(false, nil or false)
+  end)
+end)
