@@ -1,52 +1,32 @@
 local M_ = {}
 
 -- http://www.asciitable.com/
-function M_.is_printable(s)
-  local code = string.byte(s)
-
+function M_.is_printable(code)
   return code >= 0x20 and code <= 0x7E
 end
 
-function M_.printable_string()
+function M_.printable_characters()
   local t = {}
   for i=0, 255 do
-    local c = string.char(i)
-    if M_.is_printable(c) then
-      t[#t + 1] = c
+    if M_.is_printable(i) then
+      t[#t + 1] = string.format('%c', i)
     end
   end
 
   return table.concat(t)
 end
 
+-- http://lua-users.org/wiki/HexDump
 function M_.hexdump(s)
   local t = {}
-  for offset=0, #s, 15 do
-    local addr = string.format('%08x', offset)
-
-    local hex = {}
-    local char = {}
-    for i=1, 16 do
-      local c = s:sub(offset + i, offset + i)
-      print(c)
-      -- if c == nil then
-      --   hex[#hex + 1] = '..'
-      -- else
-      --   hex[#hex + 1] = string.format('%s', c)
-
-      --   if M_.is_printable(c) then
-      --     char[#char + 1] = c
-      --   else
-      --     char[#char + 1] = '.'
-      --   end
-      -- end
-    end
-    print(#hex, #char)
-
-    t[#t + 1] = string.format('%s %s |%s|', addr, table.concat(hex, ' '), table.concat(char))
+  for offset=1, #s, 16 do
+    io.write(string.format('%08x ', offset-1))
+    local chunk = s:sub(offset, offset + 15)
+    chunk:gsub('.', function(c) io.write(string.format('%02x ', string.byte(c))) end)
+    -- padding
+    io.write(string.rep(' ',3*(16-#chunk)))
+    io.write(string.format(' |%s|\n', chunk:gsub('%c', '.')))
   end
-
-  return table.concat(t, '\n')
 end
 
 return M_
