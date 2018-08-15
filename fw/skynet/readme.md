@@ -6,3 +6,4 @@ SKYNET
 * http的SSL支持，参考[这里](https://github.com/dpull/lua-webclient)
 * skynet.exit()貌似会等待所有co结束才出来
 * require对应接口luaL_requiref， 默认如果文件已经加载(package.loaded)，则直接返回；busted貌似加载一个新的测试文件，会把已经加载的文件清零，导致skynet多测试原件运行有错误
+* sproto序列化map，如果某个元素缺少key属性，确实可以序列化，可是解析会出错，这个是个兼容性错误。需要注意，考虑修复
