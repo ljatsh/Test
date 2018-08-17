@@ -5,6 +5,8 @@
 -- 2. operand order is the same as expression order
 -- 3. some events support all kinds of operands(==), while others doesn't(.., +-*/, etc)
 
+local helper = require('helper')
+
 describe("metatable", function()
   it('arithmetic - add', function()
     local expects = {
@@ -166,9 +168,44 @@ describe("metatable", function()
     assert.has.no.error(function() return 'a' / obj1 end)
   end)
 
-  
-end
-)
+  --- other arithmetic events are omited (__div, __mod, __unm, __pow)
+  -- bitwise events are ommited too (__band, __bor, __bxor, __bnot, __shl, __shr)
+
+  it('length', function()
+    local mt = { __len = function(...) end }
+    local obj = setmetatable({}, mt)
+
+    local s = spy.on(mt, '__len')
+    assert.is_nil(#obj, '__len can return anything')
+    assert.spy(s).was.called(1)
+    assert.spy(s).was.called_with(obj)
+  end)
+
+  it('concat', function()
+    local expects = {
+      {'1', '2', '12'}, {'1', 2, '12'},
+      {1, '2', '12'}, {1, 2, '12'}
+    }
+
+    -- By default, operands of .. operator are strings or that which can be converted to strings
+    for _, v in ipairs(expects) do
+      assert.are.same(v[3], v[1] .. v[2])
+    end
+
+    local mt = {
+      __tostring = function(...) return '__tostring' end
+    }
+
+    local obj = setmetatable({}, mt)
+    assert.has.error.match(function() return 1 .. obj end, 'attempt to concatenate a table value', 'it seems lua converts only numbers by default')
+
+    mt.__concat = function(...) end
+    local s = spy.on(mt, '__concat')
+    assert.is_nil(1 .. obj)
+    assert.spy(s).was.called(1)
+    assert.spy(s).was.called_with(1, obj)
+  end)
+end)
 
 --[[
 
@@ -189,37 +226,6 @@ function create_obj()
     setmetatable(obj, _mt)
 
     return obj
-end
-
-function test_arithmetic_methods()
-    local obj1 = create_obj()
-    local obj2 = create_obj()
-
-    _mt.__add = function (...) return table.pack('__add', ...) end
-    _mt.__sub = function (...) return table.pack('__sub', ...) end
-    _mt.__mul = function (...) return table.pack('__mul', ...) end
-    _mt.__div = function (...) return table.pack('__div', ...) end
-    _mt.__mod = function (...) return table.pack('__mod', ...) end
-    _mt.__unm = function (...) return table.pack('__unm', ...) end
-
-    assert_error('By default, add event can only occurr between values which can be converted to number(tonumber)',
-                    function() return 1 + 'a' end)
-    assert_equal(11, 1+'10', 'By default, add event can only occurr between values which can be converted to number(tonumber)')
-    assert_equal(11, '1'+'10', 'By default, add event can only occurr between values which can be converted to number(tonumber)')
-    assert_error('By default, add event can only occurr between values which can be converted to number(tonumber)',
-                    function() return 1 + true end)
-
-    test.assert_list_equal({'__add', 1, obj1}, 1+obj1, 'operand order is the same as expression order')
-    test.assert_list_equal({'__add', obj1, 1}, obj1+1, 'operand order is the same as expression order')
-    test.assert_list_equal({'__add', obj1, obj2}, obj1+obj2)
-
-    test.assert_list_equal({'__sub', 1, obj1}, 1-obj1)
-    test.assert_list_equal({'__mul', 3, obj1}, 3 * obj1)
-    test.assert_list_equal({'__div', obj1, 0}, obj1/0)
-    test.assert_list_equal({'__mod', obj2, 3}, obj2%3)
-
-    -- TODO: unary operation
-    -- print(1+(-obj1))
 end
 
 function test_length_method()
