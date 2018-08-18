@@ -1,0 +1,18 @@
+
+import os
+
+env = Environment()
+
+cppPath = [
+]
+
+libPath = [
+]
+
+env.AppendUnique(CPPFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall'],
+                 CPPPATH = cppPath,
+                 LIBPATH = libPath,
+                 LIBS = ['lua', 'gmock', 'dl', 'pthread'])
+
+env.Program('test', ['main.cpp', 'stack_test.cpp'])
+

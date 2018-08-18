@@ -30,6 +30,18 @@ RUN cd /tmp \
 # install busted
 RUN luarocks install busted
 
+# install gtests
+RUN apt-get update \
+    && apt-get install -y cmake g++ scons
+
+RUN cd /tmp \
+    && curl -fSL https://github.com/google/googletest/archive/release-1.8.0.zip -o release-1.8.0.zip --progress \
+    && unzip release-1.8.0.zip -d . \
+    && cd googletest-release-1.8.0 \
+    && cmake . \
+    && make \
+    && make install
+
 RUN apt-get autoremove -y \
     && rm -fr /tmp/*
 

@@ -1,6 +1,7 @@
 
 local helper = require('helper')
 
+-- 1. If you want to protect the metatable(reading/writing), add __metatable to the metatable
 
 describe("metatable", function()
   it('arithmetic - add', function()

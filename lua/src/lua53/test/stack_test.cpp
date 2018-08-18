@@ -1,4 +1,5 @@
 
+#include <cstring>
 #include "lua.hpp"
 #include "gtest/gtest.h"
 
