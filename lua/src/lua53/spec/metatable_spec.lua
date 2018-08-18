@@ -178,7 +178,8 @@ describe("metatable", function()
     local s = spy.on(mt, '__len')
     assert.is_nil(#obj, '__len can return anything')
     assert.spy(s).was.called(1)
-    assert.spy(s).was.called_with(obj)
+    -- 'TODO, why are there two parameters?'
+    assert.spy(s).was.called_with(obj, obj)
   end)
 
   it('concat', function()
@@ -205,52 +206,66 @@ describe("metatable", function()
     assert.spy(s).was.called(1)
     assert.spy(s).was.called_with(1, obj)
   end)
+
+  -- TODO spy.on cannot be applied to metamethods __index, __newindex and __call
+  it('index', function()
+    local mt = {
+      __index = function(...) return select(2, ...) end
+    }
+    local obj = setmetatable({'ljatsh', age=34}, mt)
+
+    -- __index can be a function, and it was only queried when table field does not exist
+    assert.are.same('ljatsh', obj[1])
+    assert.are.same(34, obj.age)
+    assert.are.same('addr', obj.addr)
+    assert.are.same(3, obj[3])
+
+    -- __index can also be a table
+    obj = setmetatable({}, {__index = obj})
+    assert.are.same('ljatsh', obj[1])
+    assert.are.same(34, obj.age)
+    assert.are.same('addr', obj.addr)
+    assert.are.same(3, obj[3])
+  end)
+
+  it('newindex', function()
+    local t = {}
+    local mt = {
+      __newindex = function(...) table.insert(t, table.pack(...)) end
+    }
+    local obj = setmetatable({name='ljatsh', age=34}, mt)
+
+    -- __newindex was only queries when table key does not exist. it can be a function
+    obj.age = 35
+    assert.are.same(0, #t)
+    obj.sex = 'm'
+    assert.are.same({obj, 'sex', 'm', n=3}, t[1])
+
+    -- __newindex can also be a table
+    local obj2 = setmetatable({where='sh'}, {__newindex = obj})
+    obj2.where = 'xa'
+    assert.are.same(1, #t)
+    obj2.name = 'ljatxa'
+    assert.is_nil(rawget(obj2, 'name'))
+    assert.are.same('ljatxa', obj.name, '__newindex was forwarded to the new table')
+    assert.are.same(1, #t)
+    obj.from = 'CN'
+    assert.are.same({obj, 'from', 'CN', n=3}, t[2], 'table object changed when it passed the chain')
+  end)
+
+  it('call', function()
+    local mt = {
+      __call = function(...) return table.pack(...) end
+    }
+    
+    local obj = {}
+    assert.has.error.match(function() return obj() end, 'attempt to call a table value')
+    setmetatable(obj, mt)
+    assert.are.same({obj, 1, 2, n=3}, obj(1, 2))
+  end)
 end)
 
 --[[
-
-module("cp13", lunit.testcase, package.seeall)
-
-local _mt
-
-function setup()
-    _mt = {}
-end
-
-function teardown()
-    _mt = nil
-end
-
-function create_obj()
-    local obj = {}
-    setmetatable(obj, _mt)
-
-    return obj
-end
-
-function test_length_method()
-    local obj1 = create_obj()
-
-    _mt.__len = function (...) return table.pack('__len', ...) end
-
-    test.assert_list_equal({'__len', obj1, obj1},
-                            #obj1,
-                            'this test may fail on lua which version is different from v5.2')
-end
-
-function test_concat_method()
-    local obj1 = create_obj()
-    local obj2 = create_obj()
-
-    _mt.__concat = function (...) return table.pack('__concat', ...) end
-
-    assert_equal('12', 1 .. '2', 'By default, concat event can only occurr between strings, string and number, or number and string, or number and number')
-    assert_equal('12', '1' .. '2', 'By default, concat event can only occurr between strings, string and number, or number and string, or number and number')
-    assert_equal('12', '1' .. 2, 'By default, concat event can only occurr between strings, string and number, or number and string, or number and number')
-    assert_equal('12', 1 .. 2, 'By default, concat event can only occurr between strings, string and number, or number and string, or number and number')
-
-    test.assert_list_equal({'__concat', 1, obj1}, 1 .. obj1)
-end
 
 function test_comparision_methods()
     local obj1 = create_obj()
@@ -286,50 +301,5 @@ function test_comparision_methods()
     assert_false(obj1 < obj1)
     assert_false(obj1 < obj2 and obj2 < obj1)
     assert_true(not (obj1 < obj3) and obj3 < obj1)
-end
-
-function test_index_methods()
-    local obj = {2, 3, name='ljatsh', 4}
-    assert_equal(2, obj[1])
-    assert_equal(3, obj[2])
-    assert_equal(4, obj[3])
-    assert_equal('ljatsh', obj.name)
-
-    assert_nil(obj.age)
-
-    local mt = {}
-    mt.__index = {age=34}
-    setmetatable(obj, mt)
-    assert_equal(34, obj.age, 'age was picked from __index')
-
-    mt.__index = function(...) return table.pack(...) end
-    test.assert_list_equal({obj, 'age'}, obj.age, '__index can also be function')
-
-    obj = {}
-    assert_nil(obj.age)
-    obj.age = 10
-    assert_equal(10, obj.age)
-    mt = {}
-    mt.__newindex = {}
-    obj.age = nil
-    setmetatable(obj, mt)
-    obj.age = 10
-    assert_equal(10, mt.__newindex.age, 'assignment was forward to __newindex table')
-    assert_nil(obj.age)
-
-    local result
-    mt.__newindex = function(...) result = table.pack(...) end
-    obj.age = 10
-    test.assert_list_equal({obj, 'age', 10}, result, '__newindex can also be function')
-end
-
-function test_call_method()
-    local obj = create_obj()
-
-    assert_error('table cannot be callable by default',
-                    function() obj(1, 2, 3) end)
-
-    _mt.__call = function(...) return table.pack(...) end
-    test.assert_list_equal({obj, 1, 2, 3}, obj(1, 2, 3), 'obj can be called now')
 end
 ]]
