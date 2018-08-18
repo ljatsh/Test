@@ -1,11 +1,6 @@
--- Programming in Lua: Metatables and Metamethods
--- http://www.lua.org/pil/13.html
-
--- 1. metamethod signature cannot be changed (returns count, sometimes return value type)
--- 2. operand order is the same as expression order
--- 3. some events support all kinds of operands(==), while others doesn't(.., +-*/, etc)
 
 local helper = require('helper')
+
 
 describe("metatable", function()
   it('arithmetic - add', function()
@@ -263,10 +258,48 @@ describe("metatable", function()
     setmetatable(obj, mt)
     assert.are.same({obj, 1, 2, n=3}, obj(1, 2))
   end)
+
+  it('__metatable field', function()
+    local mt = {
+      __metatable = 'Hello'
+    }
+
+    local obj = setmetatable({}, mt)
+    assert.are.same('Hello', getmetatable(obj))
+    assert.has.error.match(function() setmetatable(obj, {}) end, 'cannot change a protected metatable')
+  end)
+
+  it('pairs', function()
+    local mt
+    mt = {
+      iterator = function(t, index)
+        if (index <= 6) then return index+1, index * 2 end
+        return nil -- the end
+      end,
+
+      __pairs = function(t)
+        return mt.iterator, t, 4
+      end
+    }
+
+    local obj = setmetatable({x = 1, y = 2}, mt)
+    spy.on(mt, 'iterator')
+    local t = {}
+    for k, v in pairs(obj) do table.insert(t, v) end
+    assert.are.same({8, 10, 12}, t)
+    assert.spy(mt.iterator).was.called(4)
+    assert.spy(mt.iterator).was.called_with(obj, 4)
+    assert.spy(mt.iterator).was.called_with(obj, 5)
+    assert.spy(mt.iterator).was.called_with(obj, 6)
+    assert.spy(mt.iterator).was.called_with(obj, 7)
+  end)
+
+  -- TODO
+  -- userdata metatables
 end)
 
 --[[
-
+-- TODO comparision metatable is a little complicated. __le call __lt...
 function test_comparision_methods()
     local obj1 = create_obj()
     local obj2 = create_obj()
