@@ -9,10 +9,19 @@ cppPath = [
 libPath = [
 ]
 
-env.AppendUnique(CPPFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall'],
+env.AppendUnique(CPPFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall', '-std=c++0x'],
                  CPPPATH = cppPath,
                  LIBPATH = libPath,
                  LIBS = ['lua', 'gmock', 'dl', 'pthread'])
 
-env.Program('test', ['main.cpp', 'stack_test.cpp'])
+SRC = [
+  'main.cpp',
+  'lua_engine.c',
+
+  'lua_engine_test.cpp',
+  'lua_test.cpp',
+  'stack_test.cpp'
+]
+
+env.Program('test', SRC)
 
