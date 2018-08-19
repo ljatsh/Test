@@ -19,6 +19,34 @@ int simpleTest1(lua_State* L) {
   return 3;
 }
 
+std::string dump_stack(lua_State* L) {
+  std::ostringstream ss;
+  for (int i=1; i<=lua_gettop(L); i++) {
+    int type = lua_type(L, i);
+    switch (type) {
+      case LUA_TNUMBER:
+        if (lua_isinteger(L, i))
+          ss << ' ' << lua_tointeger(L, i);
+        else
+          ss << ' ' << lua_tonumber(L, i);
+        break;
+      case LUA_TNIL:
+        ss << " nil";
+        break;
+      case LUA_TBOOLEAN:
+        ss << ' ' << (lua_toboolean(L, i) ? "true" : "false");
+        break;
+      case LUA_TSTRING:
+        ss << ' ' << lua_tostring(L, i);
+        break;
+      default:
+        ss << ' ' << "undefined";
+    }
+  }
+
+  return ss.str().substr(1);
+}
+
 class StackTest : public ::testing::Test {
   public:
     void SetUp() override {
@@ -69,33 +97,7 @@ class StackTest : public ::testing::Test {
     // }
   
   protected:
-    // std::string dump() {
-    //   std::ostringstream ss;
-    //   for (int i=1; i<=lua_gettop(_L); i++) {
-    //     int type_ = lua_type(_L, i);
-    //     switch (type_) {
-    //       case LUA_TNUMBER:
-    //         if (lua_isinteger(_L, i))
-    //           ss << ' ' << lua_tointeger(_L, i);
-    //         else
-    //           ss << ' ' << lua_tonumber(_L, i);
-    //         break;
-    //       case LUA_TNIL:
-    //         ss << " nil";
-    //         break;
-    //       case LUA_TBOOLEAN:
-    //         ss << ' ' << (lua_toboolean(_L, i) ? "true" : "false");
-    //         break;
-    //       case LUA_TSTRING:
-    //         ss << ' ' << lua_tostring(_L, i);
-    //         break;
-    //       default:
-    //         ss << ' ' << "undefined";
-    //     }
-    //   }
-
-    //   return ss.str().substr(1);
-    // }
+    
 
   protected:
     lua_State* L;
@@ -135,41 +137,54 @@ TEST_F(StackTest, NormalOperation) {
   const char* buff_lua_2 = lua_tostring(L, 5);
   EXPECT_EQ(buff_lua, buff_lua_2);
   EXPECT_STRCASEEQ(buff_lua, buff_lua_2);
+}
 
-  // // other operations
-  // lua_settop(_L, 6);
-  // ASSERT_TRUE(lua_isnil(_L, -1));   // 1.2 5 true nil lj@sh nil
-  // ASSERT_STRCASEEQ("1.2 5 true nil lj@sh nil", dump().c_str());
+TEST_F(StackTest, StackManipulation) {
+  // lua_settop index can be negative
+  lua_settop(L, 3);
+  EXPECT_STRCASEEQ("nil nil nil", dump_stack(L).c_str());
   
-  // lua_pop(_L, 2);
-  // ASSERT_EQ(4, lua_gettop(_L));     // 1.2 5 true nil
-  // ASSERT_STRCASEEQ("1.2 5 true nil", dump().c_str());
+  lua_settop(L, -2);
+  EXPECT_STRCASEEQ("nil nil", dump_stack(L).c_str());
 
-  // lua_pushvalue(_L, 2);
+  // lua_insert (move top to given index, index cannot be lt size)
+  lua_pushinteger(L, 1);                    // nil nil 1
+  lua_insert(L, 1);                         // 1 nil nil
+  EXPECT_STRCASEEQ("1 nil nil", dump_stack(L).c_str());
 
-  // ASSERT_EQ(5, lua_gettop(_L));
-  // ASSERT_EQ(5, lua_tonumber(_L, -1)); // 1.2 5 true nil 5
-  // ASSERT_STRCASEEQ("1.2 5 true nil 5", dump().c_str());
+  lua_pushinteger(L, 2);
+  lua_insert(L, 4);                         // 1 nil nil 2, index == size
+  EXPECT_STRCASEEQ("1 nil nil 2", dump_stack(L).c_str());
 
-  // lua_remove(_L, 2);
-  // ASSERT_EQ(4, lua_gettop(_L));   // 1.2 true nil 5
-  // ASSERT_STRCASEEQ("1.2 true nil 5", dump().c_str());
+  // lua_remove (remove given index)
+  lua_remove(L, 3);
+  lua_remove(L, 2);
+  EXPECT_STRCASEEQ("1 2", dump_stack(L).c_str());
 
-  // lua_insert(_L, -3);
-  // ASSERT_EQ(4, lua_gettop(_L));
-  // ASSERT_STRCASEEQ("1.2 5 true nil", dump().c_str());
+  // lua_pushvalue (copy the element at given index to the top)
+  lua_pushnil(L);                 // 1 2 nil
+  lua_pushvalue(L, 1);            // 1 2 nil 1
+  EXPECT_STRCASEEQ("1 2 nil 1", dump_stack(L).c_str());
 
-  // lua_replace(_L, -2);
-  // ASSERT_EQ(3, lua_gettop(_L));
-  // ASSERT_STRCASEEQ("1.2 5 nil", dump().c_str());
+  // lua_copy (copy to valid index, size does not change)
+  lua_copy(L, 3, 1);             // nil 2 nil 1
+  EXPECT_STRCASEEQ("nil 2 nil 1", dump_stack(L).c_str());
 
-  // lua_pushinteger(_L, 10);
-  // lua_pushinteger(_L, 11);
-  // lua_pushinteger(_L, 12);
-  // lua_pushinteger(_L, 13);
-  // ASSERT_STRCASEEQ("1.2 5 nil 10 11 12 13", dump().c_str());
-  // lua_rotate(_L, 3, 1);
-  // ASSERT_STRCASEEQ("1.2 5 10 11 12 nil 13", dump().c_str());
+  // lua_replace (replace the elment at given index with top element, size shrinks)
+  lua_replace(L, 1);              // 1 2 nil
+  EXPECT_STRCASEEQ("1 2 nil", dump_stack(L).c_str());
+
+  // lua_rotate
+  lua_pushboolean(L, 1);
+  lua_pushboolean(L, 0);
+  lua_pushstring(L, "hello");     // 1 2 nil true false hello
+
+  lua_rotate(L, 3, 1);            // 1 2 hello nil true false
+  EXPECT_STRCASEEQ("1 2 hello nil true false", dump_stack(L).c_str());
+  lua_rotate(L, 4, 2);            // 1 2 hello true false nil
+  EXPECT_STRCASEEQ("1 2 hello true false nil", dump_stack(L).c_str());
+  lua_rotate(L, 2, -1);           // 1 hello true false nil 2
+  EXPECT_STRCASEEQ("1 hello true false nil 2", dump_stack(L).c_str());
 }
 
 // 1. lua_settable and lua_gettable is the general way to write/read a table
@@ -341,3 +356,5 @@ TEST_F(StackTest, NormalOperation) {
 //   // release the reference
 //   luaL_unref(_L, LUA_REGISTRYINDEX, ref);
 // }
+
+// TODO pseudo-index
