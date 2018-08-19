@@ -67,6 +67,8 @@ Database
   DROP {DATABASE | SCHEMA} [IF EXISTS] db_name
   ```
 
+* [Sample](r/database.result)
+
 reference
 ---------
 

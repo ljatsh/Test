@@ -80,4 +80,63 @@ TEST_F(LuaTest, LuaTypeString) {
   EXPECT_FALSE(lua_isstring(L, 4));
 }
 
+// 1. lua_settable and lua_gettable is the general way to write/read a table
+// 2. lua_setfiled and lua_getfild writes/reads a table by string key
+// 3. lua_seti and lua_geti writes/reads a table by index
+// 4. every read/write API has a corresponed raw API
+TEST_F(LuaTest, LuaTypeTable) {
+  lua_newtable(L);
+  EXPECT_TRUE(lua_istable(L, 1));
+
+  // get/set field by key
+  lua_getfield(L, 1, "age");            // table, nil
+  EXPECT_EQ(2, lua_gettop(L));
+  EXPECT_TRUE(lua_isnil(L, 2));
+  lua_pop(L, 1);
+
+  lua_pushinteger(L, 34);               // table 34
+  lua_setfield(L, 1, "age");            // table
+  EXPECT_EQ(1, lua_gettop(L));
+  lua_getfield(L, 1, "age");            // table 34
+  EXPECT_EQ(34, lua_tointeger(L, 2));
+  lua_pop(L, 1);                        // table
+
+  // get/set field by index
+  lua_geti(L, 1, 10);                   // table nil
+  EXPECT_TRUE(lua_isnil(L, 2));
+  lua_pop(L, 1);
+
+  lua_pushstring(L, "ljatsh");          // table ljatsh
+  lua_seti(L, 1, 10);                   // table
+  EXPECT_EQ(1, lua_gettop(L));
+
+  lua_geti(L, 1, 10);                   // table ljatsh
+  EXPECT_STRCASEEQ("ljatsh", lua_tostring(L, 2));
+  lua_pop(L, 1);
+}
+
+// lua_getglobal/lua_setglobal
+TEST_F(LuaTest, GlobalVariable) {
+  EXPECT_EQ(LUA_TNIL, lua_getglobal(L, "name"));
+  EXPECT_EQ(1, lua_gettop(L));
+  EXPECT_TRUE(lua_isnil(L, 1));
+  lua_pop(L, 1);
+
+  EXPECT_EQ(LUA_OK, lua_execute_string(L, "name = 'ljatsh'"));
+  EXPECT_EQ(0, lua_gettop(L));
+
+  EXPECT_EQ(LUA_TSTRING, lua_getglobal(L, "name"));
+  EXPECT_EQ(1, lua_gettop(L));
+  EXPECT_STRCASEEQ("ljatsh", lua_tostring(L, 1));
+  lua_pop(L, 1);
+
+  lua_pushboolean(L, 1);
+  lua_setglobal(L, "sex");
+  
+  EXPECT_EQ(LUA_TBOOLEAN, lua_getglobal(L, "sex"));
+  EXPECT_EQ(1, lua_toboolean(L, 1));
+  lua_pop(L, 1);
+}
+
 // TODO clousre/usesrdata/table...
+// TODO lua_rawset/lua_rawset metatables
