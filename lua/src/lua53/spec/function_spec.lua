@@ -3,7 +3,10 @@ describe('function', function()
   -- syntax sugar:
   -- 1. if the function has only 1 single parameter, and this argument is either a literal string
   --    or a table constructor, then the parentheses are optional.
+  -- 2. local function f() end ==> local f; f = function() end;
+  -- 3. function f() end ==> f = function() end;
   it('syntax sugar', function()
+    -- 1.
     local s = spy.new(function() end)
 
     s'hello'
@@ -19,6 +22,26 @@ describe('function', function()
     s{1, nil, 2}
     assert.spy(s).was.called(1)
     assert.spy(s).was.called_with({1, nil, 2})
+
+    -- 2.
+    local f1 = function(n)
+      if n == 0 then
+        return 1
+      else
+        return n * f1(n - 1) -- f1 is upvalue <-- nil
+      end
+    end
+
+    local function f2(n)
+      if n == 0 then
+        return 1
+      else
+        return n * f2(n - 1) -- f2 is upvalue <-- f2
+      end
+    end
+
+    assert.has.error.match(function() return f1(3) end, "attempt to call a nil value")
+    assert.has.no.error(function() f2(3) end)
   end)
 
   -- 1. function results are all discarded in statement.
@@ -117,31 +140,55 @@ describe('function', function()
     assert.spy(s).was.called_with(10, 1)
   end)
 
-  -- the safer way to traverse variable parameters is table.pack
+  -- the safer way to traverse variable parameters is table.pack or select(index, ...)
+  -- {...} is much more convenient
   it('variadic function', function()
     
   end)
+
+  -- it seems the anoymous function, and all the upvalues determines a closure.
+  -- upvalues: https://www.lua.org/pil/27.3.3.html
+  it('closure - general', function()
+    local v
+    local f1 = function()
+      return function() return v end
+    end
+    local f2 = function(test)
+      return function() return test end
+    end
+    local f3 = function()
+      local t = {}
+      return function() return t end
+    end
+
+    assert.are.equal(f1(), f1(), 'both are determined by f1, v')
+    assert.are.equal(f1()(), f1()())
+
+    assert.are.no.equal(f2(v), f2(v), 'upvalues in higher-function parameters are different, event if they refer the same value')
+    assert.are.equal(f2(v)(), f2(v)())
+
+    assert.are.no.equal(f3(), f3(), 'upvalues are different')
+    assert.are.no.equal(f3()(), f3()())
+  end)
+
+  it('closure - non-global functions with nested calling', function()
+    do
+      local g
+
+      local function f1()
+        h()
+      end
+      local function f2()
+        g()
+      end
+
+      function g() end
+      local function h() end
+
+      assert.has.error.match(function() f1() end, 'attempt to call a nil value')
+      assert.has.no.error(function() f2() end)
+    end
+
+    assert.is_nil(g, 'g is local')
+  end)
 end)
-
--- Programming in Lua-->Functions
--- http://www.lua.org/pil/5.html
-
--- module ("cp5", lunit.testcase, package.seeall)
-
---     function testVariableFunction()
---         local function func_test(...)
---             return select('#', ...), select(1, ...)
---         end
-
---         local count = func_test()
---         assert_equal(0, count, 'zero arguments')
-
---         count, p1 = func_test(1)
---         assert_equal(1, count, '1 arguments')
---         assert_equal(1, p1)
-
---         count, p1, p2 = func_test(1, 'a', 'b')
---         assert_equal(3, count, '3 arguments')
---         assert_equal(1, p1)
---         assert_equal('a', p2)
---     end
