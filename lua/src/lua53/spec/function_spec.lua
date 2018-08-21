@@ -161,6 +161,7 @@ describe('function', function()
       return function() return t end
     end
 
+    -- TODO not stable (research lua implementation)
     assert.are.equal(f1(), f1(), 'both are determined by f1, v')
     assert.are.equal(f1()(), f1()())
 
