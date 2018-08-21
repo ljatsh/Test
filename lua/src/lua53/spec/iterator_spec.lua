@@ -8,7 +8,6 @@ describe('iterator', function()
     function t.f() end
 
     local s = stub.new(t, 'f')
-    s.returns(nil)
 
     s.on_call_with(nil, nil).returns(1)
     s.on_call_with(nil, 1).returns(5)
@@ -19,13 +18,7 @@ describe('iterator', function()
     s.on_call_with(10, 5).returns(nil)
 
     local r = {}
-    --for v in s do r[#r + 1] = v end
-    --assert.stub(s).was.called(1)
-    --assert.stub(s).was.called_with()
-    --assert.are.same({}, r)
-
-    s:clear()
-    for v in s, nil, nil do r[#r + 1] = v end
+    for v in s do r[#r + 1] = v end
 
     assert.stub(s).was.called(3)
     assert.stub(s).was.called_with(nil, nil)

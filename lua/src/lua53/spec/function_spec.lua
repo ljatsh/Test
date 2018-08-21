@@ -162,7 +162,7 @@ describe('function', function()
     end
 
     -- TODO not stable (research lua implementation)
-    assert.are.equal(f1(), f1(), 'both are determined by f1, v')
+    --assert.are.equal(f1(), f1(), 'both are determined by f1, v')
     assert.are.equal(f1()(), f1()())
 
     assert.are.no.equal(f2(v), f2(v), 'upvalues in higher-function parameters are different, event if they refer the same value')
