@@ -243,6 +243,35 @@ describe('pattern', function()
     matches = {}
   end)
 
+  -- *: 0 or more times of previous character(alap)
+  -- +: 1 or more times of previous character(alap)
+  -- ?: matches an optional character
+  -- -: 0 or more times of previous character(asap)
+  -- %bxy: matches balanced string
+  it('pattern modifier', function()
+    -- *
+    local s = "local _name = '' 'ljatsh'"
+    assert.are.same('_name', string.match(s, '[_%a][_%w]*', 6))
+
+    -- +
+    assert.are.same("'ljatsh'", string.match(s, "'[%w]+'"))
+
+    -- ?
+    assert.are.same({1, 3, n=2}, table.pack(string.find('124a', '[+-]?%d+')))
+    assert.are.same({1, 4, n=2}, table.pack(string.find('+124a', '[+-]?%d+')))
+    assert.are.same({1, 4, n=2}, table.pack(string.find('-124', '[+-]?%d+')))
+
+    -- -
+    s = 'one|two|three|four'
+    assert.are.same('two|three', string.match(s, '|(.*)|'))
+    assert.are.same('two', string.match(s, '|(.-)|'))
+
+    -- %b
+    -- %b specified any character, including magic one
+    assert.are.same('a  line', string.gsub("a (enclosed (in) parentheses) line", "%b()", ""))
+    assert.are.same('a - line', string.gsub("a +enclosed +in- parentheses-- line", "%b+-", ""))
+  end)
+
   it('find', function()
     -- pattern match disabled
     assert.are.same({8, 11, n=2}, table.pack(string.find('Hello, Lua.', 'Lua.', 1, true)))
@@ -362,36 +391,6 @@ describe('pattern', function()
     assert.has.error.match(function() string.gsub(s, '%$(%w+)', function(...) return {} end) end, 'invalid replacement value')
     assert.are.same({s, 2, n=2}, table.pack(string.gsub(s, '%$(%w+)', function(...) return false end)))
   end)
-
--- function testPatternModifier()
---     -- * matches 0 or more characters of the origin class(as longest as possible)
---     s = "local _name = 'ljatsh'"
---     assert_equal('_name', string.match(s, '[_%a][_%w]*', 6), 'match a identifier')
-
---     -- + matches 1 or more characters of the origin class(as longest as possible)
---     assert_equal("'ljatsh'", string.match(s, "'[%w]+'"), 'match a non empty literal string')
-
---     -- ? matches an optional character
---     assert_true(string.find('124', '[+-]?%d+') == 1)
---     assert_true(string.find('+124', '[+-]?%d+') == 1)
---     assert_true(string.find('-124', '[+-]?%d+') == 1)
-
---     -- - matches 0 or more characters of the origin class(but as shortest as possible)
---     s = 'one|two|three|four'
---     assert_equal('|two|three|', string.match(s, '|.*|'))
---     assert_equal('|two|', string.match(s, '|.-|'))
--- end
-
--- function testPattern()
---     -- %b matches balanced string
---     assert_equal('a  line',
---                  string.gsub("a (enclosed (in) parentheses) line", "%b()", ""),
---                  'magic character does not take effect here')
-
---     assert_equal('a - line',
---                  string.gsub("a +enclosed +in- parentheses-- line", "%b+-", ""),
---                  'magic character does not take effect here')
--- end
 
 -- function testCapture()
 --     test.assert_list_equal({3, 4, 3, 5},
