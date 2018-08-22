@@ -1,27 +1,37 @@
 
 import os
 
-env = Environment()
+env_test = Environment()
 
 cppPath = [
 ]
 
 libPath = [
+  '.'
 ]
 
-env.AppendUnique(CPPFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall', '-std=c++0x'],
-                 CPPPATH = cppPath,
-                 LIBPATH = libPath,
-                 LIBS = ['lua', 'gmock', 'dl', 'pthread'])
+env_test.AppendUnique(CPPPATH = cppPath,
+                      LIBPATH = libPath,
+                      LIBS = ['lua_engine', 'lua', 'gmock', 'dl', 'pthread'])
 
-SRC = [
+test_src = [
   'main.cpp',
-  'lua_engine.c',
 
   'lua_engine_test.cpp',
   'lua_test.cpp',
   'stack_test.cpp'
 ]
 
-env.Program('test', SRC)
+evn_lib = Environment()
+lua_engine = evn_lib.StaticLibrary('lua_engine',
+                                   'lua_engine.c',
+                                   CFLAGS=['-g', '-O2', '-Wno-deprecated' '-Wall'])
+test = env_test.Program('test', test_src, CPPFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall', '-std=c++0x'])
 
+evn_dyl = Environment()
+test1_dyl = evn_dyl.SharedLibrary('test', 'libtest.c',
+                                  CFLAGS=['-g', '-O2', '-Wno-deprecated' '-Wall'],
+                                  LINKFLAGS = ['-fPIC'],
+                                  LIBS = ['dl'])
+
+Depends(test, lua_engine)
