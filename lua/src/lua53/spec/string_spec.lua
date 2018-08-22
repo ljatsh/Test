@@ -1,5 +1,6 @@
 
 local helper = require('helper')
+local sp = require('snippets')
 
 describe('string', function()
   -- lua string is literal
@@ -264,7 +265,7 @@ describe('pattern', function()
     assert.are.same('Lua.', string.match('Hello, Lua.', 'Lua%.'))
     assert.is_nil(string.match('Hello, Lua.', 'Lua%a'))
 
-    -- with capture
+    -- with capture (returns each captured value instead of the whole string)
     assert.are.same('Hello, Lua.', string.match('Hello, Lua.__', '%w+,%s*%w+%.'))
     assert.are.same({'Hello', 'Lua', n=2}, table.pack(string.match('Hello, Lua.__', '(%w+),%s*(%w+)%.')))
   end)
@@ -278,7 +279,7 @@ describe('pattern', function()
     end
     assert.are.same({'hello', 'world', 'from', 'lua'}, t)
 
-    -- with capture
+    -- with capture (returns each captured value instead of the whole string)
     s = 'from=world, to = Lua'
     t = {}
     for k, v in string.gmatch(s, '(%w+)%s*=%s*(%w+)') do
@@ -296,11 +297,13 @@ describe('pattern', function()
     -- with capture
     s = 'name=ljatsh, age=33'
     assert.are.same('ljatsh is name, 33 is age', string.gsub(s, '(%w+)%s*=%s*(%w+)', '%2 is %1'))
+    assert.are.same('ehll,oL au', string.gsub('hello, Lua', '(.)(.)', '%2%1'))
+    assert.are.same('h-he-el-ll-lo-o, L-Lu-ua-a', string.gsub('hello, Lua', '%a', '%0-%0'))
   end)
 
   it('gusb - function', function()
     local t = {}
-    function t.f(...) print(...) end
+    function t.f(...) end
     local sb = stub.new(t, 'f')
     sb.on_call_with('$name').returns('ljatsh')
     sb.on_call_with('$team').returns('red-team')
@@ -310,7 +313,7 @@ describe('pattern', function()
     -- pattern match
     local s = 'Can you help $name? Monsters are attacking $team.'
     local target = 'Can you help ljatsh? Monsters are attacking red-team.'
-    assert.are.same({target, 2, n=2}, table.pack(string.gsub(s, '$%w+', function(...) return sb(...) end)))
+    assert.are.same({target, 2, n=2}, table.pack(string.gsub(s, '%$%w+', function(...) return sb(...) end)))
     assert.stub(sb).was.called(2)
     assert.stub(sb).was.called_with('$name')
     assert.stub(sb).was.called_with('$team')
@@ -326,46 +329,39 @@ describe('pattern', function()
     assert.are.same({target, 1, n=2}, table.pack(string.gsub(s, '(version%s*=%s*%d+.)(%d+)', function(...) return t.increase_version(...) end)))
     assert.spy(t.increase_version).was.called(1)
     assert.spy(t.increase_version).was.called_with('version=1.', '0')
-
-    -- function should return string
-    sb.returns({})
-    assert.has.error.match(function() string.gsub(s, '(version%s*=%d+%.)(%d)', function(...) return sb(...) end) end, 'invalid replacement value')
   end)
 
   it('gsub - table', function()
-    -- s = 'name=$name, age=$age'
-    -- assert_equal('name=ljatsh, age=33',
-    --              string.gsub(s, '$(%w+)', {name='ljatsh', age=33}),
-    --              'replaced by table value by the given capture key')
+    -- table was indexed with the first captured string or the whole string
+    local t = {
+      name = 'ljatsh',
+      age = 34,
+      f = function() end
+    }
+
+    local proxy = setmetatable({}, {
+      __index = function(_, k)
+        t.f(k)
+        return t[k]
+      end
+    })
+    local sp = spy.on(t, 'f')
+
+    local s = 'name=$name, age=$age'
+    assert.are.same('name=ljatsh, age=34', string.gsub(s, '$(%w+)', proxy))
+    assert.spy(t.f).was.called(2)
+    assert.spy(t.f).was.called_with('name')
+    assert.spy(t.f).was.called_with('age')
   end)
 
--- function testGsub()
---     local function increase_version(prefix, v)
---         return prefix .. tostring(tonumber(v) + 1)
---     end
---     s = 'version=1.0, name=test'
---     test.assert_list_equal({'version=1.1, name=test', 1},
---                            table.pack(string.gsub(s, '(version%s*=%d+%.)(%d)', increase_version)),
---                            'replaced by function return')
-
---     s = 'name=$name, age=$age'
---     assert_equal('name=ljatsh, age=33',
---                  string.gsub(s, '$(%w+)', {name='ljatsh', age=33}),
---                  'replaced by table value by the given capture key')
-
---     s = 'name=ljatsh, age=33'
---     assert_equal('ljatsh is name, 33 is age',
---                  string.gsub(s, '(%w+)%s*=%s*(%w+)', '%2 is %1'),
---                  '%1-9 stands for the corresponded capture if replace is string')
--- end
-
--- function testMatch()
---     assert_equal('Lua.',
---                  string.match('Hello, Lua.', 'Lua.+'),
---                  "simple pattern matching")
-
---     assert_nil(string.match('Hello, Lua.', 'Lua%a'), "mismatched pattern")
--- end
+  it('gsub - other', function()
+    -- function/indexed value should be string, number
+    -- if the values was false, nil, substitution was skipped. However, every matched string is 
+    -- recored as a successful substitution
+    local s = 'name=$name, age=$age'
+    assert.has.error.match(function() string.gsub(s, '%$(%w+)', function(...) return {} end) end, 'invalid replacement value')
+    assert.are.same({s, 2, n=2}, table.pack(string.gsub(s, '%$(%w+)', function(...) return false end)))
+  end)
 
 -- function testPatternModifier()
 --     -- * matches 0 or more characters of the origin class(as longest as possible)
