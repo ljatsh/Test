@@ -2,7 +2,7 @@
 describe('iterator', function()
   -- 1. iterator was a function
   -- 2. for semantics: one iterator with 2 parameters, invariant state and control value
-  -- 3. prefer stateless iterator in '''for''' statement
+  -- 3. prefer stateless iterator in '''for''' statement (see snippets.split)
   it('for semantics', function()
     local t = {}
     function t.f() end

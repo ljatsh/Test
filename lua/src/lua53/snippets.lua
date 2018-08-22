@@ -34,7 +34,6 @@ local mt_default = {
   end
 }
 
--- TODO customize __pair to ignore key_default?
 function M_.set_default(t, v)
   t[key_default] = v
   setmetatable(t, mt_default)
@@ -85,5 +84,47 @@ function M_.proxy(t)
 
   return setmetatable(o, mt_proxy)
 end
+
+local function trim_left(s)
+  return (string.gsub(s, '^%s*', ''))
+end
+
+local function trim_right(s)
+  return (string.gsub(s, '%s*$', ''))
+end
+
+local function trim(s)
+  -- pattern ^%s*(.*)%s*$ is bad
+  return (string.gsub(s, '^%s*(.-)%s*$', '%1'))
+end
+
+-- elment count == count of delimiters + 1
+function M_.split(s, delimiter)
+
+  local function next_delimiter(s, n)
+    local x, y = string.find(s, delimiter, n, true)
+    local ni = nil
+    if x ~= nil then
+      ni = y + 1
+    end
+
+    return ni, x, y
+  end
+
+  local r = {}
+  local i = 1
+  for _, x, y in next_delimiter, s, 1 do
+    r[#r + 1] = trim(string.sub(s, i, x-1))
+    i = y + 1
+  end
+  r[#r + 1] = trim(string.sub(s, i))
+
+  return r
+end
+
+-- exports
+M_.trim_left = trim_left
+M_.trim_right = trim_right
+M_.trim = trim
 
 return M_
