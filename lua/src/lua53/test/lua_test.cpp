@@ -138,5 +138,28 @@ TEST_F(LuaTest, GlobalVariable) {
   lua_pop(L, 1);
 }
 
+TEST_F(LuaTest, CallLuaFunc) {
+  const char *s =
+  "function sum(...)\n"
+  "  local sum = 0\n"
+  "  for _, v in ipairs{...} do\n"
+  "    sum = sum + v\n"
+  "  end\n"
+  "  return sum\n"
+  "end";
+
+  EXPECT_EQ(LUA_OK, lua_execute_string(L, s));
+
+  EXPECT_EQ(LUA_TFUNCTION, lua_getglobal(L, "sum"));
+  lua_pushnumber(L, 1.0);
+  lua_pushnumber(L, 1.3);
+  lua_pushinteger(L, 3);
+  lua_call(L, 3, 1);
+
+  EXPECT_EQ(1, lua_gettop(L));
+  EXPECT_FLOAT_EQ(5.3, lua_tonumber(L, -1));
+}
+
 // TODO clousre/usesrdata/table...
 // TODO lua_rawset/lua_rawset metatables
+// TODO error handling, call lua func...
