@@ -1,0 +1,12 @@
+
+src = [
+  'cmocka_test.c',
+  'ansic_stdarg_test.c',
+
+  'main.c'
+]
+
+env = Environment()
+env.AppendUnique(CPPPATH = ['./../'],
+                 CPPDEFINES = ['UNIT_TESTING'])
+env.Program('test', src, LIBS=['cmocka'], RPATH=['/usr/local/lib'])

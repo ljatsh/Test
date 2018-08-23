@@ -4,7 +4,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/lua/third/googletest-1.8.0/include",
-                "${workspaceFolder}/lua/third/lua-5.3.4/include"
+                "${workspaceFolder}/c/third/cmocka",
+                "${workspaceFolder}/c/src"
             ],
             "defines": [],
             "macFrameworkPath": [
