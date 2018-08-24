@@ -38,6 +38,15 @@ RUN cd /tmp \
 # install busted
 RUN luarocks install busted
 
+# install luv
+RUN apt-get install -y git g++ libtool \
+    && ln -s /usr/bin/libtoolize /usr/bin/libtool
+
+RUN git clone https://github.com/richardhundt/luv.git /tmp/luv \
+    && cd /tmp/luv \
+    && make \
+    && cp src/luv.so /usr/local/lib/lua/5.1
+
 RUN apt-get autoremove -y \
     && rm -fr /tmp/*
 
