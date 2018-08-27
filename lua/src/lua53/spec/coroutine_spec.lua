@@ -78,37 +78,34 @@ describe('coroutine', function()
 
   -- consumer runs on main loop
   it('scenario - producer and consumer 1', function()
-    local s = stub.new(io, 'read')
-
     local producer = coroutine.wrap(function()
-      local i = 1
-      while true do
-        if i <= 3 then
-          s.returns(i)
-        else
-          s.returns('quit')
-        end
-
-        coroutine.yield(io.read())
-        i = i + 1
-      end
+      repeat
+        local data = io.read()
+        if data == '' then break end
+        coroutine.yield(data)
+      until false
     end)
 
     local function consumer(prod)
       local t = {}
-      while true do
-        local data = prod()
 
-        if data == 'quit' then break end
-
+      for data in prod do
         t[#t + 1] = data
       end
 
       return t
     end
 
-    assert.are.same({1, 2, 3}, consumer(producer))
-    s:revert()  -- TODO stub affets other test case
+    local s = stub.new(io, 'read')
+    local i = 0
+    s.by_default.invokes(function()
+      i = i + 1
+      if i <= 3 then return tostring(i) end
+      return ''
+    end)
+    assert.are.same({'1', '2', '3'}, consumer(producer))
+
+    s:revert() -- TODO stub affets other test case
   end)
 
   -- producer runs on main loop
@@ -150,39 +147,17 @@ describe('coroutine', function()
 
   it('scenario - producer and consumer pattern', function()
     local producer = coroutine.wrap(function()
-      local s = stub.new(io, 'read')
-      local i = 1
-
-      while true do
-        if i <= 3 then
-          s.returns(tostring(i))
-        else
-          s.returns(nil)
-        end
-
-        coroutine.yield(io.read())
-
-        i = i + 1
-
-        if i >= 4 then
-          break
-        end
-      end
-
-      s:revert()
+      repeat
+        local data = io.read()
+        if data == '' then break end
+        coroutine.yield(data)
+      until false
     end)
 
     local function filter(prod)
       return coroutine.wrap(function()
         local i = 1
-
-        while true do
-          local data = prod()
-
-          if data == nil then
-            break
-          end
-
+        for data in prod do
           coroutine.yield(string.format('line %d:%s', i, data))
           i = i + 1
         end
@@ -190,31 +165,37 @@ describe('coroutine', function()
     end
 
     local function consumer(prod)
-      while true do
-        local data = prod()
-
-        if data == nil then break end
+      for data in prod do
         io.write(data, '\n')
       end
     end
 
+    local s = stub.new(io, 'read')
+    local i = 0
+    s.by_default.invokes(function()
+      i = i + 1
+      if i <= 3 then return tostring(i) end
+      return ''
+    end)
     local s2 = stub.new(io, 'write')
+
     consumer(filter(producer))
     assert.stub(s2).was.called(3)
     assert.stub(s2).was.called_with('line 1:1', '\n')
     assert.stub(s2).was.called_with('line 2:2', '\n')
     assert.stub(s2).was.called_with('line 3:3', '\n')
-
     s2:revert()
+    s:revert()
+  end)
+
+  -- Perfer generator iteration style(likes Python). Coroutine is a great tool for this concept.
+  it('iterator - generator', function()
+    local function generator(n)
+      for i=1, n do coroutine.yield(i * 2) end
+    end
+
+    local r = {}
+    for i in coroutine.wrap(generator), 3 do r[#r + 1] = i end
+    assert.are.same({2, 4, 6}, r)
   end)
 end)
-
---     function test_iterator()
---         local function test_func(n)
---             for i=1, n do coroutine.yield(i * 2) end
---         end
-
---         local result = {}
---         for i in coroutine.wrap(test_func), 3 do table.insert(result, i) end
---         test.assert_list_equal({2, 4, 6}, result)
---     end
