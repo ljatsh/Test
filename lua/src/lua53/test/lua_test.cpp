@@ -95,12 +95,16 @@ TEST_F(LuaTest, LuaTypeNumber) {
 }
 
 // only boolean itself canbe boolean
+// boolean is 1 or 0
 TEST_F(LuaTest, LuaTypeBoolean) {
   lua_pushboolean(L, 0);
   lua_pushinteger(L, 0);
 
   EXPECT_TRUE(lua_isboolean(L, 1));
   EXPECT_FALSE(lua_isboolean(L, 2));
+
+  lua_pushboolean(L, 2);
+  EXPECT_EQ(1, lua_toboolean(L, 3));
 }
 
 // string/integer/number canbe string
@@ -299,8 +303,64 @@ TEST_F(LuaTest, Clousure) {
   EXPECT_EQ(14, lua_tointeger(L, 6));     // 10 + 3 + 1
 }
 
+TEST_F(LuaTest, ThreadDataExchange) {
+  lua_State *L1 = lua_newthread(L);
+  EXPECT_NE(L, L1);
+  EXPECT_TRUE(lua_isthread(L, -1));
+  EXPECT_EQ(0, lua_gettop(L1));
+
+  lua_pushboolean(L1, 1);
+  lua_pushstring(L1, "ljatsh");
+  lua_newtable(L1);
+  lua_xmove(L1, L, 2);
+
+  EXPECT_EQ(1, lua_gettop(L1));
+  EXPECT_EQ(1, lua_toboolean(L1, 1));
+  EXPECT_EQ(3, lua_gettop(L));                // thread, 'ljatsh', {}
+  EXPECT_STRCASEEQ("ljatsh", lua_tostring(L, 2));
+  EXPECT_TRUE(lua_istable(L, 3));
+  EXPECT_EQ(0, luaL_len(L, 3));
+}
+
+TEST_F(LuaTest, ThreadResume) {
+  const char *s =
+  "function f(n)\n"
+  "  local v = 0\n"
+  "  for i=1, n do\n"
+  "    v = coroutine.yield(i * 2 + v) or 0\n"
+  "  end\n"
+  "  return v\n"
+  "end";
+  EXPECT_EQ(LUA_OK, lua_execute_string(L, s));
+
+  lua_State *L1 = lua_newthread(L);
+  EXPECT_EQ(LUA_TFUNCTION, lua_getglobal(L1, "f"));
+  lua_pushinteger(L1, 2);                               // f, 3
+  
+  EXPECT_EQ(LUA_YIELD, lua_resume(L1, L, 1));           // 1
+  EXPECT_EQ(1, lua_gettop(L1));
+  EXPECT_EQ(2, lua_tointeger(L1, 1));
+
+  // Manual suggests elements from last_resume should be cleared prior to next lua_resume(http://www.lua.org/manual/5.3/manual.html#lua_resume).
+  // However, it seems the results from last lua_resume can be processed correctly.
+  lua_pushinteger(L1, 2);                               // 1, 2
+  EXPECT_EQ(LUA_YIELD, lua_resume(L1, L, 1));           // 5(2*2 + 2)
+  EXPECT_EQ(1, lua_gettop(L1));
+  EXPECT_EQ(6, lua_tointeger(L1, 1));
+
+  lua_pushinteger(L1, 4);                               // 5, 4
+  EXPECT_EQ(LUA_OK, lua_resume(L1, L, 1));              // 4
+  EXPECT_EQ(1, lua_gettop(L1));
+  EXPECT_EQ(4, lua_tointeger(L1, 1));
+}
+
+TEST_F(LuaTest, ThreadResumeInC) {
+  //
+}
+
 // TODO usesrdata/lightuserdata/(registry and lua_state)
 // TODO lua_rawset/lua_rawset metatables
 // TODO error handling, call lua func...
 // Garbage collection, week table and reference mechanism
 // share upvalues in c functions (luaL_setfuncs)
+// yield from c continuations

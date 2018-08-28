@@ -51,53 +51,12 @@ class StackTest : public ::testing::Test {
   public:
     void SetUp() override {
       L = create_lua_engine();
-
-      // register C functions
-      // luaL_openlibs(_L);
-      // lua_pushcfunction(_L, simpleTest1);
-      // lua_setglobal(_L, "simpleTest1");
-
-      // ASSERT_EQ(0, luaL_loadfile(_L, "test.lua"));
-      // pcall(0, 0, 0);
     }
 
     virtual void TearDown() {
       ASSERT_TRUE(L != NULL);
       destroy_lua_engine(L);
     }
-
-    // void pcall(int args, int results, int msgh) {
-    //   int error = lua_pcall(_L, args, results, msgh);
-    //   const char* err_string = NULL;
-    //   if (error) {
-    //     err_string = lua_tostring(_L, -1);
-    //   }
-
-    //   ASSERT_EQ(LUA_OK, error) << err_string;
-    // }
-
-    // const char* getName() {
-    //   lua_getglobal(_L, "getName");
-
-    //   if (!lua_isfunction(_L, -1))
-    //     return NULL;
-
-    //   pcall(0, 1, 0);
-
-    //   if (lua_gettop(_L) != 1)
-    //     return NULL;
-
-    //   if (!lua_isstring(_L, -1))
-    //     return NULL;
-
-    //   const char* name = lua_tostring(_L, -1);
-    //   lua_pop(_L, -1);
-
-    //   return name;
-    // }
-  
-  protected:
-    
 
   protected:
     lua_State* L;
