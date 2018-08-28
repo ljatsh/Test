@@ -1,0 +1,10 @@
+
+
+env = Environment(SHLIBPREFIX = '')
+app = env.SharedLibrary('app',
+                     'app.c',
+                     CFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall'],
+                     LINKFLAGS = ['-fPIC'],
+                     LIBS = ['dl'])
+
+env.Install('/usr/local/lib/lua/5.1', app)
