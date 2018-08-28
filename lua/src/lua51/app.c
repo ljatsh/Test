@@ -47,8 +47,10 @@ run(lua_State *L) {
       last = current;
     }
 
-    usleep(10000);
-    delta += 10;
+    double now1 = now_time();
+    usleep(1000);
+    double now2 = now_time();
+    delta += now2 - now1;
   }
 
   return 0;
