@@ -2,6 +2,7 @@
 
 local luv = require('luv')
 local app = require('app')
+local hp = require('helper')
 
 describe('fiber', function()
   it('as coroutine', function()
@@ -13,6 +14,7 @@ describe('fiber', function()
       t.f(n)
 
       for i=1, n do
+        -- yield/resume behavior is different from coroutine
         --t.f(coroutine.yield(i * 2))
         t.f(luv.fiber.yield(i * 2))
       end
@@ -72,9 +74,12 @@ end)
 
 describe('net', function()
   it('scenario', function()
-    local host = luv.net.getaddrinfo("www.google.com")
+    local host, port = luv.net.getaddrinfo("www.google.com")
+    print(host, port)
     local sock = luv.net.tcp()
     print("conn:", sock:connect(host, 80))
+    print(hp.dump(sock:getsockname()))
+    print(hp.dump(sock:getpeername()))
     print("write:", sock:write("GET / HTTP/1.0\r\nHost: www.google.com\r\n\r\n"))
     print("read:", sock:read())
   end)
