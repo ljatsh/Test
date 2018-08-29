@@ -1,6 +1,7 @@
 
 
 env = Environment(SHLIBPREFIX = '')
+env.AppendUnique(CPPPATH = ['/usr/local/include/luajit-2.0'])
 app = env.SharedLibrary('app',
                      'app.c',
                      CFLAGS=['-g', '-O2', '-Wno-deprecated', '-Wall'],

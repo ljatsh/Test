@@ -10,12 +10,12 @@ RUN apt-get update \
 
 RUN apt-get install -y libncurses-dev
 
-# install lua
+# install luajit
 RUN cd /tmp \
-    && curl -fSL http://www.lua.org/ftp/lua-5.1.5.tar.gz -o lua-5.1.5.tar.gz --progress \
-    && tar xzf lua-5.1.5.tar.gz \
-    && cd lua-5.1.5 \
-    && make linux test \
+    && curl -fSL http://luajit.org/download/LuaJIT-2.0.5.tar.gz -o LuaJIT-2.0.5.tar.gz --progress \
+    && tar xzf LuaJIT-2.0.5.tar.gz \
+    && cd LuaJIT-2.0.5 \
+    && make \
     && make install
 
 # install luarocks
@@ -24,16 +24,9 @@ RUN cd /tmp \
     && tar xzf luarocks-${LUAROCKS_VERSION}.tar.gz \
     && cd luarocks-${LUAROCKS_VERSION} \
     && ./configure \
+        --with-lua-include=/usr/local/include/luajit-2.0 \
     && make build \
     && make install
-
-# install luasocket
-RUN cd /tmp \
-    && curl -fSL https://github.com/diegonehab/luasocket/archive/v3.0-rc1.zip -o luasocket.zip --progress \
-    && unzip luasocket.zip -d . \
-    && cd luasocket-3.0-rc1 \
-    && make -e LUAV=5.1 linux \
-    && make install test
 
 # install busted
 RUN luarocks install busted
