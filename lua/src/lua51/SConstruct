@@ -9,3 +9,4 @@ app = env.SharedLibrary('app',
                      LIBS = ['dl'])
 
 env.Install('/usr/local/lib/lua/5.1', app)
+env.Alias('install', '/usr/local/lib/lua/5.1')

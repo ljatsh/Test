@@ -28,8 +28,9 @@ RUN cd /tmp \
     && make build \
     && make install
 
-# install busted
-RUN luarocks install busted
+# install busted, lua-http-parser
+RUN luarocks install busted 
+RUN luarocks install lua-http-parser
 
 # install luv
 RUN apt-get install -y git g++ libtool \
@@ -40,8 +41,11 @@ RUN git clone https://github.com/ljatsh/luv.git /tmp/luv \
     && make \
     && cp src/luv.so /usr/local/lib/lua/5.1
 
-# install http-parser
-RUN luarocks install lua-http-parser
+# install lpack
+RUN git clone https://github.com/ljatsh/lpack.git /tmp/lpack \
+    && cd /tmp/lpack \
+    && export LUAJIT=1 \
+    && scons install
 
 RUN apt-get autoremove -y \
     && rm -fr /tmp/*

@@ -3,6 +3,7 @@ local sock = require('socket')
 local headers = require('http.header')
 local hreq = require('http.request')
 local hresp = require('http.response')
+local hurl = require('http.url')
 local lhp = require('http.parser')
 
 local M_ = {}
@@ -19,7 +20,6 @@ function M_.request(req, host, port)
     return nil, err
   end
 
-  print(tostring(req))
   local r, err = socket:write(tostring(req))
   if not r then
     return nil, err
@@ -39,6 +39,14 @@ function M_.request(req, host, port)
     on_headers_complete = function()
       response.status = parser:status_code()
       response.version_major, response.version_minor = parser:version()
+
+      print('on_headers_complete')
+
+      print(parser:method())
+
+      if req:method() == 'HEAD' then
+        finished = true
+      end
     end,
 
     on_body = function(body)
@@ -56,19 +64,28 @@ function M_.request(req, host, port)
   local data
   repeat
     count, data = socket:read()
-    if count == false or count == 0 then
+    print(count)
+    if count == false then
       -- for connection-close
       parser:execute('')
       break
     end
 
     parser:execute(data)
+
+    print(response)
+
+    if finished then
+      break
+    end
   until false
 
   if finished then
     response:set_data(table.concat(bodies, ''))
     return response
   end
+
+  print(string.format('%d %s %s', parser:error()))
 
   if data ~= nil then
     return nil, data
