@@ -40,6 +40,9 @@ RUN git clone https://github.com/ljatsh/luv.git /tmp/luv \
     && make \
     && cp src/luv.so /usr/local/lib/lua/5.1
 
+# install http-parser
+RUN luarocks install lua-http-parser
+
 RUN apt-get autoremove -y \
     && rm -fr /tmp/*
 

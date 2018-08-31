@@ -34,6 +34,28 @@ describe('fiber', function()
     assert.spy(t.f).was.called_with(6)
     assert.spy(t.f).was.called_with('done')
   end)
+
+  it('cond', function()
+    local t = {}
+    function t.f() end
+    spy.on(t, 'f')
+
+    local cond
+    local f1 = luv.fiber.create(function()
+      t.f()
+      cond = luv.cond.create()
+      t.f(cond:wait())
+    end)
+
+    f1:ready()
+    luv.sleep(0.001)
+    assert.spy(t.f).was.called(1)
+
+    cond:signal(true, 1, 'hello', {})
+    f1:join()
+    assert.spy(t.f).was.called(2)
+    assert.spy(t.f).was.called_with(true, 1, 'hello', {})
+  end)
 end)
 
 describe('timer', function()
