@@ -34,7 +34,7 @@ end
 --   if err ~= nil then break end
 -- end
 function parser:execute(data)
-  return 0, 'error', nil
+  return 'error', 0, nil
 end
 
 return parser

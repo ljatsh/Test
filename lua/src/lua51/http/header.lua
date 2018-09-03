@@ -5,7 +5,7 @@ local class = require('class')
 local header = class()
 
 --- useful headers
--- https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+-- see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers">Http Headers</a>
 -- @field Date
 -- @field Cache_Control
 -- @field Connection

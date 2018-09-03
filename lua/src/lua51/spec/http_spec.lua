@@ -1,7 +1,7 @@
 
-local hh = require('parser.http.header')
+local hh = require('http.header')
 -- local hreq = require('http.request')
-local hresp = require('parser.http.response')
+local hresp = require('http.response')
 local lhp = require('http.parser')
 local hp = require('helper')
 

@@ -1,7 +1,7 @@
 
 require('pack')
 local lhp = require('http.parser')
-local hurl = require('parser.http.url')
+local hurl = require('http.url')
 
 -- copied from Lua5.3
 describe('lpack', function()

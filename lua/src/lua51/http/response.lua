@@ -1,9 +1,9 @@
 
 --- http response
--- https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview
+-- see see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview">Http Overview</a>
 
 local class = require('class')
-local hh = require('parser.http.header')
+local hh = require('http.header')
 
 local http_status_msg = {
   [100] = "Continue",
