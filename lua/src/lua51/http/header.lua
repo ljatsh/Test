@@ -35,6 +35,7 @@ header.Host                           = 'Host'
 
 -- response headers
 header.Keep_Alive                     = 'Keep-Alive'
+header.Transfer_Encoding              = 'Transfer-Encoding'
 
 local hk = {}
 
