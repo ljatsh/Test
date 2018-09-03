@@ -15,8 +15,8 @@ if [ -d $pwd/tmp ]; then
 fi
 mkdir $pwd/tmp
 
-for i in stream stream_socket; do
-  cp $src/$i.lua $pwd/tmp
+for i in stream.lua stream_socket.lua parser; do
+  cp -r $src/$i $pwd/tmp/$i
 done;
 
 ldoc -d $doc $pwd/tmp

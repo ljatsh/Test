@@ -7,7 +7,10 @@ local function class(super)
   class_type.super = super
   class_type.new = function(...)
     local obj = {}
-    setmetatable(obj, {__index = _class[class_type]})
+    setmetatable(obj, {
+      __index = _class[class_type],
+      __tostring = function(self) return self:tostring() end
+    })
     do
       local create
       create = function(c, ...)
