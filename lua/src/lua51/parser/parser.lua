@@ -12,29 +12,28 @@ end
 function parser:reset()
 end
 
---- consume binary data and generates message if the message is alreay.
+--- consume 1 char and generates message if the message is alreay.
 -- If message is completed, execute should return.
--- @param data the binary data
+-- @param chr
 -- @return error: parse error
--- @return consumed length
--- @return message: if message was completed, execute should return at once.
+-- @return message: the completed message if it was ready
 -- @usage
 -- while true do
---   local err, len, m
+--   local err, m
 --   repeat
---     err, len, m = parser:execute(data)
---     if err ~= nil then break end
---     if m ~= nil then
---       print(m)
---     end
---     
---     if len == #data then break end
---     data = data:sub(len + 1)
+--    local data = stream:read()
+--    for i in 1, #data do
+--      err, m = parser:execute(data[i])
+--      if err then break end
+--      if m then print(m) end
+--    end
+--    if err then break end
+--    end)
 --   until false
 --   if err ~= nil then break end
 -- end
-function parser:execute(data)
-  return 'error', 0, nil
+function parser:execute(chr)
+  return 'error', nil
 end
 
 return parser

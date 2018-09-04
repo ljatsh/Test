@@ -3,78 +3,80 @@
 -- 4 bytes len + 1 byte version + msg
 
 local class = require('class')
-local parser = require('parser.paresr')
+local parser = require('parser.parser')
 require('pack')
 
 local parser_header = class(parser)
 
 local status = {
   HEAD = 1,
-  BODY = 2
+  BODY = 2,
+  ERROR = 3
 }
 
-function parser_header:ctor()
+function parser_header:ctor(version)
   self.status = status.HEAD
   self.datas = {}
-  self.size = 0
   self.body_size = 0
   self.off_set = 1
+  self.version = 1
+  self.data = ''
+  self.msg = nil
+
+  self.valid_version = version
+  assert (self.valid_version <= 255)
 end
 
 function parser_header:reset()
   self.status = status.HEAD
+  self.datas = {}
+  self.body_size = 0
 end
 
-function parser_header:execute(data)
-  self.datas[#self.datas + 1] = data
-  self.size = #data
+function parser_header:execute(chr)
+  assert (#chr == 1)
+
+  if self.status == status.ERROR then
+    return 'internal error', nil
+  end
+
+  self.datas[#self.datas + 1] = chr
 
   if self.status == status.HEAD then
-    if self.size >= 5 then
-      self.status = status.BODY
-      if #self.datas > 1 then
-        self.datas = {table.concat(self.datas)}
+    if #self.datas == 5 then
+      self.data = table.concat(self.datas)
+      self.datas = {}
+      self.offset, self.body_size, self.version = string.unpack(self.data, '>Ib')
+
+      -- version check
+      if self.version ~= self.valid_version then
+        self.status = status.ERROR
+        return 'incompatible version', nil
       end
 
-      off_set, self.body_size, version = string.unpack(self.datas[1], 'Ib', off_set)
-      self.size -= 5
-      -- TODO version check
+      self.status = status.BODY
     end
   end
 
   if self.status == status.BODY then
-    if self.size >= self.body_size then
-      self.status = self.HEAD
+    if #self.datas == self.body_size then
+      self.data = table.concat(self.datas)
+      self.datas = {}
+      self.offset, self.msg = string.unpack(self.data, string.format('A%d', self.body_size))
 
-      if #self.datas > 1 then
-        self.datas = {table.concat(self.datas)}
-      end
-
-      local msg
-      off_set, msg = string.unpack(self.datas[1], string.format('%dA', self.body_size), off_set)
-      self.size -= self.body_size
-      return nil, off_set, msg
+      self.status = status.HEAD
+      return nil, self.msg
     end
   end
 
-  return 'error', 0, nil
+  return nil, nil
 end
 
 --- pack data
 -- @param data the binary msg
 -- @return the binary msg with header ahead
 function parser_header:pack(data)
-  return string.pack('IbA', #data, 1, data)
+  return string.pack('>IbA', #data, self.valid_version, data)
 end
 
---- unpack data
--- @param the binary msg with header ahead
--- @return msg and version
-function parser_header:unpack(data)
-  local offset, size, version = string.unpack(data, 'Ib')
-  assert (offset == 6)
-
-  local msg = string.unpack(data, string.format('%dA', size), offset)
-
-  return msg, version
-end
+return parser_header
