@@ -2,6 +2,7 @@
 require('pack')
 local lhp = require('http.parser')
 local hurl = require('http.url')
+local hp = require('helper')
 
 -- copied from Lua5.3
 describe('lpack', function()
@@ -49,6 +50,10 @@ describe('lpack', function()
     -- zero-terminaled strings
     local s = string.pack('z', 'hello\0lua')
     assert.are.same({7, 'hello', n=2}, table.pack(string.unpack(s, 'z')))
+
+    -- strings
+    s = string.pack('AA', 'hello\0lua', 'ljatsh')
+    assert.are.same({16, 'hello\0lua', 'ljatsh', n=3}, table.pack(string.unpack(s, 'A9A6')))
 
     -- varialbe length string
     s = string.pack('p', 'hello, lua')

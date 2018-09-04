@@ -45,6 +45,7 @@ describe('fiber', function()
       t.f()
       cond = luv.cond.create()
       t.f(cond:wait())
+      t.f(cond:wait())
     end)
 
     f1:ready()
@@ -52,9 +53,14 @@ describe('fiber', function()
     assert.spy(t.f).was.called(1)
 
     cond:signal(true, 1, 'hello', {})
-    f1:join()
+    luv.sleep(0.001)
     assert.spy(t.f).was.called(2)
     assert.spy(t.f).was.called_with(true, 1, 'hello', {})
+
+    cond:signal(false)
+    f1:join()
+    assert.spy(t.f).was.called(3)
+    assert.spy(t.f).was.called_with(false)
   end)
 end)
 
