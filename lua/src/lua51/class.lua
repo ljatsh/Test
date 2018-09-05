@@ -7,9 +7,12 @@ local function class(super)
   class_type.super = super
   class_type.new = function(...)
     local obj = {}
+    local obj_str = tostring(obj)
     setmetatable(obj, {
       __index = _class[class_type],
-      __tostring = function(self) return self:tostring() end
+      __tostring = function(self)
+          return self:tostring()
+      end
     })
     do
       local create
@@ -24,6 +27,11 @@ local function class(super)
 
       create(class_type, ...)
     end
+
+    if obj.tostring == nil then
+      obj.tostring = function(self) return obj_str end
+    end
+
     return obj
   end
   local vtbl = {}
