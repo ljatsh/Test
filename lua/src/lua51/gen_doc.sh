@@ -15,7 +15,7 @@ if [ -d $pwd/tmp ]; then
 fi
 mkdir $pwd/tmp
 
-for i in stream.lua stream_socket.lua parser http; do
+for i in stream.lua stream_socket.lua parser http session*.lua; do
   cp -r $src/$i $pwd/tmp/$i
 done;
 
