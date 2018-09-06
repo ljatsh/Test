@@ -19,13 +19,13 @@ describe('session mgmt', function()
   end)
 
   it('initialization', function()
-    local s = session.new('127.0.0.1', 80, self.parser)
+    local s = session.new('127.0.0.1', 80, self.parser, self.sink)
     -- not a good test style, but it is useful
     assert.is.no_nil(s.socket)
     assert.are.same('127.0.0.1', s.socket.host)
     assert.are.same(80, s.socket.port)
     assert.are.equal(self.parser, s.parser)
-    assert.is_nil(s.sink)
+    assert.are.same(self.sink, s.sink)
     assert.are.equal(session.status.closed, s.status)
   end)
 
