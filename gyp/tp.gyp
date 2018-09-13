@@ -53,6 +53,37 @@
         'PRODUCT_BUNDLE_IDENTIFIER' : 'cn.gyp.tp-mac',
         'ASSETCATALOG_COMPILER_APPICON_NAME' : 'AppIcon'
       }
+    },
+    {
+      'target_name' : 'tp-ios',
+      'product_name' : 'tp-ios',
+      'type' : 'executable',
+      'mac_bundle' : 1,
+      'mac_bundle_resources' : [
+        'ios/Base.lproj/Main.storyboard',
+        'ios/Base.lproj/LaunchScreen.storyboard',
+        'ios/Assets.xcassets'
+      ],
+      'sources': [
+        'ios/AppDelegate.m',
+        'ios/ViewController.m',
+        'ios/main.m'
+      ],
+      'link_settings': {
+        'libraries': [
+           '$(SDKROOT)/System/Library/Frameworks/Foundation.framework',
+           '$(SDKROOT)/System/Library/Frameworks/UIKit.framework',
+        ],
+      },
+      'xcode_settings': {
+        'SDKROOT': 'iphoneos',
+        'CODE_SIGN_STYLE': 'Automatic',
+        'DEVELOPMENT_TEAM': 'X3HKBC92DN',
+        'CODE_SIGN_IDENTITY[sdk=iphoneos*]': 'iPhone Developer',
+        'INFOPLIST_FILE': 'ios/Info.plist',
+        'PRODUCT_BUNDLE_IDENTIFIER' : 'cn.gyp.tp-ios',
+        'ASSETCATALOG_COMPILER_APPICON_NAME' : 'AppIcon'
+      }
     }
   ]
 }
