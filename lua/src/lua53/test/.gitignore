@@ -1,1 +1,4 @@
 test
+liblua_engine.a
+libtest.os
+libtest.so

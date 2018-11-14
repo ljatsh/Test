@@ -358,6 +358,21 @@ TEST_F(LuaTest, ThreadResumeInC) {
   //
 }
 
+struct userdata_struct {
+  int age;
+  char name[24];
+};
+
+TEST_F(LuaTest, UserData) {
+  void* data = lua_newuserdata(L, sizeof(userdata_struct));
+  memset(data, 0, sizeof(userdata_struct));
+
+  EXPECT_EQ(1, lua_gettop(L));
+  EXPECT_TRUE(lua_isuserdata(L, 1));
+
+  EXPECT_EQ(data, lua_touserdata(L, 1));
+}
+
 // TODO usesrdata/lightuserdata/(registry and lua_state)
 // TODO lua_rawset/lua_rawset metatables
 // TODO error handling, call lua func...

@@ -92,15 +92,103 @@ split(lua_State *L) {
   return 1;
 }
 
+struct student {
+  int age;
+  char name[24];
+};
+
+const char* student_mt = "libtest.student";
+
+static int
+new_student(lua_State* L) {
+  int size = lua_gettop(L);
+  if (size > 2) {
+    luaL_error(L, "invalid parameters of new_student");
+    return 0;
+  }
+
+  int age = 0;
+  const char* name = NULL;
+  size_t length = 0;
+  if (size >= 1) {
+    age = luaL_checkinteger(L, 1);
+  }
+
+  if (size == 2) {
+    name = luaL_checklstring(L, 2, &length);
+  }
+
+  size_t max_length = sizeof(struct student);
+  struct student* s = (struct student*)lua_newuserdata(L, max_length);
+  memset(s, 0, max_length);
+  s->age = age;
+  memcpy(s->name, name, length > (max_length - 1) ? (max_length - 1) : length);
+
+  // set metatable
+  luaL_getmetatable(L, student_mt);
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
+static int
+student_age(lua_State* L) {
+  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
+  lua_pushinteger(L, s->age);
+
+  return 1;
+}
+
+static int
+student_set_age(lua_State* L) {
+  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
+  int age = luaL_checkinteger(L, 2);
+  s->age = age;
+
+  return 0;
+}
+
+static int
+student_name(lua_State* L) {
+  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
+  lua_pushstring(L, s->name);
+
+  return 1;
+}
+
+static int
+student_set_name(lua_State* L) {
+  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
+  size_t length = 9;
+  const char* name = luaL_checklstring(L, 2, &length);
+  memcpy(s->name, name, length > (sizeof(struct student) - 1) ? (sizeof(struct student) - 1) : length);
+
+  return 0;
+}
+
 static const struct luaL_Reg mylib[] = {
   {"sum", sum},
   {"map", map},
   {"split", split},
+  {"new_student", new_student},
+  {NULL, NULL}
+};
+
+static const struct luaL_Reg student_funcs[] = {
+  {"age", student_age},
+  {"set_age", student_set_age},
+  {"name", student_name},
+  {"set_name", student_set_name},
   {NULL, NULL}
 };
 
 int
 luaopen_libtest(lua_State *L) {
+  luaL_newmetatable(L, student_mt);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -2, "__index");
+  luaL_setfuncs(L, student_funcs, 0);
+
   luaL_newlib(L, mylib);
   return 1;
 }

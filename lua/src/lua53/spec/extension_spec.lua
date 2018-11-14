@@ -30,4 +30,25 @@ describe('extension', function()
     assert.are.same({'1', '3', '1 2', '4', ''}, self.test.split(' 1 ; 3 ; 1 2 ; 4;', ';'))
     assert.are.same({'1', '3', '1 2', '4', ''}, self.test.split(' 1 $$ 3 $$ 1 2 $$ 4$$', '$$'))
   end)
+
+  it('userdata', function()
+    local s = self.test.new_student()
+    assert.are.same(0, s:age())
+    assert.are.same('', s:name())
+
+    s:set_age(11)
+    s:set_name('ljatsh')
+    assert.are.same(11, s:age())
+    assert.are.same('ljatsh', s:name())
+
+    s = self.test.new_student(12)
+    assert.are.same(12, s:age())
+    assert.are.same('', s:name())
+
+    s = self.test.new_student(13, 'ljatsh')
+    assert.are.same(13, s:age())
+    assert.are.same('ljatsh', s:name())
+
+    assert.has.error.match(function() self.test.new_student(13, 'ljatsh', false) end, 'invalid parameters')
+  end)
 end)
