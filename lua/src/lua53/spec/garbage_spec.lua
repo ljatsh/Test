@@ -63,4 +63,48 @@ describe('garbage', function()
     assert.are.same('a', t[5])
     assert.is_nil(t[6])
   end)
+
+  it('finalizer - finalizer muste be a function', function()
+    -- we cannot use spy technology here
+    local collects = {}
+    local mt = {__gc = function(o) collects[#collects + 1] = tostring(o) end}
+
+    local a = setmetatable({}, mt)
+    local addr = tostring(a)
+    a = nil
+    local b = setmetatable({}, {__call = mt.__gc})
+    b = nil
+    collectgarbage()
+    assert.are.same({addr}, collects)
+  end)
+
+  -- At the end of each garbage-collection cycle, finalizers for userdata are called in reversed order
+  -- of their creation.
+  it('finalizer - called in reverse order', function()
+    local collects = {}
+    local mt = {__gc = function(o) collects[#collects + 1] = tostring(o) end}
+
+    local a = setmetatable({}, mt)
+    local b = setmetatable({}, mt)
+    local addr_a = tostring(a)
+    local addr_b = tostring(b)
+    a = nil
+    b = nil
+    collectgarbage()
+
+    assert.are.same({addr_b, addr_a}, collects)
+  end)
+
+  it('finalizer - resurrection', function()
+    -- local mt = {__gc = function(o) print('deallocates', o) end}
+
+    -- local a = setmetatable({}, mt)
+    -- print(a)
+    -- local b = setmetatable({a = a}, {__gc = function(o) print('reference', o.a) end})
+    -- print(b)
+
+    -- a = nil
+    -- b = nil
+    -- collectgarbage()
+  end)
 end)
