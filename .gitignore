@@ -12,3 +12,4 @@ package-lock.json
 *.sconsign.dblite
 
 doc/
+unix/out

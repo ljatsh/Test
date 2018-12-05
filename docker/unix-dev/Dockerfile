@@ -31,6 +31,14 @@ RUN cd /tmp \
 RUN luarocks install busted 
 RUN luarocks install luaposix
 
+# install gyp
+RUN apt-get install -y git python
+RUN apt-get install -y python-setuptools
+RUN git clone https://chromium.googlesource.com/external/gyp.git /tmp/gyp \
+    && cd /tmp/gyp \
+    && python setup.py install
+RUN apt-get install -y g++
+
 RUN apt-get autoremove -y \
     && rm -fr /tmp/*
 
