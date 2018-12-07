@@ -3,6 +3,8 @@
 #include <lauxlib.h>
 #include <stdio.h>
 
+#include <fcntl.h>
+
 // https://linux.die.net/man/3/tmpnam
 static int
 get_tmpfile_name(lua_State* L) {
@@ -27,5 +29,9 @@ static const struct luaL_Reg mylib[] = {
 int
 luaopen_test(lua_State *L) {
   luaL_newlib(L, mylib);
+
+  lua_pushinteger(L, O_ACCMODE);
+  lua_setfield(L, -2, "O_ACCMODE");
+
   return 1;
 }
