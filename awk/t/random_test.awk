@@ -1,10 +1,7 @@
 
 @include "util"
 
-# generate a random integer >=1 and <=n
-function rand_int(n) {
-  return int(n * rand()) + 1
-}
+# TODO random bridge hands?
 
 # choose k elements from array in order
 function choose(arr, n, k, ret,   i) {

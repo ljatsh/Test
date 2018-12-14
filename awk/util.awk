@@ -1,4 +1,10 @@
 
+
+# generate a random integer >=1 and <=n
+function rand_int(n) {
+  return int(n * rand()) + 1
+}
+
 # join.awk --- join an array into a string
 # https://www.gnu.org/software/gawk/manual/html_node/Join-Function.html#Join-Function
 function join(array, start, end, sep,   result, i) {
