@@ -26,6 +26,12 @@ RUN cd /tmp \
     && sed -i "s#PREFIX=/usr#PREFIX=/usr/local#g" Makefile \
     && make install
 
+# install bats
+RUN cd /tmp \
+    && git clone https://github.com/sstephenson/bats.git \
+    && cd bats \
+    && ./install.sh /usr/local
+
 RUN apt-get autoremove -y \
     && rm -r /usr/bin/awk \
     && ln -s /usr/local/bin/awk /usr/bin/awk \
