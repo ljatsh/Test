@@ -1,0 +1,6 @@
+Good Practice:
+
+1. Never allow a dot or writable directories in root’s $PATH. For more, see Recipe 14.9, “Finding World-Writable Directories in Your $PATH” and Recipe 14.10, “Adding the Current Directory to the $PATH.”
+
+TODO:
+(())  $ if (( $? )) ; then echo failed ; else echo OK; fi

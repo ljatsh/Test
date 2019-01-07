@@ -7,6 +7,7 @@ Table of Contents
 =================
 
 * [hexdump](#hexdump)
+* [read](#read)
 
 hexdump
 -------
@@ -34,3 +35,8 @@ hexdump
     2d 77 20 2f 6f 70 74 2f 64 65 76 20 5c 0a 6c 75 |-w /opt/dev \.lu|
     61 35 33 2d 64 65 76 3a 6c 61 74 65 73 74 0a    |a53-dev:latest.|
     ```
+
+read
+----
+
+* [read](http://man7.org/linux/man-pages/man1/read.1p.html)
