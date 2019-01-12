@@ -1,5 +1,6 @@
 
 #!/usr/bin/env bats
+# https://www.gnu.org/software/bash/manual/bash.html#Redirections
 
 load test_helper
 
@@ -53,3 +54,24 @@ load test_helper
   # [ $content ="lj@sh 35 man" ]
   # TODO how to check file content
 }
+
+# [n]<&digit-
+# moves file descriptor digit to n (default is the standard input), digit is closed after being duplicated to n
+@test "move file descriptor" {
+  # input
+  echo lj@sh 35 man > "$TMP"/test_redirection
+
+  read name age sex 4< "$TMP"/test_redirection <&4-
+  [ $name = lj@sh -a $age = 35 -a $sex = man ]
+
+  error=
+  read -u 4 name a  ge sex 4< "$TMP"/test_redirection <&4- || error=yes
+  [ $error = yes ]
+}
+
+# Tips
+# 1. redirect both standard output and standard error to file (TODO, i dont't know the reason, just remember it)
+#    a) &> f
+#    b) > f 2>& 1
+# 2. several specified files:
+#    /dev/stdin, /dev/stdout, /dev/stderr, /dev/null
