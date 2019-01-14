@@ -8,6 +8,10 @@ Table of Contents
 
 * [hexdump](#hexdump)
 * [read](#read)
+* [pwd](#pwd)
+* [ls](#ls)
+* [stat](#stat)
+* [file](#file)
 
 hexdump
 -------
@@ -39,4 +43,46 @@ hexdump
 read
 ----
 
-* [read](http://man7.org/linux/man-pages/man1/read.1p.html)
+* [man](http://man7.org/linux/man-pages/man1/read.1p.html)
+
+pwd
+---
+* [man](http://man7.org/linux/man-pages/man1/pwd.1.html)  
+* 选项:
+  * -L Display the logical current working directory
+  * -P Display the physical current working directory (all symbolic links are resolved)
+
+ls
+--
+
+* [man](http://man7.org/linux/man-pages/man1/ls.1.html)  
+  options:
+  * -d list directories themselves, not their contents
+  * -L show information about the linked file, rather than the symbolic link itself
+  * -F append indicator (one of */=>@|) to entries
+       a slash (/) indicates a directory, an asterisk (*) means the file is executable, an at sign (@) indicates a symbolic link, a percent sign (%) shows a whiteout, an equal sign (=) is a socket, and a pipe or vertical bar (|) is a FIFO.
+
+stat
+----
+
+* [man](http://man7.org/linux/man-pages/man1/stat.1.html)  
+  options:
+  * -c --format=FORMAT
+    * %a     access rights in octal (note '#' and '0' printf flags)
+    * %A     access rights in human readable form
+    * ...
+
+file
+----
+
+* [man](http://man7.org/linux/man-pages/man1/file.1.html)  
+  options:
+  * -i Causes the file command to output mime type strings rather than the more traditional human readable ones.  Thus it may sa ‘text/plain; charset=us-ascii’ rather than “ASCII text”.
+
+  ```bash
+    $ file -i file.c file /dev/{wd0a,hda}
+    file.c:      text/x-c
+    file:        application/x-executable
+    /dev/hda:    application/x-not-regular-file
+    /dev/wd0a:   application/x-not-regular-file
+  ```
