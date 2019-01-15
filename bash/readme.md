@@ -57,6 +57,7 @@ ls
 
 * [man](http://man7.org/linux/man-pages/man1/ls.1.html)  
   options:
+  * -C Force multi-column output; this is the default when output is to a terminal.
   * -d list directories themselves, not their contents
   * -L show information about the linked file, rather than the symbolic link itself
   * -F append indicator (one of */=>@|) to entries
@@ -102,9 +103,22 @@ find
     * -executable: matches files which are executable and directories which are searchable.
     * -type c: file is type of `c` (f regular file, d directory l symbolic link)
   * ACTIONS:
-    * -print|-print0: if file name contains unusual characters, you can consider -print0 action.
+    * -print|-print0:
+      if file name contains unusual characters, you can consider -print0 action.
+    * -exec command;:
+      Execute command; true if 0 status is returned.  All following arguments to find are taken to be arguments to the command until an argument consisting of `;' is encountered. The string '{}' is replaced by the current file name being processed everywhere it occurs in the arguments to the command, not just in arguments where it is alone, as in some versions of find.
+    * -exec command {} +: effects looks like xargs.
+    * -execdir command;: like -exec, but the sepecfied command is run from the subdirectory containing the matches file, which is not normally the directory in which you started find.
+    * -execdir command {} +:
+  * OPERATORS:
+    * expr1, expr2: both expr1 and expr2 are always evaluated. The value of expre1 is discarded, and the value of list is the value of expr2.
 
 * examples:
   * ```bash
     find /tmp -name core -type f -print | xargs /bin/rm -f
+
+    find . -type f -exec file '{}' \;
+
+    find / \( -perm -4000 -fprintf /root/suid.txt '%#m %u %p\n' \) , \
+       \( -size +100M -fprintf /root/big.txt '%-10s %p\n' \)
     ```
