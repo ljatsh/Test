@@ -75,8 +75,9 @@ stat
 file
 ----
 
-* [man](http://man7.org/linux/man-pages/man1/file.1.html)  
-  options:
+* [man](http://man7.org/linux/man-pages/man1/file.1.html)
+* There are 3 sets of tests to be performed in order, filesystem tests, magic tests and language tests.
+* options:
   * -i Causes the file command to output mime type strings rather than the more traditional human readable ones.  Thus it may sa ‘text/plain; charset=us-ascii’ rather than “ASCII text”.
 
   ```bash
@@ -86,3 +87,24 @@ file
     /dev/hda:    application/x-not-regular-file
     /dev/wd0a:   application/x-not-regular-file
   ```
+
+find
+----
+
+* [man](http://man7.org/linux/man-pages/man1/find.1.html)
+* find searchs for files in a directory hierarchy.
+  find [options] [starting-point...] [expression]
+* expression:
+  * TESTS:
+    * -name pattern: base of file name(the path with the leading directories removed) matches shell pattern `pattern`. Pattern should be enclosed in quotes under MacOS.
+    * -path pattern: file name matches shell patern `pattern`.
+    * -empty: file is empty and either a regular file or directory.
+    * -executable: matches files which are executable and directories which are searchable.
+    * -type c: file is type of `c` (f regular file, d directory l symbolic link)
+  * ACTIONS:
+    * -print|-print0: if file name contains unusual characters, you can consider -print0 action.
+
+* examples:
+  * ```bash
+    find /tmp -name core -type f -print | xargs /bin/rm -f
+    ```
