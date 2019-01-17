@@ -11,6 +11,7 @@ load test_helper
 # 1. output(or and standard error) of command1 is connected via a pipe to the input of command2.
 #    This connection is performed before any redirections specified by the command
 # 2. exit status of the pipe command is the exit status of the last command
+# 3. commands are executed in sub shells
 @test "pipe command" {
   echo "lj@sh lj@xa" | grep "lj@sh" > /dev/null
   ! echo "lj@sh lj@xa" | grep "lj@usa" > /dev/null
@@ -50,4 +51,9 @@ load test_helper
 
 }
 
+# (list) list commands are executed in sub shell
+# { list; } The braces are actually reserved words, so they must be surrounded by white space. Also, the trailing semicolon is required before the closing space.
+@test "grouping commands" {
+
+}
 

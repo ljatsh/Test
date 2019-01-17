@@ -24,4 +24,15 @@ load test_helper
   # TODO multiple line tests
 }
 
+# tail can be used to skip header
+@test "test_skip_header" {
+  for i in 2 3 4 5; do
+    content=$(printf "line1\nline2\nline3\nline4\nline5\n" | tail -n +$i | awk 'NR==1 {print}')
+    [ $content = line$i ]
+  done
+}
 
+@test "test_swaping_stdout_and_stderr" {
+  #TODO
+  #command 3>&1 1> stdout.logfile 2>3&- | tee -a stderr.logfile
+}

@@ -26,7 +26,8 @@ load test_helper
   echo lj@sh 35 man > "$TMP"/test_redirection
   echo lj@xa 24 man >> "$TMP"/test_redirection
 
-  # TODO how to check file content?
+  [ "$(awk 'NR==1 {print}' < "$TMP"/test_redirection )" = "lj@sh 35 man" ]
+  [ "$(awk 'NR==2 {print}' < "$TMP"/test_redirection )" = "lj@xa 24 man" ]
 }
 
 # [n]<&word - duplicate input file descriptor
@@ -37,6 +38,7 @@ load test_helper
 # 1. if word is digits, n is a copy of the file descriptor(must be opened for writing)
 # 2. is word is -. n is closed
 # 3. default value of n is 1(the standard output)
+# 4. >& file or &> file is a shortcut that simply send both STDOUT and STDERR to the same place
 @test "duplicate file descriptor" {
   # input
   echo lj@sh 35 man > "$TMP"/test_redirection
@@ -49,10 +51,9 @@ load test_helper
   [ $error = yes ]
 
   # output
-  echo lj@sh 35 man 4> "$TMP"/test_redirection >&4
-  # content=$(cat "$TMP"/test_redirection)
-  # [ $content ="lj@sh 35 man" ]
-  # TODO how to check file content
+  echo lj@sh 35 man 4> "$TMP"/test_redirection >& 4
+  content=$(< "$TMP"/test_redirection)
+  [ "$content" = "lj@sh 35 man" ]
 }
 
 # [n]<&digit-

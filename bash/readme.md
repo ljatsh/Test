@@ -12,6 +12,8 @@ Table of Contents
 * [ls](#ls)
 * [stat](#stat)
 * [file](#file)
+* [tail](#tail)
+* [tee](#tee)
 
 hexdump
 -------
@@ -122,3 +124,24 @@ find
     find / \( -perm -4000 -fprintf /root/suid.txt '%#m %u %p\n' \) , \
        \( -size +100M -fprintf /root/big.txt '%-10s %p\n' \)
     ```
+
+tail
+----
+
+* [man](http://man7.org/linux/man-pages/man1/tail.1p.html)
+* options:
+  -n number: + ---> Relative to the beginning of the file; - or none ---> Relative to the end of the file
+  -f: dont't stop after the last line of the input file have been copied
+* tail can be used to skip file header(see test_skip_header) (TODO: code snippets)
+
+tee
+---
+
+* [man](http://man7.org/linux/man-pages/man1/tee.1p.html)
+* options:
+  * -a: Append the output to the files rather than overwriting them.
+* tee is useful to detect what's happending between two commands in a pipe
+
+  ```bash
+    command1 | tee data.txt | command2
+  ```
