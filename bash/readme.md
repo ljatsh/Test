@@ -46,6 +46,9 @@ read
 ----
 
 * [man](http://man7.org/linux/man-pages/man1/read.1p.html)
+* options:
+  -p: print a prompt string before reading the input
+  -r: backslash will not be treaed as escape character
 
 pwd
 ---

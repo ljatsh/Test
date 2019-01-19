@@ -70,6 +70,28 @@ load test_helper
   [ $error = yes ]
 }
 
+# [n]<<-word
+#		here document
+# world
+# - means formatted here document, all leading tabs in here documented are stripped, and the terminator can have tabs prefix. Otherwise, the terminator must be at the beginning of the new line.
+# enclose word in quotes is the preferred style, otherwise, the here document would be expanded.
+@test "here document" {
+  var=$(head -n 1 <<'EOF'
+	line1  
+	line2
+EOF
+)
+  [ "$var" = '	line1  ' ]
+
+  var=$(head -n 1 <<-'EOF'
+		line1
+		line2
+		EOF
+	)
+
+  [ "$var" = 'line1' ]
+}
+
 # Tips
 # 1. redirect both standard output and standard error to file (TODO, i dont't know the reason, just remember it)
 #    a) &> f

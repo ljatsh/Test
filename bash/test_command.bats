@@ -11,7 +11,7 @@ load test_helper
 # 1. output(or and standard error) of command1 is connected via a pipe to the input of command2.
 #    This connection is performed before any redirections specified by the command
 # 2. exit status of the pipe command is the exit status of the last command
-# 3. commands are executed in sub shells
+# 3. commands are executed in sub shells, and they don't have to run sequentially
 @test "pipe command" {
   echo "lj@sh lj@xa" | grep "lj@sh" > /dev/null
   ! echo "lj@sh lj@xa" | grep "lj@usa" > /dev/null
@@ -20,7 +20,7 @@ load test_helper
 }
 
 # 1. command; command; ...
-#    command are executed in sequence, exit status is the last command executed
+#    command are executed in sequence, exit status is the last command executed (every command will be executed regardless of the exist status of last command)
 # 2. command1 && command2
 #    command2 is executed if and only if exit status of command1 is 0, the final exit status is the result of command2
 # 3. command1 || command2
