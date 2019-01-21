@@ -9,7 +9,7 @@ load test_helper
 
 # command substituion
 # $(command) or `command`
-# The $( ) encloses a command that is run in a subshell. The output from that command is substituted in place of the $( ) phrase. Newlines in the output are replaced with a space character(see #IFS)
+# The $( ) encloses a command that is run in a subshell. The output from that command is substituted in place of the $( ) phrase. Trailing newline in the output are replaced with a space character(see #IFS)
 # $() is preferred than ``
 @test "command substituion" {
   [ $(echo a) = a ]

@@ -11,6 +11,7 @@ load test_helper
 }
 
 # printf format [arguments ...]
+# Always to quotes variable reference, there are strange issues if the variable contains blanks
 @test "test_printf" {
   # the trailing newline was removed by command substitution
   r=$(printf "%s=%d\n" lj@sh 50)
