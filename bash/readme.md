@@ -30,7 +30,7 @@ hexdump
     ```
   * 自定义格式
     ```bash
-    hexdump  -e '16/1 "%02x " " |"' -e '16/1 "%_p" "|"  "\n"'  create_docker.sh 
+    hexdump  -e '16/1 "%02x " " |"' -e '16/1 "%_p" "|"  "\n"'  create_docker.sh  
 
     23 21 2f 62 69 6e 2f 62 61 73 68 0a 0a 64 69 72 |#!/bin/bash..dir|
     3d 24 28 63 64 20 60 64 69 72 6e 61 6d 65 20 24 |=$(cd `dirname $|
@@ -52,6 +52,7 @@ read
 
 pwd
 ---
+
 * [man](http://man7.org/linux/man-pages/man1/pwd.1.html)  
 * 选项:
   * -L Display the logical current working directory
