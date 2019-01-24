@@ -37,7 +37,15 @@ EOF
 	mono "$TEST_EXE" || { echo "failed to check MDK"; exit 1; }
 }
 
-install_mono
-check_mono
+install_dotnet() {
+  brew cask list dotnet-sdk >/dev/null 2>&1
+
+  if [ $? -ne 0 ]; then
+    # version is dotnet-sdk-2.2.103-osx-x64.pkg when I install it on mac
+    brew cask install dotnet-sdk || { echo "failed to install dotnet-sdk by brew"; exit 1; };
+  fi
+}
+
+install_dotnet
 
 exit 0
