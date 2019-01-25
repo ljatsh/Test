@@ -37,8 +37,27 @@ load test_helper
 # 3. for ...
 
 @test "looping constructs" {
-  # mkdir "$TMP"/looping
-  # touch "$TMP"/looping/1 "$TMP"/looping/3 "$TMP"/looping/3
+  # test arithmetic expression 
+  OUT_VALUE=
+  while (( (TEST_VALUE += 1) <= 3)); do
+    OUT_VALUE=${OUT_VALUE}${TEST_VALUE}\;
+  done
+
+  [ $OUT_VALUE = "1;2;3;" ]
+
+  # test read
+  OUT_VALUE=
+  while read STATUS FILE; do
+    if [ $STATUS = M ]; then OUT_VALUE="${OUT_VALUE} $FILE"; fi
+  done <<'EOF'
+! file1.txt
+M file2.txt
+M file3.txt
+D file4.txt
+A file5.txt
+EOF
+
+  [ "$OUT_VALUE" = " file2.txt file3.txt" ]
 }
 
 # if test-command; then
@@ -47,8 +66,24 @@ load test_helper
 #   more-consequends;]
 # [else alternate-consequends;]
 # fi
-@test "conditional constucts" {
 
+# [ equivalents to test
+# (()) equivalents let "expression"
+
+test_conditional_constructs_let() {
+  if (($1 < 10)); then echo "<"; else echo ">="; fi
+}
+
+test_conditional_constructs_simple_form() {
+  (($1 < 10)) && { echo "<"; exit 0; } || { echo ">="; exit 1; }
+}
+
+@test "conditional constucts" {
+  [ $(test_conditional_constructs_let 9) = "<" ]
+  [ $(test_conditional_constructs_let 10) = ">=" ]
+
+  [ $(test_conditional_constructs_simple_form 9) = "<" ]
+  [ $(test_conditional_constructs_simple_form 10) = ">=" ]
 }
 
 # (list) list commands are executed in sub shell

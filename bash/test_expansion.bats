@@ -117,3 +117,32 @@ test_prameter_expansion() {
   [ ${PEOPLE[lj@sh]} -eq 35 ]
   [ ${PEOPLE[lj@xa]} -eq 22 ]
 }
+
+# $(())
+# 1. Variable in (()) needs no dollar sign, except for positional parameter
+# 2. White spaces can be used to format expression any where
+# 3. Other expansions occur prior to arithmetic evaluation
+# let expression [expression ...]
+# 1. No white spaces can be allowed arround operators in expression
+# 2. If the last expression evaluates to 0, let returns 1; otherwise 0 is returned.
+# 3. let "expression" equivalents to (()), it is often used in conditional construction
+@test "test arithmetic expansion" {
+  # default value
+  unset ARITHMETIC_VALUE
+  [ $((ARITHMETIC_VALUE)) -eq 0 ]
+  [ $((ARITHMETIC_VALUE)) = 0 ]
+
+  ARITHMETIC_VALUE=5
+  [ $((ARITHMETIC_VALUE * 2)) -eq 10 ]
+  [ $((ARITHMETIC_VALUE ** 2)) -eq 25 ]
+
+  [ $(( $(echo 5) * ARITHMETIC_VALUE)) -eq 25 ]
+
+  ARITHMETIC_VALUE=$((ARITHMETIC_VALUE += 3))
+  [ $ARITHMETIC_VALUE = 8 ]
+
+  # let
+  let ARITHMETIC_VALUE+=2 ARITHMETIC_VALUE2=3
+  [ $ARITHMETIC_VALUE = 10 ]
+  [ $ARITHMETIC_VALUE2 = 3 ]
+}
