@@ -34,7 +34,12 @@ load test_helper
 #    execute consequend-commands until exit status of test-command is non 0, final exit status if the result of last executed consequend-command
 # 2. while test-command; to consequend-commands; done
 #    execute consequend-commands as long as test-command has an exit status of 0, final exit status if the last executed consequend-command
-# 3. for ...
+# 3. for name [ [in [words ...]]; ] do commands; done
+#    if 'in words' is not presend, 'in "$@"' is assumed
+#    the return status is the exit status of the last executed command
+#    for ((expr1; expr2; expr3)); do commands; done
+#    all three expressions are arithmetic expressions
+#    the return status is the exit status of the last executed command
 
 @test "looping constructs" {
   # test arithmetic expression 
@@ -58,6 +63,28 @@ A file5.txt
 EOF
 
   [ "$OUT_VALUE" = " file2.txt file3.txt" ]
+
+  # test for
+  OUT_VALUE=
+  for v in a b c; do
+    OUT_VALUE=$OUT_VALUE_$v\;
+  done
+
+  [ $OUT_VALUE = "_a;_b;_c;" ]
+
+  set -- e f g
+  for v do
+    OUT_VALUE=$OUT_VALUE_$v\;
+  done
+
+  [ $OUT_VALUE = "_e;_f;_g;" ]
+
+  OUT_VALUE=
+  for ((i=1; i<=3; i++)); do
+    OUT_VALUE=$OUT_VALUE_$i\;
+  done
+
+  [ $OUT_VALUE = "_1;_2;_3;" ]
 }
 
 # if test-command; then

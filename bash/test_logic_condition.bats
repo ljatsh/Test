@@ -9,6 +9,7 @@ load test_helper
 # -f file True if file exists and is a regular file
 # -h file True if file exists and is a symbolic link
 # -x file True if file exists and is executable
+# -t file descriptor. True if the file whose file descriptor number is file descriptor is open and is associated with a terminal.
 @test "file status test" {
   [ -d "$TMP" ]
 

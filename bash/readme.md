@@ -14,6 +14,7 @@ Table of Contents
 * [file](#file)
 * [tail](#tail)
 * [tee](#tee)
+* [seq](#seq)
 
 hexdump
 -------
@@ -148,4 +149,17 @@ tee
 
   ```bash
     command1 | tee data.txt | command2
+  ```
+
+seq
+---
+
+* [man](http://man7.org/linux/man-pages/man1/seq.1.html)
+* options:
+  * -s, --separator=STRING  
+  use STRING to separate numbers (default: \n)
+* seq can be used to loop floating points
+
+  ```bash
+  seq 1.0 0.1 1.5 | while read v; do commands; done
   ```
