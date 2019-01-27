@@ -69,3 +69,33 @@ items
   IL_0010: call [nunit.framework]NUnit.Framework.Constraints.EqualConstraint [nunit.framework]NUnit.Framework.Is::EqualTo([System.Runtime]System.Object)
   IL_0015: call void [nunit.framework]NUnit.Framework.Assert::That(mvar, [nunit.framework]NUnit.Framework.Constraints.IResolveConstraint)
   ```
+
+* readonly
+  * runtime constant
+
+  ```csharp
+  public static readonly string WHERE = "xa";
+  public readonly DateTime BIRTHDAY = new DateTime(1984, 2, 22);
+
+  .field public static initonly string WHERE
+  .field public initonly [System.Runtime]System.DateTime BIRTHDAY
+
+  Assert.That(Constant.WHERE, Is.EqualTo("xa"));
+  Assert.That(v.BIRTHDAY.Year, Is.EqualTo(1984));
+
+  IL_0055: nop
+  IL_0056: ldsfld string Tests.Constant::WHERE
+  IL_005b: ldstr "xa"
+  IL_0060: call [nunit.framework]NUnit.Framework.Constraints.EqualConstraint [nunit.framework]NUnit.Framework.Is::EqualTo([System.Runtime]System.Object)
+  IL_0065: call void [nunit.framework]NUnit.Framework.Assert::That(mvar, [nunit.framework]NUnit.Framework.Constraints.IResolveConstraint)
+  IL_006a: nop
+  IL_006b: ldloc.0
+  IL_006c: ldfld [System.Runtime]System.DateTime Tests.Constant::BIRTHDAY
+  IL_0071: stloc.1
+  IL_0072: ldloca.s V_1
+  IL_0074: call instance int32 [System.Runtime]System.DateTime::get_Year()
+  IL_0079: ldc.i4 1984
+  IL_007e: box System.Int32
+  IL_0083: call [nunit.framework]NUnit.Framework.Constraints.EqualConstraint [nunit.framework]NUnit.Framework.Is::EqualTo([System.Runtime]System.Object)
+  IL_0088: call void [nunit.framework]NUnit.Framework.Assert::That(mvar, [nunit.framework]NUnit.Framework.Constraints.IResolveConstraint)
+  ```
