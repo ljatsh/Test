@@ -4,6 +4,7 @@ Table of Contents
 * [dev environment](#dev_env)
 * [ildsam](#ildsam)
 * [items](#items)
+* [todo](#todo)
 
 dev_env
 -------
@@ -99,3 +100,8 @@ items
   IL_0083: call [nunit.framework]NUnit.Framework.Constraints.EqualConstraint [nunit.framework]NUnit.Framework.Is::EqualTo([System.Runtime]System.Object)
   IL_0088: call void [nunit.framework]NUnit.Framework.Assert::That(mvar, [nunit.framework]NUnit.Framework.Constraints.IResolveConstraint)
   ```
+
+todo
+----
+
+* [il assembly language](https://www.codeproject.com/Articles/3778/Introduction-to-IL-Assembly-Language)
