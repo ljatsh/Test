@@ -9,6 +9,28 @@ class SomeClassWithConstant {
   public readonly int MAX_AGE = 100;
 }
 
+struct ValueMethod {
+  private float field1;
+  private int field2;
+}
+
+class ClassMethod {
+  private float field1 = 1.0f;
+  private int field2;
+  private string field3;
+
+  private ValueMethod field4;
+
+  public ClassMethod() {
+    field2 = 1;
+    field3 = "lj@sh";
+  }
+
+  public ClassMethod(int field2): this() {
+    this.field2 = field2;
+  }
+}
+
 class cp4 {
   class Employ {}
 

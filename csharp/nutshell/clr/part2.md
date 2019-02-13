@@ -1,7 +1,6 @@
 Table of Contents
 =================
 
-* [Type Fundamentals](1_tf)
 * [Type Fundamentals](#1_tf)
   * [Casting Between Types](#1_cbt)
 * [Primitives, Reference and Value Types](#2_prvt)
@@ -9,6 +8,9 @@ Table of Contents
   * [Value Types](#2_vt)
 * [Consts and Fields](#4_caf)
   * [Constant](#4_c)
+* [Methods](#5_m)
+  * [Constructor and Class](#Constructor and Class)
+  * [Constructor and Value](#Constructor and Value)
 
 1_tf
 ----
@@ -252,3 +254,77 @@ dynamic | System.Object | Yes | tbd
     IL_0011: ret
   } // End of method System.Void part2.cp4::TestConstant()
 ```
+
+Constructor and Class
+---------------------
+
+* Initializers are executed first
+* Base class constructor is then executed later
+* Constructor logic is excuted lately
+* this() is preferred to called to avoid instruction duplicates
+
+```csharp
+  class ClassMethod {
+    private float field1 = 1.0f;
+    private int field2;
+    private string field3;
+
+    public ClassMethod() {
+      field2 = 1;
+      field3 = "lj@sh";
+    }
+
+    public ClassMethod(int field2): this() {
+      this.field2 = field2;
+    }
+  }
+
+  .class private auto ansi beforefieldinit part2.ClassMethod extends [System.Runtime]System.Object
+  {
+    .field private single field1
+    .field private int32 field2
+    .field private string field3
+
+    .method public hidebysig specialname rtspecialname instance void .ctor() cil managed
+    {
+      // Code size 38
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: ldc.r4 1
+      IL_0006: stfld single part2.ClassMethod::field1
+      IL_000b: ldarg.0
+      IL_000c: call instance void [System.Runtime]System.Object::.ctor()
+      IL_0011: nop
+      IL_0012: nop
+      IL_0013: ldarg.0
+      IL_0014: ldc.i4.1
+      IL_0015: stfld int32 part2.ClassMethod::field2
+      IL_001a: ldarg.0
+      IL_001b: ldstr "lj@sh"
+      IL_0020: stfld string part2.ClassMethod::field3
+      IL_0025: ret
+    } // End of method System.Void part2.ClassMethod::.ctor()
+
+    .method public hidebysig specialname rtspecialname instance void .ctor(int32 field2) cil managed
+    {
+      // Code size 16
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: call instance void part2.ClassMethod::.ctor()
+      IL_0006: nop
+      IL_0007: nop
+      IL_0008: ldarg.0
+      IL_0009: ldarg.1
+      IL_000a: stfld int32 part2.ClassMethod::field2
+      IL_000f: ret
+    } // End of method System.Void part2.ClassMethod::.ctor(System.Int32)
+  } // End of class part2.ClassMethod
+```
+
+Constructor and Value
+---------------------
+
+* C# does not generate parameterless constructor, and parameterless constructor is forbidden in C#
+* Intializer is not allowed
+* Value type fields are guaranteed to be 0, if the value type is nested in reference type
+* Stack-based value fields are not guaranteed to be 0, you should call parameterless constructor explicitly to guarantee it

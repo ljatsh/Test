@@ -22,9 +22,8 @@ ildsam
 
 * [install](https://www.nuget.org/packages/dotnet-ildasm/)
 * [ildsam reference](https://docs.microsoft.com/en-us/dotnet/framework/tools/ildasm-exe-il-disassembler)
+* [CIL Instructions](https://en.wikipedia.org/wiki/List_of_CIL_instructions)
+* [il assembly language](https://www.codeproject.com/Articles/3778/Introduction-to-IL-Assembly-Language)
 
 todo
 ----
-
-* [CIL Instructions](https://en.wikipedia.org/wiki/List_of_CIL_instructions)
-* [il assembly language](https://www.codeproject.com/Articles/3778/Introduction-to-IL-Assembly-Language)
