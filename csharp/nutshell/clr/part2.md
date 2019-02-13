@@ -1,24 +1,26 @@
 Table of Contents
 =================
 
-* [Type Fundamentals](#1_tf)
-  * [Casting Between Types](#1_cbt)
-* [Primitives, Reference and Value Types](#2_prvt)
-  * [Primitives](#2_p)
-  * [Value Types](#2_vt)
-* [Consts and Fields](#4_caf)
-  * [Constant](#4_c)
-* [Methods](#5_m)
-  * [Constructor and Class](#Constructor and Class)
-  * [Constructor and Value](#Constructor and Value)
+* [Type Fundamentals](#type-fundamentals)
+  * [Casting Between Types](#casting-between-types)
+* [Primitives, Reference and Value Types](#primitives-reference-and-value-types)
+  * [Primitives](#primitives)
+  * [Value Types](#value-types)
+* [Consts and Fields](#consts-and-fields)
+  * [Constant](#constant)
+* [Methods](#methods)
+  * [Constructor and Class](#constructor-and-class)
+  * [Constructor and Value](#constructor-and-value)
 
-1_tf
-----
+Type Fundamentals
+-----------------
 
 1. All types are derived from System.Object
 
-1_cbt
------
+[Back to TOC](#table-of-contents)
+
+Casting Between Types
+---------------------
 
 ```csharp
   // 1. Prefer is/as than ()
@@ -70,8 +72,15 @@ Table of Contents
   } // End of method System.Void part2.cp4::TestTypeCast()
 ```
 
-2_p
----
+[Back to TOC](#table-of-contents)
+
+Primitives, Reference and Value Types
+------------------------------------
+
+[Back to TOC](#table-of-contents)
+
+Primitives
+----------
 
 ```csharp
   // 1. Primitive Type is just an alias in c#. Every primitive type maps to one FCL type.
@@ -150,8 +159,10 @@ string | System.String | Yes | An array of characters
 object | System.Object | Yes | Base type of all types
 dynamic | System.Object | Yes | tbd
 
-2_vt
-----
+[Back to TOC](#table-of-contents)
+
+Value Types
+-----------
 
 * Value type considerations:
   * The type doesn’t need to inherit from any other type.
@@ -198,11 +209,15 @@ dynamic | System.Object | Yes | tbd
   } // End of method System.Void part2.cp4::TestValueTypeAndReferenceType()
 ```
 
-4_caf
------
+[Back to TOC](#table-of-contents)
 
-4_c
----
+Consts and Fields
+-----------------
+
+[Back to TOC](#table-of-contents)
+
+Constant
+--------
 
 ```csharp
   // 1. constant is evaluated at compile time.
@@ -254,6 +269,11 @@ dynamic | System.Object | Yes | tbd
     IL_0011: ret
   } // End of method System.Void part2.cp4::TestConstant()
 ```
+
+[Back to TOC](#table-of-contents)
+
+Methods
+-------
 
 Constructor and Class
 ---------------------
@@ -321,6 +341,8 @@ Constructor and Class
   } // End of class part2.ClassMethod
 ```
 
+[Back to TOC](#table-of-contents)
+
 Constructor and Value
 ---------------------
 
@@ -328,3 +350,5 @@ Constructor and Value
 * Intializer is not allowed
 * Value type fields are guaranteed to be 0, if the value type is nested in reference type
 * Stack-based value fields are not guaranteed to be 0, you should call parameterless constructor explicitly to guarantee it
+
+[Back to TOC](#table-of-contents)
