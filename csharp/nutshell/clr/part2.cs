@@ -1,8 +1,29 @@
-
 using System;
 using System.Collections;
 
 namespace part2 {
+
+class ClassMethodCalling {
+  public int Method1(int i) { return i + 1; }
+
+  public virtual int Method2(int i) { return i + 2; }
+
+  public static int Method3(int i) { return i + 3; }
+
+  public override String ToString() {
+    return base.ToString();
+  }
+}
+
+struct ValueMethodCalling {
+  public int Method1(int i) { return i + 1; }
+
+  public static int Method3(int i) { return i + 3; }
+
+  public override String ToString() {
+    return base.ToString();
+  }
+}
 
 class SomeClassWithConstant {
   public const int AGE = 10;
@@ -101,6 +122,21 @@ class cp4 {
     c.Add(x);
 
     SomeValue y = (SomeValue)c[0];
+  }
+
+  static void TestMethodCalling() {
+    ClassMethodCalling v1 = new ClassMethodCalling();
+    v1.Method1(1);
+    v1.Method2(2);
+    v1.ToString();
+    ClassMethodCalling.Method3(3);
+
+    ValueMethodCalling v2 = new ValueMethodCalling();
+    v2.Method1(1);
+    ValueType v3 = v2;
+    v3.ToString();
+    v2.ToString();
+    ValueMethodCalling.Method3(3);
   }
 
   // 1. constant is evaluated at compile time.

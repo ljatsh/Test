@@ -6,6 +6,8 @@ Table of Contents
 * [Primitives, Reference and Value Types](#primitives-reference-and-value-types)
   * [Primitives](#primitives)
   * [Value Types](#value-types)
+* [Type and Member Basics](#type-and-member-basics)
+  * [How CLR Calls Methods](#how-clr-calls-methods)
 * [Consts and Fields](#consts-and-fields)
   * [Constant](#constant)
 * [Methods](#methods)
@@ -210,6 +212,134 @@ Value Types
 ```
 
 [Back to TOC](#table-of-contents)
+
+Type and Member Basics
+----------------------
+
+How CLR Calls Methods
+---------------------
+
+1. Base.ToString in Class Type generates call instruction
+2. Base.ToString in Value Type results in boxing. So avoid to call base method while override virtual methods.
+3. Non-Virtual method calling in Class Type generates callvirt instruction(null pointer check in C#)
+4. Non-Virtual method calling in Value type generates call instruction
+5. Base root class is the operand of callvirt instruction. (Derived.ToString() == Object.ToString())
+6. "Finally, if you were to call a value type’s virtual method virtually, the CLR would need to have a reference to the
+   value type’s type object in order to refer to the method table within it. This requires boxing the value type".
+   I cannot validate this conclusion in .net core 2.2.
+
+```csharp
+  class ClassMethodCalling {
+    public int Method1(int i) { return i + 1; }
+
+    public virtual int Method2(int i) { return i + 2; }
+
+    public static int Method3(int i) { return i + 3; }
+
+    public override String ToString() {
+      return base.ToString();
+    }
+  }
+
+  .method public hidebysig virtual instance string ToString() cil managed
+  {
+    // Code size 12
+    .maxstack 1
+    .locals init(string V_0)
+    IL_0000: nop
+    IL_0001: ldarg.0
+    IL_0002: call instance string [System.Runtime]System.Object::ToString()
+    IL_0007: stloc.0
+    IL_0008: br.s     IL_000a
+    IL_000a: ldloc.0
+    IL_000b: ret
+  } // End of method System.String part2.ClassMethodCalling::ToString()
+
+  struct ValueMethodCalling {
+    public int Method1(int i) { return i + 1; }
+
+    public static int Method3(int i) { return i + 3; }
+
+    public override String ToString() {
+      return base.ToString();
+    }
+  }
+
+  .method public hidebysig virtual instance string ToString() cil managed
+  {
+    // Code size 22
+    .maxstack 1
+    .locals init(string V_0)
+    IL_0000: nop
+    IL_0001: ldarg.0
+    IL_0002: ldobj part2.ValueMethodCalling
+    IL_0007: box part2.ValueMethodCalling
+    IL_000c: call instance string [System.Runtime]System.ValueType::ToString()
+    IL_0011: stloc.0
+    IL_0012: br.s     IL_0014
+    IL_0014: ldloc.0
+    IL_0015: ret
+  } // End of method System.String part2.ValueMethodCalling::ToString()
+
+  static void TestMethodCalling() {
+    ClassMethodCalling v1 = new ClassMethodCalling();
+    v1.Method1(1);
+    v1.Method2(2);
+    v1.ToString();
+    ClassMethodCalling.Method3(3);
+
+    ValueMethodCalling v2 = new ValueMethodCalling();
+    v2.Method1(1);
+    ValueType v3 = v2;
+    v3.ToString();
+    v2.ToString();
+    ValueMethodCalling.Method3(3);
+  }
+
+  .method private hidebysig static void TestMethodCalling() cil managed
+  {
+    // Code size 90
+    .maxstack 2
+    .locals init(part2.ClassMethodCalling V_0, part2.ValueMethodCalling V_1, [System.Runtime]System.ValueType V_2)
+    IL_0000: nop
+    IL_0001: newobj instance void part2.ClassMethodCalling::.ctor()
+    IL_0006: stloc.0
+    IL_0007: ldloc.0
+    IL_0008: ldc.i4.1
+    IL_0009: callvirt instance int32 part2.ClassMethodCalling::Method1(int32)
+    IL_000e: pop
+    IL_000f: ldloc.0
+    IL_0010: ldc.i4.2
+    IL_0011: callvirt instance int32 part2.ClassMethodCalling::Method2(int32)
+    IL_0016: pop
+    IL_0017: ldloc.0
+    IL_0018: callvirt instance string [System.Runtime]System.Object::ToString()
+    IL_001d: pop
+    IL_001e: ldc.i4.3
+    IL_001f: call int32 part2.ClassMethodCalling::Method3(int32)
+    IL_0024: pop
+    IL_0025: ldloca.s V_1
+    IL_0027: initobj part2.ValueMethodCalling
+    IL_002d: ldloca.s V_1
+    IL_002f: ldc.i4.1
+    IL_0030: call instance int32 part2.ValueMethodCalling::Method1(int32)
+    IL_0035: pop
+    IL_0036: ldloc.1
+    IL_0037: box part2.ValueMethodCalling
+    IL_003c: stloc.2
+    IL_003d: ldloc.2
+    IL_003e: callvirt instance string [System.Runtime]System.Object::ToString()
+    IL_0043: pop
+    IL_0044: ldloca.s V_1
+    IL_0046: constrained. part2.ValueMethodCalling
+    IL_004c: callvirt instance string [System.Runtime]System.Object::ToString()
+    IL_0051: pop
+    IL_0052: ldc.i4.3
+    IL_0053: call int32 part2.ValueMethodCalling::Method3(int32)
+    IL_0058: pop
+    IL_0059: ret
+  } // End of method System.Void part2.cp4::TestMethodCalling()
+```
 
 Consts and Fields
 -----------------
