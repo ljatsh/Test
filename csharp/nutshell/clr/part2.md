@@ -6,6 +6,7 @@ Table of Contents
 * [Primitives, Reference and Value Types](#primitives-reference-and-value-types)
   * [Primitives](#primitives)
   * [Value Types](#value-types)
+  * [Boxing and Unboxing](#boxing-and-unboxing)
 * [Type and Member Basics](#type-and-member-basics)
   * [How CLR Calls Methods](#how-clr-calls-methods)
 * [Consts and Fields](#consts-and-fields)
@@ -13,6 +14,7 @@ Table of Contents
 * [Methods](#methods)
   * [Constructor and Class](#constructor-and-class)
   * [Constructor and Value](#constructor-and-value)
+  * [Type Constructor](#type-constructor)
 
 Type Fundamentals
 -----------------
@@ -209,6 +211,113 @@ Value Types
     IL_0021: stloc.3
     IL_0022: ret
   } // End of method System.Void part2.cp4::TestValueTypeAndReferenceType()
+```
+
+[Back to TOC](#table-of-contents)
+
+Boxing and Unboxing
+-------------------
+
+1. Base.ToString cause boxing
+2. Calling virtual method does not cause boxing
+3. Calling a nonvirtual inherited method(GetType or MemberwiseClone) causes boxing. These methods requires this argument is a reference type.
+
+```csharp
+  struct SomeValue : IComparable {
+    public int x;
+
+    public int CompareTo(object obj) {
+      return 0;
+    }
+
+    public override string ToString() {
+      return base.ToString();
+    }
+  }
+
+  .method public hidebysig virtual instance string ToString() cil managed
+  {
+    // Code size 22
+    .maxstack 1
+    .locals init(string V_0)
+    IL_0000: nop
+    IL_0001: ldarg.0
+    IL_0002: ldobj part2.SomeValue
+    IL_0007: box part2.SomeValue
+    IL_000c: call instance string [System.Runtime]System.ValueType::ToString()
+    IL_0011: stloc.0
+    IL_0012: br.s     IL_0014
+    IL_0014: ldloc.0
+    IL_0015: ret
+  } // End of method System.String part2.SomeValue::ToString()
+
+  static void TestBox() {
+    ArrayList c = new ArrayList();
+    SomeValue x = new SomeValue();
+    x.x = 1;
+    // box
+    c.Add(x);
+    x.x = 2;
+    // box
+    c.Add(x);
+
+    // unbox
+    SomeValue y = (SomeValue)c[0];
+
+    // box while calling GetType
+    x.GetType();
+
+    // not box while calling ToString. However, Base.ToString cause boxing
+    x.ToString();
+
+    // box, interface is reference type
+    IComparable v = x;
+  }
+
+  .method private hidebysig static void TestBox() cil managed
+  {
+    // Code size 104
+    .maxstack 2
+    .locals init([System.Runtime.Extensions]System.Collections.ArrayList V_0, part2.cp4/SomeValue V_1, part2.cp4/SomeValue V_2, [System.Runtime]System.IComparable V_3)
+    IL_0000: nop
+    IL_0001: newobj instance void [System.Runtime.Extensions]System.Collections.ArrayList::.ctor()
+    IL_0006: stloc.0
+    IL_0007: ldloca.s V_1
+    IL_0009: initobj part2.cp4/SomeValue
+    IL_000f: ldloca.s V_1
+    IL_0011: ldc.i4.1
+    IL_0012: stfld int32 part2.cp4/SomeValue::x
+    IL_0017: ldloc.0
+    IL_0018: ldloc.1
+    IL_0019: box part2.cp4/SomeValue
+    IL_001e: callvirt instance int32 [System.Runtime.Extensions]System.Collections.ArrayList::Add([System.Runtime]System.Object)
+    IL_0023: pop
+    IL_0024: ldloca.s V_1
+    IL_0026: ldc.i4.2
+    IL_0027: stfld int32 part2.cp4/SomeValue::x
+    IL_002c: ldloc.0
+    IL_002d: ldloc.1
+    IL_002e: box part2.cp4/SomeValue
+    IL_0033: callvirt instance int32 [System.Runtime.Extensions]System.Collections.ArrayList::Add([System.Runtime]System.Object)
+    IL_0038: pop
+    IL_0039: ldloc.0
+    IL_003a: ldc.i4.0
+    IL_003b: callvirt instance [System.Runtime]System.Object [System.Runtime.Extensions]System.Collections.ArrayList::get_Item(int32)
+    IL_0040: unbox.any part2.cp4/SomeValue
+    IL_0045: stloc.2
+    IL_0046: ldloc.1
+    IL_0047: box part2.cp4/SomeValue
+    IL_004c: call instance [System.Runtime]System.Type [System.Runtime]System.Object::GetType()
+    IL_0051: pop
+    IL_0052: ldloca.s V_1
+    IL_0054: constrained. part2.cp4/SomeValue
+    IL_005a: callvirt instance string [System.Runtime]System.Object::ToString()
+    IL_005f: pop
+    IL_0060: ldloc.1
+    IL_0061: box part2.cp4/SomeValue
+    IL_0066: stloc.3
+    IL_0067: ret
+  } // End of method System.Void part2.cp4::TestBox()
 ```
 
 [Back to TOC](#table-of-contents)
@@ -477,8 +586,14 @@ Constructor and Value
 ---------------------
 
 * C# does not generate parameterless constructor, and parameterless constructor is forbidden in C#
-* Intializer is not allowed
+* Initializer is not allowed except for static field
 * Value type fields are guaranteed to be 0, if the value type is nested in reference type
 * Stack-based value fields are not guaranteed to be 0, you should call parameterless constructor explicitly to guarantee it
 
 [Back to TOC](#table-of-contents)
+
+Type Constructor
+----------------
+
+* Never define type constructor in Value Type. I don't know why it was not called during testing.
+* Type constructor is thread safe and will be called by CLR only once every AppDomain.

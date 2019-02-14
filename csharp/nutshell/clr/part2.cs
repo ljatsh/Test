@@ -3,6 +3,19 @@ using System.Collections;
 
 namespace part2 {
 
+// The main advantage of value types is that they’re not allocated as objects in the managed heap.
+struct SomeValue : IComparable {
+  public int x;
+
+  public int CompareTo(object obj) {
+    return 0;
+  }
+
+  public override string ToString() {
+    return base.ToString();
+  }
+}
+
 class ClassMethodCalling {
   public int Method1(int i) { return i + 1; }
 
@@ -99,8 +112,6 @@ class cp4 {
     }
   }
 
-  // The main advantage of value types is that they’re not allocated as objects in the managed heap.
-  struct SomeValue { public int x; }
   class SomeRef { public int x; }
   static void TestValueTypeAndReferenceType() {
     SomeValue x1 = new SomeValue();
@@ -117,11 +128,23 @@ class cp4 {
     ArrayList c = new ArrayList();
     SomeValue x = new SomeValue();
     x.x = 1;
+    // box
     c.Add(x);
     x.x = 2;
+    // box
     c.Add(x);
 
+    // unbox
     SomeValue y = (SomeValue)c[0];
+
+    // box while calling GetType
+    x.GetType();
+
+    // not box while calling ToString. However, Base.ToString cause boxing
+    x.ToString();
+
+    // box, interface is reference type
+    IComparable v = x;
   }
 
   static void TestMethodCalling() {
