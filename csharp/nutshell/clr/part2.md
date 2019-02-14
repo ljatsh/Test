@@ -7,6 +7,7 @@ Table of Contents
   * [Primitives](#primitives)
   * [Value Types](#value-types)
   * [Boxing and Unboxing](#boxing-and-unboxing)
+  * [Prefer Immutable Value Type](#prefer-immutable-value-type)
 * [Type and Member Basics](#type-and-member-basics)
   * [How CLR Calls Methods](#how-clr-calls-methods)
 * [Consts and Fields](#consts-and-fields)
@@ -221,6 +222,7 @@ Boxing and Unboxing
 1. Base.ToString cause boxing
 2. Calling virtual method does not cause boxing
 3. Calling a nonvirtual inherited method(GetType or MemberwiseClone) causes boxing. These methods requires this argument is a reference type.
+4. Casting an unboxed instance of a value type to one of the type’s interfaces causes boxing
 
 ```csharp
   struct SomeValue : IComparable {
@@ -321,6 +323,46 @@ Boxing and Unboxing
 ```
 
 [Back to TOC](#table-of-contents)
+
+Prefer Immutable Value Type
+---------------------------
+
+* C# does not allow you to change boxed value type
+* Interface can be used to change boxed value type. However, we should avoid trick.
+
+```csharp
+  static void TestPreferImmutableValueType() {
+    Point p = new Point(1, 1);
+
+    Object o = p;
+    // a new unboxed temporary variable is created by IL
+    ((Point) o).Change(3, 3);
+  }
+
+  .method private hidebysig static void TestPreferImmutableValueType() cil managed
+  {
+    // Code size 35
+    .maxstack 3
+    .locals init(part2.cp4/Point V_0, [System.Runtime]System.Object V_1, part2.cp4/Point V_2)
+    IL_0000: nop
+    IL_0001: ldloca.s V_0
+    IL_0003: ldc.i4.1
+    IL_0004: ldc.i4.1
+    IL_0005: call instance void part2.cp4/Point::.ctor(int32, int32)
+    IL_000a: ldloc.0
+    IL_000b: box part2.cp4/Point
+    IL_0010: stloc.1
+    IL_0011: ldloc.1
+    IL_0012: unbox.any part2.cp4/Point
+    IL_0017: stloc.2
+    IL_0018: ldloca.s V_2
+    IL_001a: ldc.i4.3
+    IL_001b: ldc.i4.3
+    IL_001c: call instance void part2.cp4/Point::Change(int32, int32)
+    IL_0021: nop
+    IL_0022: ret
+  } // End of method System.Void part2.cp4::TestPreferImmutableValueType()
+```
 
 Type and Member Basics
 ----------------------
