@@ -16,6 +16,10 @@ Table of Contents
   * [Constructor and Class](#constructor-and-class)
   * [Constructor and Value](#constructor-and-value)
   * [Type Constructor](#type-constructor)
+* [Parameters](#parameters)
+  * [Optional and Named Parameters](#optional-and-named-parameters)
+  * [Passing Parameters by Reference to a Method](#passing-parameters-by-reference-to-a-method)
+  * [Passing a Variable Number of Arguments to a Method](#passing-a-variable-number-of-arguments-to-a-method)
 
 Type Fundamentals
 -----------------
@@ -364,6 +368,8 @@ Prefer Immutable Value Type
   } // End of method System.Void part2.cp4::TestPreferImmutableValueType()
 ```
 
+[Back to TOC](#table-of-contents)
+
 Type and Member Basics
 ----------------------
 
@@ -639,3 +645,108 @@ Type Constructor
 
 * Never define type constructor in Value Type. I don't know why it was not called during testing.
 * Type constructor is thread safe and will be called by CLR only once every AppDomain.
+
+Parameters
+----------
+
+(method-parameters)(https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters)
+
+Optional and Named Parameters
+-----------------------------
+
+* Default values must be constant at compile time. You can use [default](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/default-value-expressions)(value type) to express default value type
+* Change default value is interface change
+
+[Back to TOC](#table-of-contents)
+
+Passing Parameters by Reference to a Method
+-------------------------------------------
+
+* There is no difference between out and ref in CLR
+
+```csharp
+  static void TestReferenceParameter() {
+    int v = 1;
+    TestMethod1(out v);
+    TestMethod2(ref v);
+    TestMethod(v);
+  }
+
+  .method private hidebysig static void TestReferenceParameter() cil managed
+  {
+    // Code size 27
+    .maxstack 1
+    .locals init(int32 V_0)
+    IL_0000: nop
+    IL_0001: ldc.i4.1
+    IL_0002: stloc.0
+    IL_0003: ldloca.s V_0
+    IL_0005: call void part2.cp4::TestMethod1(byreference)
+    IL_000a: nop
+    IL_000b: ldloca.s V_0
+    IL_000d: call void part2.cp4::TestMethod2(byreference)
+    IL_0012: nop
+    IL_0013: ldloc.0
+    IL_0014: call void part2.cp4::TestMethod(int32)
+    IL_0019: nop
+    IL_001a: ret
+  } // End of method System.Void part2.cp4::TestReferenceParameter()
+```
+
+[Back to TOC](#table-of-contents)
+
+Passing a Variable Number of Arguments to a Method
+--------------------------------------------------
+
+* refer [params](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/params)
+* It’s legal to pass null or a reference to an array of 0 entries as the last parameter to the method.
+* There is no difference between ```csharp (new int[] {3, 4})``` and ```csharp (3,4)``` in CLR
+
+```csharp
+  static void TestVariableParameters() {
+    TestMethodWithVariableParams(new int[] {3, 4});
+    TestMethodWithVariableParams(3, 4);
+    TestMethodWithVariableParams();
+    TestMethodWithVariableParams(null);
+  }
+
+  .method private hidebysig static void TestVariableParameters() cil managed
+  {
+    // Code size 60
+    .maxstack 8
+    IL_0000: nop
+    IL_0001: ldc.i4.2
+    IL_0002: newarr System.Int32
+    IL_0007: dup
+    IL_0008: ldc.i4.0
+    IL_0009: ldc.i4.3
+    IL_000a: stelem.i4
+    IL_000b: dup
+    IL_000c: ldc.i4.1
+    IL_000d: ldc.i4.4
+    IL_000e: stelem.i4
+    IL_000f: call void part2.cp4::TestMethodWithVariableParams(int32[])
+    IL_0014: nop
+    IL_0015: ldc.i4.2
+    IL_0016: newarr System.Int32
+    IL_001b: dup
+    IL_001c: ldc.i4.0
+    IL_001d: ldc.i4.3
+    IL_001e: stelem.i4
+    IL_001f: dup
+    IL_0020: ldc.i4.1
+    IL_0021: ldc.i4.4
+    IL_0022: stelem.i4
+    IL_0023: call void part2.cp4::TestMethodWithVariableParams(int32[])
+    IL_0028: nop
+    IL_0029: call mvar[] [System.Runtime]System.Array::Empty()
+    IL_002e: call void part2.cp4::TestMethodWithVariableParams(int32[])
+    IL_0033: nop
+    IL_0034: ldnull
+    IL_0035: call void part2.cp4::TestMethodWithVariableParams(int32[])
+    IL_003a: nop
+    IL_003b: ret
+  } // End of method System.Void part2.cp4::TestVariableParameters()
+```
+
+[Back to TOC](#table-of-contents)

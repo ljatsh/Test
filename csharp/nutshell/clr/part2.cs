@@ -193,6 +193,32 @@ class cp4 {
     SomeClassWithConstant o = new SomeClassWithConstant();
     int v2 = o.MAX_AGE;
   }
+
+  static void TestMethod1(out int p) {
+    p = 10;
+  }
+  static void TestMethod2(ref int p) {
+  }
+  static void TestMethod(int p) {
+  }
+
+  static void TestReferenceParameter() {
+    int v = 1;
+    TestMethod1(out v);
+    TestMethod2(ref v);
+    TestMethod(v);
+  }
+
+  static void TestMethodWithVariableParams(params int[] p) {
+
+  }
+
+  static void TestVariableParameters() {
+    TestMethodWithVariableParams(new int[] {3, 4});
+    TestMethodWithVariableParams(3, 4);
+    TestMethodWithVariableParams();
+    TestMethodWithVariableParams(null);
+  }
 } // class cp4
 
 } // namespace part2

@@ -8,6 +8,7 @@ Table of Contents
 dev_env
 -------
 
+* [csharp language reference](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/index)
 * [mono](https://www.mono-project.com/)
 * [.net core](https://docs.microsoft.com/en-us/dotnet/core/)
 * [.net core API](https://docs.microsoft.com/en-us/dotnet/api/?view=netcore-2.2)
