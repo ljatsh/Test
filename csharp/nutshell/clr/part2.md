@@ -20,6 +20,9 @@ Table of Contents
   * [Optional and Named Parameters](#optional-and-named-parameters)
   * [Passing Parameters by Reference to a Method](#passing-parameters-by-reference-to-a-method)
   * [Passing a Variable Number of Arguments to a Method](#passing-a-variable-number-of-arguments-to-a-method)
+  * [Parameter and Return Type Guidelines](parameter-and-return-type-guidelines)
+* [Properties](#properties)
+  * [Parameterless Properties](#parameterless-properties)
 
 Type Fundamentals
 -----------------
@@ -701,6 +704,7 @@ Passing a Variable Number of Arguments to a Method
 * refer [params](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/params)
 * It’s legal to pass null or a reference to an array of 0 entries as the last parameter to the method.
 * There is no difference between ```csharp (new int[] {3, 4})``` and ```csharp (3,4)``` in CLR
+* Try to define several overloaded methods without params to help performance enhancement. Refer [String.Concat](https://docs.microsoft.com/en-us/dotnet/api/system.string.concat?view=netcore-2.2)
 
 ```csharp
   static void TestVariableParameters() {
@@ -747,6 +751,63 @@ Passing a Variable Number of Arguments to a Method
     IL_003a: nop
     IL_003b: ret
   } // End of method System.Void part2.cp4::TestVariableParameters()
+```
+
+[Back to TOC](#table-of-contents)
+
+Parameter and Return Type Guidelines
+-------------------------------------
+
+* When declaring a method’s parameter types, you should specify the weakest type possible, preferring interfaces over base classes
+* On the flip side, it is usually best to declare a method’s return type by using the strongest type possible.
+
+[Back to TOC](#table-of-contents)
+
+Properties
+----------
+
+Parameterless Properties
+------------------------
+
+* Avoid to use automatically implemented properties(AIPs).
+
+```csharp
+  internal class PropertyClass {
+    public String Name { get; set; }
+  }
+
+  .class private auto ansi beforefieldinit part2.PropertyClass extends [System.Runtime]System.Object
+  {
+    .field private string '<Name>k__BackingField'
+
+    .method public hidebysig specialname instance string get_Name() cil managed
+    {
+      // Code size 7
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: ldfld string part2.PropertyClass::'<Name>k__BackingField'
+      IL_0006: ret
+  } // End of method System.String part2.PropertyClass::get_Name()
+
+  .method public hidebysig specialname instance void set_Name(string 'value') cil managed
+  {
+    // Code size 8
+    .maxstack 8
+    IL_0000: ldarg.0
+    IL_0001: ldarg.1
+    IL_0002: stfld string part2.PropertyClass::'<Name>k__BackingField'
+    IL_0007: ret
+  } // End of method System.Void part2.PropertyClass::set_Name(System.String)
+
+  .method public hidebysig specialname rtspecialname instance void .ctor() cil managed
+  {
+    // Code size 8
+    .maxstack 8
+    IL_0000: ldarg.0
+    IL_0001: call instance void [System.Runtime]System.Object::.ctor()
+    IL_0006: nop
+    IL_0007: ret
+  } // End of method System.Void part2.PropertyClass::.ctor()
 ```
 
 [Back to TOC](#table-of-contents)

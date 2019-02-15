@@ -65,6 +65,10 @@ class ClassMethod {
   }
 }
 
+internal class PropertyClass {
+  public String Name { get; set; }
+}
+
 class cp4 {
   class Employ {}
 
@@ -161,6 +165,7 @@ class cp4 {
       return String.Format("({0}, {1})", m_x.ToString(), m_y.ToString());
     }
   }
+
   static void TestPreferImmutableValueType() {
     Point p = new Point(1, 1);
 
@@ -218,6 +223,12 @@ class cp4 {
     TestMethodWithVariableParams(3, 4);
     TestMethodWithVariableParams();
     TestMethodWithVariableParams(null);
+  }
+
+  static void TestProperty() {
+    var o = new PropertyClass();
+    o.Name = "";
+    Console.WriteLine(o.Name);
   }
 } // class cp4
 
