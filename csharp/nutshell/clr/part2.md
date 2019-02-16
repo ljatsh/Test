@@ -16,13 +16,17 @@ Table of Contents
   * [Constructor and Class](#constructor-and-class)
   * [Constructor and Value](#constructor-and-value)
   * [Type Constructor](#type-constructor)
+  * [Extension Method](#extension-method)
 * [Parameters](#parameters)
   * [Optional and Named Parameters](#optional-and-named-parameters)
   * [Passing Parameters by Reference to a Method](#passing-parameters-by-reference-to-a-method)
   * [Passing a Variable Number of Arguments to a Method](#passing-a-variable-number-of-arguments-to-a-method)
-  * [Parameter and Return Type Guidelines](parameter-and-return-type-guidelines)
+  * [Parameter and Return Type Guidelines](#parameter-and-return-type-guidelines)
 * [Properties](#properties)
   * [Parameterless Properties](#parameterless-properties)
+  * [Object and Collection Initializer](#object-and-collection-initializer)
+    * [Object Initializer](#object-initializer)
+    * [Collection Initializer](#collection-initializer)
 
 Type Fundamentals
 -----------------
@@ -649,6 +653,39 @@ Type Constructor
 * Never define type constructor in Value Type. I don't know why it was not called during testing.
 * Type constructor is thread safe and will be called by CLR only once every AppDomain.
 
+Extension Method
+----------------
+
+refer [this](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/extension-methods)
+
+* Extension Method generates ```call``` instruction. So null this is valid.
+* Good Practice:
+  * Prefer to add extension to interface instead of concreate class. Refer [System.Linq.Enumerable](https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.all?view=netcore-2.2)
+  * Prefer to use extension method to avoid dependency issue
+
+```csharp
+  static void TestExtensionMethod() {
+    String o = null;
+    o.Dump();
+  }
+
+  .method private hidebysig static void TestExtensionMethod() cil managed
+  {
+    // Code size 11
+    .maxstack 1
+    .locals init(string V_0)
+    IL_0000: nop
+    IL_0001: ldnull
+    IL_0002: stloc.0
+    IL_0003: ldloc.0
+    IL_0004: call string part2.ExtensionClass::Dump([System.Runtime]System.Collections.IEnumerable)
+    IL_0009: pop
+    IL_000a: ret
+  } // End of method System.Void part2.cp4::TestExtensionMethod()
+```
+
+[Back to TOC](#table-of-contents)
+
 Parameters
 ----------
 
@@ -808,6 +845,104 @@ Parameterless Properties
     IL_0006: nop
     IL_0007: ret
   } // End of method System.Void part2.PropertyClass::.ctor()
+```
+
+[Back to TOC](#table-of-contents)
+
+Object and Collection Initializer
+---------------------------------
+
+[Reference](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers)
+
+* CLR does not know object and collection initializer
+* Collection initializers let you specify one or more element initializers when you initialize a collection type that implements IEnumerable and has Add/Indexer with the appropriate signature as an instance method or an extension method.
+
+[Back to TOC](#table-of-contents)
+
+Object Initializer
+------------------
+
+```csharp
+  static void TestObjectInitializer() {
+    Cat cat = new Cat { Age = 10, Name = "Fluffy" };
+    Cat sameCat = new Cat("Fluffy") { Age = 10 };
+  }
+
+  .method private hidebysig static void TestObjectInitializer() cil managed
+  {
+    // Code size 49
+    .maxstack 3
+    .locals init(part2.cp4/Cat V_0, part2.cp4/Cat V_1)
+    IL_0000: nop
+    IL_0001: newobj instance void part2.cp4/Cat::.ctor()
+    IL_0006: dup
+    IL_0007: ldc.i4.s 10
+    IL_0009: callvirt instance void part2.cp4/Cat::set_Age(int32)
+    IL_000e: nop
+    IL_000f: dup
+    IL_0010: ldstr "Fluffy"
+    IL_0015: callvirt instance void part2.cp4/Cat::set_Name(string)
+    IL_001a: nop
+    IL_001b: stloc.0
+    IL_001c: ldstr "Fluffy"
+    IL_0021: newobj instance void part2.cp4/Cat::.ctor(string)
+    IL_0026: dup
+    IL_0027: ldc.i4.s 10
+    IL_0029: callvirt instance void part2.cp4/Cat::set_Age(int32)
+    IL_002e: nop
+    IL_002f: stloc.1
+    IL_0030: ret
+  } // End of method System.Void part2.cp4::TestObjectInitializer()
+```
+
+[Back to TOC](#table-of-contents)
+
+Collection Initializer
+----------------------
+
+```csharp
+  static void TestCollectionInitializer() {
+    List<int> digits = new List<int> {0, 1};
+    var moreNumbers = new Dictionary<int, string> {
+      {19, "nineteen" }
+    };
+    var numbers = new Dictionary<int, string> {
+      [7] = "seven"
+    };
+  }
+
+  .method private hidebysig static void TestCollectionInitializer() cil managed
+  {
+    // Code size 63
+    .maxstack 4
+    .locals init(genericinstance V_0, genericinstance V_1, genericinstance V_2)
+    IL_0000: nop
+    IL_0001: newobj instance void genericinstance::.ctor()
+    IL_0006: dup
+    IL_0007: ldc.i4.0
+    IL_0008: callvirt instance void genericinstance::Add(var)
+    IL_000d: nop
+    IL_000e: dup
+    IL_000f: ldc.i4.1
+    IL_0010: callvirt instance void genericinstance::Add(var)
+    IL_0015: nop
+    IL_0016: stloc.0
+    IL_0017: newobj instance void genericinstance::.ctor()
+    IL_001c: dup
+    IL_001d: ldc.i4.s 19
+    IL_001f: ldstr "nineteen"
+    IL_0024: callvirt instance void genericinstance::Add(var, var)
+    IL_0029: nop
+    IL_002a: stloc.1
+    IL_002b: newobj instance void genericinstance::.ctor()
+    IL_0030: dup
+    IL_0031: ldc.i4.7
+    IL_0032: ldstr "seven"
+    IL_0037: callvirt instance void genericinstance::set_Item(var, var)
+    IL_003c: nop
+    IL_003d: stloc.2
+    IL_003e: ret
+  } // End of method System.Void part2.cp4::TestCollectionInitializer()
 ```
 
 [Back to TOC](#table-of-contents)

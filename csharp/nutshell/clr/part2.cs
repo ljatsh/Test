@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace part2 {
 
@@ -67,6 +68,10 @@ class ClassMethod {
 
 internal class PropertyClass {
   public String Name { get; set; }
+}
+
+static class ExtensionClass {
+  public static String Dump(this IEnumerable data) { return ""; }
 }
 
 class cp4 {
@@ -188,6 +193,11 @@ class cp4 {
     ValueMethodCalling.Method3(3);
   }
 
+  static void TestExtensionMethod() {
+    String o = null;
+    o.Dump();
+  }
+
   // 1. constant is evaluated at compile time.
   // 2. constant is static and is always considered to be part of the defining type.
   // 3. constant does not have good cross-assembly version story.
@@ -229,6 +239,34 @@ class cp4 {
     var o = new PropertyClass();
     o.Name = "";
     Console.WriteLine(o.Name);
+  }
+
+  internal class Cat {
+      // Auto-implemented properties.
+      public int Age { get; set; }
+      public string Name { get; set; }
+
+      public Cat() {
+      }
+
+      public Cat(string name) {
+          this.Name = name;
+      }
+  }
+
+  static void TestObjectInitializer() {
+    Cat cat = new Cat { Age = 10, Name = "Fluffy" };
+    Cat sameCat = new Cat("Fluffy") { Age = 10 };
+  }
+
+  static void TestCollectionInitializer() {
+    List<int> digits = new List<int> {0, 1};
+    var moreNumbers = new Dictionary<int, string> {
+      {19, "nineteen" }
+    };
+    var numbers = new Dictionary<int, string> {
+      [7] = "seven"
+    };
   }
 } // class cp4
 
