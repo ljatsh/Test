@@ -27,6 +27,7 @@ Table of Contents
   * [Object and Collection Initializer](#object-and-collection-initializer)
     * [Object Initializer](#object-initializer)
     * [Collection Initializer](#collection-initializer)
+  * [Anonymous Types](#anonymous-types)
 
 Type Fundamentals
 -----------------
@@ -169,6 +170,7 @@ Primitives
 ---------------- | ---------| ------------- | -----------
 int | System.Int32 | Yes | Signed 32-bit value
 long | System.Int64 | Yes | Signed 64-bit value
+char | System.Char | Yes | 16-bit Unicode character
 float | System.Single | Yes | IEEE 32-bit floating point value
 double | System.Double | Yes | IEEE 64-bit floating point value
 string | System.String | Yes | An array of characters
@@ -943,6 +945,191 @@ Collection Initializer
     IL_003d: stloc.2
     IL_003e: ret
   } // End of method System.Void part2.cp4::TestCollectionInitializer()
+```
+
+[Back to TOC](#table-of-contents)
+
+Anonymous Types
+---------------
+
+```csharp
+  static void TestAnonymousTypes() {
+    var o = new {Name = "lj@sh", Age = 35};
+    Console.WriteLine("Name={0}, Age={1}", o.Name, o.Age.ToString());
+  }
+
+  .class private auto ansi sealed beforefieldinit <>f__AnonymousType0`2 extends [System.Runtime]System.Object
+  {
+    .field private initonly var '<Name>i__Field'
+    .field private initonly var '<Age>i__Field'
+
+    .method public hidebysig specialname instance var get_Name() cil managed
+    {
+      // Code size 7
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: ldfld <Name>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Name>i__Field
+      IL_0006: ret
+  } // End of method <Name>j__TPar <>f__AnonymousType0`2::get_Name()
+
+  .method public hidebysig specialname instance var get_Age() cil managed
+  {
+    // Code size 7
+    .maxstack 8
+    IL_0000: ldarg.0
+    IL_0001: ldfld <Age>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Age>i__Field
+    IL_0006: ret
+  } // End of method <Age>j__TPar <>f__AnonymousType0`2::get_Age()
+
+  .method public hidebysig specialname rtspecialname instance void .ctor(var Name, var Age) cil managed
+  {
+    // Code size 21
+    .maxstack 8
+    IL_0000: ldarg.0
+    IL_0001: call instance void [System.Runtime]System.Object::.ctor()
+    IL_0006: ldarg.0
+    IL_0007: ldarg.1
+    IL_0008: stfld <Name>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Name>i__Field
+    IL_000d: ldarg.0
+    IL_000e: ldarg.2
+    IL_000f: stfld <Age>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Age>i__Field
+    IL_0014: ret
+  } // End of method System.Void <>f__AnonymousType0`2::.ctor(<Name>j__TPar,<Age>j__TPar)
+
+  .method public hidebysig virtual instance boolean Equals([System.Runtime]System.Object 'value') cil managed
+  {
+    // Code size 60
+    .maxstack 3
+    .locals init(genericinstance V_0)
+    IL_0000: ldarg.1
+    IL_0001: isinst <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>
+    IL_0006: stloc.0
+    IL_0007: ldloc.0
+    IL_0008: brfalse.s     IL_003a
+    IL_000a: call genericinstance genericinstance::get_Default()
+    IL_000f: ldarg.0
+    IL_0010: ldfld <Name>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Name>i__Field
+    IL_0015: ldloc.0
+    IL_0016: ldfld <Name>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Name>i__Field
+    IL_001b: callvirt instance boolean genericinstance::Equals(var, var)
+    IL_0020: brfalse.s     IL_003a
+    IL_0022: call genericinstance genericinstance::get_Default()
+    IL_0027: ldarg.0
+    IL_0028: ldfld <Age>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Age>i__Field
+    IL_002d: ldloc.0
+    IL_002e: ldfld <Age>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Age>i__Field
+    IL_0033: callvirt instance boolean genericinstance::Equals(var, var)
+    IL_0038: br.s     IL_003b
+    IL_003a: ldc.i4.0
+    IL_003b: ret
+  } // End of method System.Boolean <>f__AnonymousType0`2::Equals(System.Object)
+
+  .method public hidebysig virtual instance int32 GetHashCode() cil managed
+  {
+    // Code size 52
+    .maxstack 8
+    IL_0000: ldc.i4 -2097246416
+    IL_0005: ldc.i4 -1521134295
+    IL_000a: mul
+    IL_000b: call genericinstance genericinstance::get_Default()
+    IL_0010: ldarg.0
+    IL_0011: ldfld <Name>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Name>i__Field
+    IL_0016: callvirt instance int32 genericinstance::GetHashCode(var)
+    IL_001b: add
+    IL_001c: ldc.i4 -1521134295
+    IL_0021: mul
+    IL_0022: call genericinstance genericinstance::get_Default()
+    IL_0027: ldarg.0
+    IL_0028: ldfld <Age>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Age>i__Field
+    IL_002d: callvirt instance int32 genericinstance::GetHashCode(var)
+    IL_0032: add
+    IL_0033: ret
+  } // End of method System.Int32 <>f__AnonymousType0`2::GetHashCode()
+
+  .method public hidebysig virtual instance string ToString() cil managed
+  {
+    // Code size 136
+    .maxstack 7
+    .locals init(var V_0, var V_1, var V_2, var V_3)
+    IL_0000: ldnull
+    IL_0001: ldstr "{{ Name = {0}, Age = {1} }}"
+    IL_0006: ldc.i4.2
+    IL_0007: newarr System.Object
+    IL_000c: dup
+    IL_000d: ldc.i4.0
+    IL_000e: ldarg.0
+    IL_000f: ldfld <Name>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Name>i__Field
+    IL_0014: stloc.0
+    IL_0015: ldloca.s V_0
+    IL_0017: ldloca.s V_1
+    IL_0019: initobj <Name>j__TPar
+    IL_001f: ldloc.1
+    IL_0020: box <Name>j__TPar
+    IL_0025: brtrue.s     IL_003b
+    IL_0027: ldobj <Name>j__TPar
+    IL_002c: stloc.1
+    IL_002d: ldloca.s V_1
+    IL_002f: ldloc.1
+    IL_0030: box <Name>j__TPar
+    IL_0035: brtrue.s     IL_003b
+    IL_0037: pop
+    IL_0038: ldnull
+    IL_0039: br.s     IL_0046
+    IL_003b: constrained. <Name>j__TPar
+    IL_0041: callvirt instance string [System.Runtime]System.Object::ToString()
+    IL_0046: stelem.ref
+    IL_0047: dup
+    IL_0048: ldc.i4.1
+    IL_0049: ldarg.0
+    IL_004a: ldfld <Age>j__TPar <>f__AnonymousType0`2<<Name>j__TPar,<Age>j__TPar>::<Age>i__Field
+    IL_004f: stloc.2
+    IL_0050: ldloca.s V_2
+    IL_0052: ldloca.s V_3
+    IL_0054: initobj <Age>j__TPar
+    IL_005a: ldloc.3
+    IL_005b: box <Age>j__TPar
+    IL_0060: brtrue.s     IL_0076
+    IL_0062: ldobj <Age>j__TPar
+    IL_0067: stloc.3
+    IL_0068: ldloca.s V_3
+    IL_006a: ldloc.3
+    IL_006b: box <Age>j__TPar
+    IL_0070: brtrue.s     IL_0076
+    IL_0072: pop
+    IL_0073: ldnull
+    IL_0074: br.s     IL_0081
+    IL_0076: constrained. <Age>j__TPar
+    IL_007c: callvirt instance string [System.Runtime]System.Object::ToString()
+    IL_0081: stelem.ref
+    IL_0082: call string string::Format([System.Runtime]System.IFormatProvider, string, [System.Runtime]System.Object[])
+    IL_0087: ret
+  } // End of method System.String <>f__AnonymousType0`2::ToString()
+    .custom instance void [System.Runtime]System.Runtime.CompilerServices.CompilerGeneratedAttribute::.ctor() = ( 01 00 00 00 )
+    .custom instance void [System.Diagnostics.Debug]System.Diagnostics.DebuggerDisplayAttribute::.ctor(string) = ( 01 00 1F 5C 7B 20 4E 61 6D 65 20 3D 20 7B 4E 61 6D 65 7D 2C 20 41 67 65 20 3D 20 7B 41 67 65 7D 20 7D 01 00 54 0E 04 54 79 70 65 10 3C 41 6E 6F 6E 79 6D 6F 75 73 20 54 79 70 65 3E )
+  } // End of class <>f__AnonymousType0`2
+
+  .method private hidebysig static void TestAnonymousTypes() cil managed
+  {
+    // Code size 46
+    .maxstack 3
+    .locals init(genericinstance V_0, int32 V_1)
+    IL_0000: nop
+    IL_0001: ldstr "lj@sh"
+    IL_0006: ldc.i4.s 35
+    IL_0008: newobj instance void genericinstance::.ctor(var, var)
+    IL_000d: stloc.0
+    IL_000e: ldstr "Name={0}, Age={1}"
+    IL_0013: ldloc.0
+    IL_0014: callvirt instance var genericinstance::get_Name()
+    IL_0019: ldloc.0
+    IL_001a: callvirt instance var genericinstance::get_Age()
+    IL_001f: stloc.1
+    IL_0020: ldloca.s V_1
+    IL_0022: call instance string int32::ToString()
+    IL_0027: call void [System.Console]System.Console::WriteLine(string, [System.Runtime]System.Object, [System.Runtime]System.Object)
+    IL_002c: nop
+    IL_002d: ret
+  } // End of method System.Void part2.cp4::TestAnonymousTypes()
 ```
 
 [Back to TOC](#table-of-contents)

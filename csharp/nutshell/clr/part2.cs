@@ -268,6 +268,11 @@ class cp4 {
       [7] = "seven"
     };
   }
+
+  static void TestAnonymousTypes() {
+    var o = new {Name = "lj@sh", Age = 35};
+    Console.WriteLine("Name={0}, Age={1}", o.Name, o.Age.ToString());
+  }
 } // class cp4
 
 } // namespace part2
