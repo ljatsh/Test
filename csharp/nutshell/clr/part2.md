@@ -28,6 +28,10 @@ Table of Contents
     * [Object Initializer](#object-initializer)
     * [Collection Initializer](#collection-initializer)
   * [Anonymous Types](#anonymous-types)
+* [Interfaces](#interfaces)
+  * [Defining an Interface](#defining-an-interface)
+  * [More About Calling Interface Methods](#more-about-calling-interface-methods)
+  * [Explicit Interface Method Implementation](#explicit-interface-method-implementation)
 
 Type Fundamentals
 -----------------
@@ -1130,6 +1134,199 @@ Anonymous Types
     IL_002c: nop
     IL_002d: ret
   } // End of method System.Void part2.cp4::TestAnonymousTypes()
+```
+
+[Back to TOC](#table-of-contents)
+
+Interfaces
+----------
+
+Defining an Interface
+---------------------
+
+* A method implements a interface is ```public```, ```virtual``` and ```final```
+* A virtual method implements a interface can be override by derived class
+
+```csharp
+  interface ITest {
+    void Test1();
+    void Test2();
+  }
+
+  internal class Class_ITest : ITest {
+    public void Test1() {}
+    public virtual void Test2() {}
+  }
+
+  .class private interface abstract auto ansi part2.ITest
+  {
+    .method public hidebysig newslot abstract virtual instance void Test1() cil managed
+    {
+    } // End of method System.Void part2.ITest::Test1()
+
+    .method public hidebysig newslot abstract virtual instance void Test2() cil managed
+    {
+    } // End of method System.Void part2.ITest::Test2()
+  } // End of class part2.ITest
+  
+  .class private auto ansi beforefieldinit part2.Class_ITest extends [System.Runtime]System.Object implements part2.ITest
+  {
+
+    .method public hidebysig newslot virtual final instance void Test1() cil managed
+    {
+      // Code size 2
+      .maxstack 8
+      IL_0000: nop
+      IL_0001: ret
+    } // End of method System.Void part2.Class_ITest::Test1()
+
+    .method public hidebysig newslot virtual instance void Test2() cil managed
+    {
+      // Code size 2
+      .maxstack 8
+      IL_0000: nop
+      IL_0001: ret
+    } // End of method System.Void part2.Class_ITest::Test2()
+
+    .method public hidebysig specialname rtspecialname instance void .ctor() cil managed
+    {
+      // Code size 8
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: call instance void [System.Runtime]System.Object::.ctor()
+      IL_0006: nop
+      IL_0007: ret
+    } // End of method System.Void part2.Class_ITest::.ctor()
+  } // End of class part2.Class_ITest
+```
+
+[Back to TOC](#table-of-contents)
+
+More About Calling Interface Methods
+------------------------------------
+
+```csharp
+  internal class BaseInterfaceTest : IDisposable {
+    // This method is implicitly sealed and cannot be overridden
+    public void Dispose() {
+      Console.WriteLine("BaseInterfaceTest's Dispose");
+    }
+  }
+
+  // This class is derived from Base and it re­implements IDisposable
+  internal class DerivedInterfaceTest : BaseInterfaceTest, IDisposable {
+    // This method cannot override Base's Dispose. 'new' is used to indicate
+    // that this method re­implements IDisposable's Dispose method
+    new public void Dispose() {
+      Console.WriteLine("Derived's Dispose");
+      // NOTE: The next line shows how to call a base class's implementation (if desired)
+      // BaseInterfaceTest.Dispose();
+    }
+  }
+
+  static void TestIntefaceMethodReimplementation() {
+    /************************* First Example *************************/
+    BaseInterfaceTest b = new BaseInterfaceTest();
+    // Calls Dispose by using b's type: "BaseInterfaceTest's Dispose"
+    b.Dispose();
+    // Calls Dispose by using b's object's type: "BaseInterfaceTest's Dispose"
+    ((IDisposable)b).Dispose();
+
+    /************************* Second Example ************************/
+    DerivedInterfaceTest d = new DerivedInterfaceTest();
+    // Calls Dispose by using d's type: "DerivedInterfaceTest's Dispose"
+    d.Dispose();
+    // Calls Dispose by using d's object's type: "DerivedInterfaceTest's Dispose"
+    ((IDisposable)d).Dispose();
+
+    /************************* Third Example *************************/
+    b = new DerivedInterfaceTest();
+    // Calls Dispose by using b's type: "BaseInterfaceTest's Dispose"
+    b.Dispose();
+    // Calls Dispose by using b's object's type: "DerivedInterfaceTest's Dispose"
+    ((IDisposable)b).Dispose();
+  }
+
+  .class private auto ansi beforefieldinit part2.DerivedInterfaceTest extends part2.BaseInterfaceTest implements [System.Runtime]System.IDisposable
+  {
+    .method public hidebysig newslot virtual final instance void Dispose() cil managed
+    {
+      // Code size 13
+      .maxstack 8
+      IL_0000: nop
+      IL_0001: ldstr "Derived's Dispose"
+      IL_0006: call void [System.Console]System.Console::WriteLine(string)
+      IL_000b: nop
+      IL_000c: ret
+    } // End of method System.Void part2.DerivedInterfaceTest::Dispose()
+
+    .method public hidebysig specialname rtspecialname instance void .ctor() cil managed
+    {
+      // Code size 8
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: call instance void part2.BaseInterfaceTest::.ctor()
+      IL_0006: nop
+      IL_0007: ret
+    } // End of method System.Void part2.DerivedInterfaceTest::.ctor()
+  } // End of class part2.DerivedInterfaceTest
+  
+  .method private hidebysig static void TestIntefaceMethodReimplementation() cil managed
+  {
+    // Code size 62
+    .maxstack 1
+    .locals init(part2.BaseInterfaceTest V_0, part2.DerivedInterfaceTest V_1)
+    IL_0000: nop
+    IL_0001: newobj instance void part2.BaseInterfaceTest::.ctor()
+    IL_0006: stloc.0
+    IL_0007: ldloc.0
+    IL_0008: callvirt instance void part2.BaseInterfaceTest::Dispose()
+    IL_000d: nop
+    IL_000e: ldloc.0
+    IL_000f: callvirt instance void [System.Runtime]System.IDisposable::Dispose()
+    IL_0014: nop
+    IL_0015: newobj instance void part2.DerivedInterfaceTest::.ctor()
+    IL_001a: stloc.1
+    IL_001b: ldloc.1
+    IL_001c: callvirt instance void part2.DerivedInterfaceTest::Dispose()
+    IL_0021: nop
+    IL_0022: ldloc.1
+    IL_0023: callvirt instance void [System.Runtime]System.IDisposable::Dispose()
+    IL_0028: nop
+    IL_0029: newobj instance void part2.DerivedInterfaceTest::.ctor()
+    IL_002e: stloc.0
+    IL_002f: ldloc.0
+    IL_0030: callvirt instance void part2.BaseInterfaceTest::Dispose()
+    IL_0035: nop
+    IL_0036: ldloc.0
+    IL_0037: callvirt instance void [System.Runtime]System.IDisposable::Dispose()
+    IL_003c: nop
+    IL_003d: ret
+  } // End of method System.Void part2.cp4::TestIntefaceMethodReimplementation()
+```
+
+[Back to TOC](#table-of-contents)
+
+Explicit Interface Method Implementation
+----------------------------------------
+
+the type’s method table contains entries for the following:
+
+* All the virtual instance methods defined by Object, the implicitly inherited base class.
+* All the interface methods defined by IDisposable, the inherited interface. In this example, there is only one method, Dispose, because the IDisposable interface defines just one method.
+* The new method, Dispose, introduced by SimpleType.
+
+conclusion:
+
+* The method implements a interface is actually a newslot different one from that in interface
+* EIMI method can only be called from interface
+* We can write following snippet:
+
+```csharp
+  internal sealed class SimpleType : IDisposable {
+  //public void Dispose() { Console.WriteLine("public Dispose"); } // you can comment out this line
+  void IDisposable.Dispose() { Console.WriteLine("IDisposable Dispose"); }
+}
 ```
 
 [Back to TOC](#table-of-contents)

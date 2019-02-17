@@ -70,6 +70,34 @@ internal class PropertyClass {
   public String Name { get; set; }
 }
 
+interface ITest {
+  void Test1();
+  void Test2();
+}
+
+internal class Class_ITest : ITest {
+  public void Test1() {}
+  public virtual void Test2() {}
+}
+
+internal class BaseInterfaceTest : IDisposable {
+  // This method is implicitly sealed and cannot be overridden
+  public void Dispose() {
+    Console.WriteLine("BaseInterfaceTest's Dispose");
+  }
+}
+
+// This class is derived from Base and it re­implements IDisposable
+internal class DerivedInterfaceTest : BaseInterfaceTest, IDisposable {
+    // This method cannot override Base's Dispose. 'new' is used to indicate
+    // that this method re­implements IDisposable's Dispose method
+    new public void Dispose() {
+      Console.WriteLine("Derived's Dispose");
+      // NOTE: The next line shows how to call a base class's implementation (if desired)
+      // base.Dispose();
+    }
+}
+
 static class ExtensionClass {
   public static String Dump(this IEnumerable data) { return ""; }
 }
@@ -272,6 +300,29 @@ class cp4 {
   static void TestAnonymousTypes() {
     var o = new {Name = "lj@sh", Age = 35};
     Console.WriteLine("Name={0}, Age={1}", o.Name, o.Age.ToString());
+  }
+
+  static void TestIntefaceMethodReimplementation() {
+    /************************* First Example *************************/
+    BaseInterfaceTest b = new BaseInterfaceTest();
+    // Calls Dispose by using b's type: "BaseInterfaceTest's Dispose"
+    b.Dispose();
+    // Calls Dispose by using b's object's type: "BaseInterfaceTest's Dispose"
+    ((IDisposable)b).Dispose();
+
+    /************************* Second Example ************************/
+    DerivedInterfaceTest d = new DerivedInterfaceTest();
+    // Calls Dispose by using d's type: "DerivedInterfaceTest's Dispose"
+    d.Dispose();
+    // Calls Dispose by using d's object's type: "DerivedInterfaceTest's Dispose"
+    ((IDisposable)d).Dispose();
+
+    /************************* Third Example *************************/
+    b = new DerivedInterfaceTest();
+    // Calls Dispose by using b's type: "BaseInterfaceTest's Dispose"
+    b.Dispose();
+    // Calls Dispose by using b's object's type: "DerivedInterfaceTest's Dispose"
+    ((IDisposable)b).Dispose();
   }
 } // class cp4
 
