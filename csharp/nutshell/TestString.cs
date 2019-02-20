@@ -1,14 +1,11 @@
 using NUnit.Framework;
 using System;
 
-namespace Tests
-{
+namespace Tests {
   [TestFixture]
-  public class Test
-  {
+  public class TestString {
     [SetUp]
-    public void Setup()
-    {
+    public void Setup() {
     }
   }
 }
