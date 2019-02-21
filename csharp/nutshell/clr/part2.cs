@@ -96,6 +96,35 @@ class OperatorOverloadTest {
   }
 }
 
+public sealed class Rational {
+   // Constructs a Rational from an Int32
+   public Rational(Int32 num) { }
+   // Constructs a Rational from a Single
+   public Rational(Single num) { }
+   // Converts a Rational to an Int32
+   public Int32 ToInt32() { return 1; }
+   // Converts a Rational to a Single
+   public Single ToSingle() { return 1.0f; }
+   // Implicitly constructs and returns a Rational from an Int32
+   public static implicit operator Rational(Int32 num) {
+      return new Rational(num);
+   }
+   // Implicitly constructs and returns a Rational from a Single
+   public static implicit operator Rational(Single num) {
+      return new Rational(num);
+   }
+   // Explicitly returns an Int32 from a Rational
+   public static explicit operator Int32(Rational r) {
+      return r.ToInt32();
+   }
+   // Explicitly returns a Single from a Rational
+   public static explicit operator Single(Rational r) {
+      return r.ToSingle();
+   }
+
+   public static implicit operator Object(Rational r) { return null; }
+}
+
 internal class PropertyClass {
   public String Name { get; set; }
 }
@@ -367,6 +396,14 @@ class cp4 {
     v7 = v4 != v5;
     v7 = v4 < v5;
     v7 = v4 > v5;
+  }
+
+  static void TestConversationOpearator() {
+    Rational r1 = 5;         // Implicit cast from Int32  to Rational
+    Rational r2 = 2.5F;      // Implicit cast from Single to Rational
+
+    Int32  x = (Int32)  r1;  // Explicit cast from Rational to Int32
+    Single s = (Single) r2;  // Explicit cast from Rational to Single
   }
 } // class cp4
 

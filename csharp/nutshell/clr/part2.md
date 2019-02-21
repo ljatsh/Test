@@ -17,6 +17,7 @@ Table of Contents
   * [Constructor and Value](#constructor-and-value)
   * [Type Constructor](#type-constructor)
   * [Operator Overload Methods](#operator-overload-methods)
+  * [Conversation Opeartor Methods](#conversation-opeartor-methods)
   * [Extension Method](#extension-method)
 * [Parameters](#parameters)
   * [Optional and Named Parameters](#optional-and-named-parameters)
@@ -671,35 +672,35 @@ Operator Overload Methods
 
 C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
 ------------------ | --------------------| -----------------------------------
-+ | op_UnaryPlus | Plus
-- | op_UnaryNegation | Negate
-! | op_LogicNot | Yes | Not
-~ | op_OnesComplement | OnesComplement
-++ | op_Increment | Yes | Increment
--- | op_Decrement | Yes | Decrement
-(none) | op_True | Yes | IsTrue { get; }
-(none) | op_False | Yes | IsFalse { get; }
+`+` | op_UnaryPlus | Plus
+`-` | op_UnaryNegation | Negate
+`!`| op_LogicNot | Yes | Not
+`~` | op_OnesComplement | OnesComplement
+`++` | op_Increment | Yes | Increment
+`--`| op_Decrement | Yes | Decrement
+`(none)` | op_True | Yes | IsTrue { get; }
+`(none)` | op_False | Yes | IsFalse { get; }
 
 * C# Binary Operators and Their CLS-Compilant Method Names:
 
 C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
 ------------------ | --------------------| -----------------------------------
-+ | op_Addition | Add
-- | op_Subtraction | Subtract
-* | op_Multiply | Multiply
-/ | op_Division | Divide
-% | op_Modulus | Mod
-& | op_BitwiseAnd | BitwiseAnd
-| | op_BitwiseOr | BitwiseOr
-^ | op_ExclusiveOr | Xor
-<< | op_LeftShift | LeftShift
->> | op_RightShift | op_RightShift
-== | op_Equality | Equals
-!= | op_InEquality | Equals
-< | op_LessThan | Compare
-> | op_GreaterThan | Compare
-<= | op_LessThanOrEqual | Compare
->= | op_GreaterThanOrEqual | Compare
+`+` | op_Addition | Add
+`-` | op_Subtraction | Subtract
+`*` | op_Multiply | Multiply
+`/` | op_Division | Divide
+`%` | op_Modulus | Mod
+`&` | op_BitwiseAnd | BitwiseAnd
+`|` | op_BitwiseOr | BitwiseOr
+`^` | op_ExclusiveOr | Xor
+`<<` | op_LeftShift | LeftShift
+`>>` | op_RightShift | op_RightShift
+`==` | op_Equality | Equals
+`!=` | op_InEquality | Equals
+`<` | op_LessThan | Compare
+`>` | op_GreaterThan | Compare
+`<=` | op_LessThanOrEqual | Compare
+`>=` | op_GreaterThanOrEqual | Compare
 
 ```csharp
   class OperatorOverloadTest {
@@ -891,6 +892,183 @@ C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
     IL_0046: stloc.s V_6
     IL_0048: ret
   } // End of method System.Void part2.cp4::TestOperatorOverload()
+```
+
+[Back to TOC](#table-of-contents)
+
+Conversation Opeartor Methods
+-----------------------------
+
+* ```public static implicit|explicit operator type1(type2) { return null; }```
+* op_Implicit and op_Explicit methods are generated in CLR.
+* User defined conversation operator is different from as/is.
+* Base, Derived class conversation is now allowed. For example, ```public static implicit operator Object(Rational r) { return null; }```  
+  causes error ```Rational.implicit operator object(Rational)': user-defined conversions to or from a base class are not allowed```
+
+```csharp
+  public sealed class Rational {
+    // Constructs a Rational from an Int32
+    public Rational(Int32 num) { }
+    // Constructs a Rational from a Single
+    public Rational(Single num) { }
+    // Converts a Rational to an Int32
+    public Int32 ToInt32() { return 1; }
+    // Converts a Rational to a Single
+    public Single ToSingle() { return 1.0f; }
+    // Implicitly constructs and returns a Rational from an Int32
+    public static implicit operator Rational(Int32 num) {
+      return new Rational(num);
+    }
+    // Implicitly constructs and returns a Rational from a Single
+    public static implicit operator Rational(Single num) {
+      return new Rational(num);
+    }
+    // Explicitly returns an Int32 from a Rational
+    public static explicit operator Int32(Rational r) {
+      return r.ToInt32();
+    }
+    // Explicitly returns a Single from a Rational
+    public static explicit operator Single(Rational r) {
+      return r.ToSingle();
+    }
+  }
+
+  .class public auto ansi sealed beforefieldinit part2.Rational extends [System.Runtime]System.Object
+  {
+    .method public hidebysig specialname rtspecialname instance void .ctor(int32 num) cil managed
+    {
+      // Code size 9
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: call instance void [System.Runtime]System.Object::.ctor()
+      IL_0006: nop
+      IL_0007: nop
+      IL_0008: ret
+    } // End of method System.Void part2.Rational::.ctor(System.Int32)
+
+    .method public hidebysig specialname rtspecialname instance void .ctor(single num) cil managed
+    {
+      // Code size 9
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: call instance void [System.Runtime]System.Object::.ctor()
+      IL_0006: nop
+      IL_0007: nop
+      IL_0008: ret
+    } // End of method System.Void part2.Rational::.ctor(System.Single)
+
+    .method public hidebysig instance int32 ToInt32() cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(int32 V_0)
+      IL_0000: nop
+      IL_0001: ldc.i4.1
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+    } // End of method System.Int32 part2.Rational::ToInt32()
+
+    .method public hidebysig instance single ToSingle() cil managed
+    {
+      // Code size 11
+      .maxstack 1
+      .locals init(single V_0)
+      IL_0000: nop
+      IL_0001: ldc.r4 1
+      IL_0006: stloc.0
+      IL_0007: br.s     IL_0009
+      IL_0009: ldloc.0
+      IL_000a: ret
+    } // End of method System.Single part2.Rational::ToSingle()
+
+    .method public hidebysig specialname static part2.Rational op_Implicit(int32 num) cil managed
+    {
+      // Code size 12
+      .maxstack 1
+      .locals init(part2.Rational V_0)
+      IL_0000: nop
+      IL_0001: ldarg.0
+      IL_0002: newobj instance void part2.Rational::.ctor(int32)
+      IL_0007: stloc.0
+      IL_0008: br.s     IL_000a
+      IL_000a: ldloc.0
+      IL_000b: ret
+    } // End of method part2.Rational part2.Rational::op_Implicit(System.Int32)
+
+    .method public hidebysig specialname static part2.Rational op_Implicit(single num) cil managed
+    {
+      // Code size 12
+      .maxstack 1
+      .locals init(part2.Rational V_0)
+      IL_0000: nop
+      IL_0001: ldarg.0
+      IL_0002: newobj instance void part2.Rational::.ctor(single)
+      IL_0007: stloc.0
+      IL_0008: br.s     IL_000a
+      IL_000a: ldloc.0
+      IL_000b: ret
+    } // End of method part2.Rational part2.Rational::op_Implicit(System.Single)
+
+    .method public hidebysig specialname static int32 op_Explicit(part2.Rational r) cil managed
+    {
+      // Code size 12
+      .maxstack 1
+      .locals init(int32 V_0)
+      IL_0000: nop
+      IL_0001: ldarg.0
+      IL_0002: callvirt instance int32 part2.Rational::ToInt32()
+      IL_0007: stloc.0
+      IL_0008: br.s     IL_000a
+      IL_000a: ldloc.0
+      IL_000b: ret
+    } // End of method System.Int32 part2.Rational::op_Explicit(part2.Rational)
+
+    .method public hidebysig specialname static single op_Explicit(part2.Rational r) cil managed
+    {
+      // Code size 12
+      .maxstack 1
+      .locals init(single V_0)
+      IL_0000: nop
+      IL_0001: ldarg.0
+      IL_0002: callvirt instance single part2.Rational::ToSingle()
+      IL_0007: stloc.0
+      IL_0008: br.s     IL_000a
+      IL_000a: ldloc.0
+      IL_000b: ret
+    } // End of method System.Single part2.Rational::op_Explicit(part2.Rational)
+  } // End of class part2.Rational
+
+  static void TestConversationOpearator() {
+    Rational r1 = 5;         // Implicit cast from Int32  to Rational
+    Rational r2 = 2.5F;      // Implicit cast from Single to Rational
+
+    Int32  x = (Int32)  r1;  // Explicit cast from Rational to Int32
+    Single s = (Single) r2;  // Explicit cast from Rational to Single
+  }
+
+  .method private hidebysig static void TestConversationOpearator() cil managed
+  {
+    // Code size 35
+    .maxstack 1
+    .locals init(part2.Rational V_0, part2.Rational V_1, int32 V_2, single V_3)
+    IL_0000: nop
+    IL_0001: ldc.i4.5
+    IL_0002: call part2.Rational part2.Rational::op_Implicit(int32)
+    IL_0007: stloc.0
+    IL_0008: ldc.r4 2.5
+    IL_000d: call part2.Rational part2.Rational::op_Implicit(single)
+    IL_0012: stloc.1
+    IL_0013: ldloc.0
+    IL_0014: call int32 part2.Rational::op_Explicit(part2.Rational)
+    IL_0019: stloc.2
+    IL_001a: ldloc.1
+    IL_001b: call single part2.Rational::op_Explicit(part2.Rational)
+    IL_0020: conv.r4
+    IL_0021: stloc.3
+    IL_0022: ret
+  } // End of method System.Void part2.cp4::TestConversationOpearator()
 ```
 
 [Back to TOC](#table-of-contents)
