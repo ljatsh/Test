@@ -8,6 +8,7 @@ Table of Contents
 dev_env
 -------
 
+* [common language infustructure](http://www.ecma-international.org/publications/standards/Ecma-335.htm)
 * [csharp language reference](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/index)
 * [mono](https://www.mono-project.com/)
 * [.net core](https://docs.microsoft.com/en-us/dotnet/core/)

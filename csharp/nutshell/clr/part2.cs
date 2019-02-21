@@ -66,6 +66,36 @@ class ClassMethod {
   }
 }
 
+class OperatorOverloadTest {
+  public override bool Equals(object obj) {
+    return false;
+  }
+
+  public override int GetHashCode() {
+    return 1;
+  }
+
+  public static OperatorOverloadTest operator+(OperatorOverloadTest left, OperatorOverloadTest right) {
+    return null;
+  }
+
+  public static bool operator==(OperatorOverloadTest left, OperatorOverloadTest right) {
+    return false;
+  }
+
+  public static bool operator!=(OperatorOverloadTest left, OperatorOverloadTest right) {
+    return true;
+  }
+
+  public static bool operator<(OperatorOverloadTest left, OperatorOverloadTest right) {
+    return false;
+  }
+
+  public static bool operator>(OperatorOverloadTest left, OperatorOverloadTest right) {
+    return false;
+  }
+}
+
 internal class PropertyClass {
   public String Name { get; set; }
 }
@@ -323,6 +353,20 @@ class cp4 {
     b.Dispose();
     // Calls Dispose by using b's object's type: "DerivedInterfaceTest's Dispose"
     ((IDisposable)b).Dispose();
+  }
+
+  static void TestOperatorOverload() {
+    int v1 = 1;
+    int v2 = 3;
+    int v3 = v1 + v2;
+
+    OperatorOverloadTest v4 = new OperatorOverloadTest();
+    OperatorOverloadTest v5 = new OperatorOverloadTest();
+    OperatorOverloadTest v6 = v4 + v5;
+    var v7 = v4 == v5;
+    v7 = v4 != v5;
+    v7 = v4 < v5;
+    v7 = v4 > v5;
   }
 } // class cp4
 

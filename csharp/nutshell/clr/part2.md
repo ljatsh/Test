@@ -16,6 +16,7 @@ Table of Contents
   * [Constructor and Class](#constructor-and-class)
   * [Constructor and Value](#constructor-and-value)
   * [Type Constructor](#type-constructor)
+  * [Operator Overload Methods](#operator-overload-methods)
   * [Extension Method](#extension-method)
 * [Parameters](#parameters)
   * [Optional and Named Parameters](#optional-and-named-parameters)
@@ -658,6 +659,241 @@ Type Constructor
 
 * Never define type constructor in Value Type. I don't know why it was not called during testing.
 * Type constructor is thread safe and will be called by CLR only once every AppDomain.
+
+Operator Overload Methods
+-------------------------
+
+* CLR does not kown operator overload at all. Operator overload is compiler action.
+* Primitive types does not define overloaded operators for performance reason.
+* Overload operator method must be public and static.
+* [System.Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal?view=netcore-2.2) is a good example.
+* C# Unary Operators and Their CLS-Compilant Method Names:
+
+C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
+------------------ | --------------------| -----------------------------------
++ | op_UnaryPlus | Plus
+- | op_UnaryNegation | Negate
+! | op_LogicNot | Yes | Not
+~ | op_OnesComplement | OnesComplement
+++ | op_Increment | Yes | Increment
+-- | op_Decrement | Yes | Decrement
+(none) | op_True | Yes | IsTrue { get; }
+(none) | op_False | Yes | IsFalse { get; }
+
+* C# Binary Operators and Their CLS-Compilant Method Names:
+
+C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
+------------------ | --------------------| -----------------------------------
++ | op_Addition | Add
+- | op_Subtraction | Subtract
+* | op_Multiply | Multiply
+/ | op_Division | Divide
+% | op_Modulus | Mod
+& | op_BitwiseAnd | BitwiseAnd
+| | op_BitwiseOr | BitwiseOr
+^ | op_ExclusiveOr | Xor
+<< | op_LeftShift | LeftShift
+>> | op_RightShift | op_RightShift
+== | op_Equality | Equals
+!= | op_InEquality | Equals
+< | op_LessThan | Compare
+> | op_GreaterThan | Compare
+<= | op_LessThanOrEqual | Compare
+>= | op_GreaterThanOrEqual | Compare
+
+```csharp
+  class OperatorOverloadTest {
+    public override bool Equals(object obj) {
+      return false;
+    }
+
+    public override int GetHashCode() {
+      return 1;
+    }
+
+    public static OperatorOverloadTest operator+(OperatorOverloadTest left, OperatorOverloadTest right) {
+      return null;
+    }
+
+    public static bool operator==(OperatorOverloadTest left, OperatorOverloadTest right) {
+      return false;
+    }
+
+    public static bool operator!=(OperatorOverloadTest left, OperatorOverloadTest right) {
+      return true;
+    }
+
+    public static bool operator<(OperatorOverloadTest left, OperatorOverloadTest right) {
+      return false;
+    }
+
+    public static bool operator>(OperatorOverloadTest left, OperatorOverloadTest right) {
+      return false;
+    }
+  }
+
+  .class private auto ansi beforefieldinit part2.OperatorOverloadTest extends [System.Runtime]System.Object
+  {
+
+    .method public hidebysig virtual instance boolean Equals([System.Runtime]System.Object obj) cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(boolean V_0)
+      IL_0000: nop
+      IL_0001: ldc.i4.0
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+    } // End of method System.Boolean part2.OperatorOverloadTest::Equals(System.Object)
+
+    .method public hidebysig virtual instance int32 GetHashCode() cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(int32 V_0)
+      IL_0000: nop
+      IL_0001: ldc.i4.1
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+    } // End of method System.Int32 part2.OperatorOverloadTest::GetHashCode()
+
+    .method public hidebysig specialname static part2.OperatorOverloadTest op_Addition(part2.OperatorOverloadTest left, part2.OperatorOverloadTest right) cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(part2.OperatorOverloadTest V_0)
+      IL_0000: nop
+      IL_0001: ldnull
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+    } // End of method part2.OperatorOverloadTest part2.OperatorOverloadTest::op_Addition(part2.OperatorOverloadTest,part2.OperatorOverloadTest)
+
+    .method public hidebysig specialname static boolean op_Equality(part2.OperatorOverloadTest left, part2.OperatorOverloadTest right) cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(boolean V_0)
+      IL_0000: nop
+      IL_0001: ldc.i4.0
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+    } // End of method System.Boolean part2.OperatorOverloadTest::op_Equality(part2.OperatorOverloadTest,part2.OperatorOverloadTest)
+
+    .method public hidebysig specialname static boolean op_Inequality(part2.OperatorOverloadTest left, part2.OperatorOverloadTest right) cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(boolean V_0)
+      IL_0000: nop
+      IL_0001: ldc.i4.1
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+    } // End of method System.Boolean part2.OperatorOverloadTest::op_Inequality(part2.OperatorOverloadTest,part2.OperatorOverloadTest)
+
+    .method public hidebysig specialname static boolean op_LessThan(part2.OperatorOverloadTest left, part2.OperatorOverloadTest right) cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(boolean V_0)
+      IL_0000: nop
+      IL_0001: ldc.i4.0
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+    } // End of method System.Boolean part2.OperatorOverloadTest::op_LessThan(part2.OperatorOverloadTest,part2.OperatorOverloadTest)
+
+    .method public hidebysig specialname static boolean op_GreaterThan(part2.OperatorOverloadTest left, part2.OperatorOverloadTest right) cil managed
+    {
+      // Code size 7
+      .maxstack 1
+      .locals init(boolean V_0)
+      IL_0000: nop
+      IL_0001: ldc.i4.0
+      IL_0002: stloc.0
+      IL_0003: br.s     IL_0005
+      IL_0005: ldloc.0
+      IL_0006: ret
+     } // End of method System.Boolean part2.OperatorOverloadTest::op_GreaterThan(part2.OperatorOverloadTest,part2.OperatorOverloadTest)
+
+    .method public hidebysig specialname rtspecialname instance void .ctor() cil managed
+    {
+      // Code size 8
+      .maxstack 8
+      IL_0000: ldarg.0
+      IL_0001: call instance void [System.Runtime]System.Object::.ctor()
+      IL_0006: nop
+      IL_0007: ret
+    } // End of method System.Void part2.OperatorOverloadTest::.ctor()
+  } // End of class part2.OperatorOverloadTest
+
+  static void TestOperatorOverload() {
+    int v1 = 1;
+    int v2 = 3;
+    int v3 = v1 + v2;
+
+    OperatorOverloadTest v4 = new OperatorOverloadTest();
+    OperatorOverloadTest v5 = new OperatorOverloadTest();
+    OperatorOverloadTest v6 = v4 + v5;
+    var v7 = v4 == v5;
+    v7 = v4 != v5;
+    v7 = v4 < v5;
+    v7 = v4 > v5;
+  }
+
+  .method private hidebysig static void TestOperatorOverload() cil managed
+  {
+    // Code size 73
+    .maxstack 2
+    .locals init(int32 V_0, int32 V_1, int32 V_2, part2.OperatorOverloadTest V_3, part2.OperatorOverloadTest V_4, part2.OperatorOverloadTest V_5, boolean V_6)
+    IL_0000: nop
+    IL_0001: ldc.i4.1
+    IL_0002: stloc.0
+    IL_0003: ldc.i4.3
+    IL_0004: stloc.1
+    IL_0005: ldloc.0
+    IL_0006: ldloc.1
+    IL_0007: add
+    IL_0008: stloc.2
+    IL_0009: newobj instance void part2.OperatorOverloadTest::.ctor()
+    IL_000e: stloc.3
+    IL_000f: newobj instance void part2.OperatorOverloadTest::.ctor()
+    IL_0014: stloc.s V_4
+    IL_0016: ldloc.3
+    IL_0017: ldloc.s V_4
+    IL_0019: call part2.OperatorOverloadTest part2.OperatorOverloadTest::op_Addition(part2.OperatorOverloadTest, part2.OperatorOverloadTest)
+    IL_001e: stloc.s V_5
+    IL_0020: ldloc.3
+    IL_0021: ldloc.s V_4
+    IL_0023: call boolean part2.OperatorOverloadTest::op_Equality(part2.OperatorOverloadTest, part2.OperatorOverloadTest)
+    IL_0028: stloc.s V_6
+    IL_002a: ldloc.3
+    IL_002b: ldloc.s V_4
+    IL_002d: call boolean part2.OperatorOverloadTest::op_Inequality(part2.OperatorOverloadTest, part2.OperatorOverloadTest)
+    IL_0032: stloc.s V_6
+    IL_0034: ldloc.3
+    IL_0035: ldloc.s V_4
+    IL_0037: call boolean part2.OperatorOverloadTest::op_LessThan(part2.OperatorOverloadTest, part2.OperatorOverloadTest)
+    IL_003c: stloc.s V_6
+    IL_003e: ldloc.3
+    IL_003f: ldloc.s V_4
+    IL_0041: call boolean part2.OperatorOverloadTest::op_GreaterThan(part2.OperatorOverloadTest, part2.OperatorOverloadTest)
+    IL_0046: stloc.s V_6
+    IL_0048: ret
+  } // End of method System.Void part2.cp4::TestOperatorOverload()
+```
+
+[Back to TOC](#table-of-contents)
 
 Extension Method
 ----------------
