@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace part2 {
+namespace clr {
 
 // The main advantage of value types is that they’re not allocated as objects in the managed heap.
 struct SomeValue : IComparable {
