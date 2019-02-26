@@ -121,8 +121,6 @@ public sealed class Rational {
    public static explicit operator Single(Rational r) {
       return r.ToSingle();
    }
-
-   public static implicit operator Object(Rational r) { return null; }
 }
 
 internal class PropertyClass {
