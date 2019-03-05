@@ -3,14 +3,18 @@ Table of Contents
 
 * [Delegates](#delegates)
   * [Using Delegates to Call Back Many Methods](#using-delegates-to-call-back-many-methods)
+  * [C#'s Syntactic Suger for Delegates](#c#'s-syntactic-suger-for-delegates)
+  * [Delegate Compability](#delegate-compability)
 
 Delegates
 ---------
 
-* C# hides lots of information behind deletage:
-  1. Every delegate is a new class derived from [MulticastDelegate](https://docs.microsoft.com/en-us/dotnet/api/system.multicastdelegate?view=netcore-2.2)
-  2. C# intepretes [Class|Instance].Method to object and method required by the delegate constructor
-  3. Invoke can be called explicitly to trigger internal methods
+C# hides lots of information behind deletage:
+
+* Every delegate is a new class derived from [MulticastDelegate](https://docs.microsoft.com/en-us/dotnet/api/system.multicastdelegate?view=netcore-2.2)
+* C# intepretes [Class|Instance].Method to object and method required by the delegate constructor
+* Invoke can be called explicitly to trigger internal methods
+* Prefer to use predefined generic delegates --> [Action](https://docs.microsoft.com/en-us/dotnet/api/system.action?view=netcore-2.2) and [Func](https://docs.microsoft.com/en-us/dotnet/api/system.func-1?view=netcore-2.2)
 
 ```csharp
 internal delegate void Feedback(Int32 value);
@@ -121,6 +125,79 @@ public static void TestDelegateChain() {
   IL_0048: nop
   IL_0049: ret
 } // End of method System.Void clr.part3::TestDelegateChain()
+```
+
+[Back to TOC](#table-of-contents)
+
+C#'s Syntactic Suger for Delegates
+----------------------------------
+
+* C# allows you to specify the name of a callback method without having to construct a delegate object wrapper
+
+```csharp
+internal sealed class AClass {
+  public static void CallbackWithoutNewingADelegateObject() {
+    ThreadPool.QueueUserWorkItem(SomeAsyncTask, 5);
+  }
+  private static void SomeAsyncTask(Object o) {
+    Console.WriteLine(o);
+  }
+}
+```
+
+* C# allows you to specify lambda expression to construct a delegate object wrapper
+
+```csharp
+internal sealed class AClass {
+  private String m_name;  // An instance field
+  // An instance method
+  public void CallbackWithoutNewingADelegateObject() {
+  ThreadPool.QueueUserWorkItem(
+    // The callback code can reference instance members.
+    obj => Console.WriteLine(m_name + ": " + obj),
+    5);
+  }
+}
+```
+
+[Back to TOC](#table-of-contents)
+
+Delegate Compability
+--------------------
+
+Parameter compatibility
+
+* A delegate can have more specific parameter types than its method target. This is called contravariance
+* The standard event pattern is designed to help you leverage contravariance through its use of the common EventArgs base class. For example, you can have a single method invoked by two different delegates, one passing a MouseEventArgs and the other passing a KeyEventArgs.
+
+```csharp
+delegate void StringAction (string s);
+class Test {
+  static void Main() {
+    StringAction sa = new StringAction (ActOnObject);
+    sa ("hello");
+  }
+  static void ActOnObject (object o) {
+    Console.WriteLine (o);   // hello
+  }
+}
+```
+
+Return type compatibility
+
+* A delegate target method may return a more specific type than described by the delegate. This is called covariance.
+
+```csharp
+delegate object ObjectRetriever();
+class Test {
+  static void Main()
+  {
+    ObjectRetriever o = new ObjectRetriever (RetriveString);
+    object result = o();
+    Console.WriteLine (result);      // hello
+  }
+  static string RetriveString() { return "hello"; }
+}
 ```
 
 [Back to TOC](#table-of-contents)
