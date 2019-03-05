@@ -159,7 +159,7 @@ static class ExtensionClass {
   public static String Dump(this IEnumerable data) { return ""; }
 }
 
-class cp4 {
+class part2 {
   class Employ {}
 
   // 1. Prefer is/as than ()
@@ -403,6 +403,6 @@ class cp4 {
     Int32  x = (Int32)  r1;  // Explicit cast from Rational to Int32
     Single s = (Single) r2;  // Explicit cast from Rational to Single
   }
-} // class cp4
+} // class part2
 
-} // namespace part2
+} // namespace clr
