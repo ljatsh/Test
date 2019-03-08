@@ -61,3 +61,5 @@ ildsam
 
 todo
 ----
+
+* Check the compiler generated code for lambda. It seems CLR have any know about lambda.

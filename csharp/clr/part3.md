@@ -3,7 +3,7 @@ Table of Contents
 
 * [Delegates](#delegates)
   * [Using Delegates to Call Back Many Methods](#using-delegates-to-call-back-many-methods)
-  * [C#'s Syntactic Suger for Delegates](#c#'s-syntactic-suger-for-delegates)
+  * [CSharp's Syntactic Suger for Delegates](#csharp's-syntactic-suger-for-delegates)
   * [Delegate Compability](#delegate-compability)
 
 Delegates
@@ -129,8 +129,8 @@ public static void TestDelegateChain() {
 
 [Back to TOC](#table-of-contents)
 
-C#'s Syntactic Suger for Delegates
-----------------------------------
+CSharp's Syntactic Suger for Delegates
+--------------------------------------
 
 * C# allows you to specify the name of a callback method without having to construct a delegate object wrapper
 
