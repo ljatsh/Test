@@ -18,6 +18,8 @@ dev_env
 * [nunit-assert-classic-model](https://github.com/nunit/docs/wiki/Classic-Model)
 * [nunit-assert-constraint-model](https://github.com/nunit/docs/wiki/Constraint-Model)
 * [nunit-constraint](https://github.com/nunit/docs/wiki/Constraints)
+* [moq](https://github.com/Moq/moq4/wiki/Quickstart)
+* [moq-nuget](https://www.nuget.org/packages/Moq)
 
 ildsam
 -------
