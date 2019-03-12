@@ -158,5 +158,55 @@ namespace Test {
       Assert.That(o1.Equals(o2), Is.True);
       Assert.That(o1.Equals(o3), Is.True);
     }
+
+    // == for reference type is identity comparision by default
+    // Sometimes, Equals and == are different, see StringBuilder and Nan
+    // .method public hidebysig instance void TestOperator() cil managed
+    // {
+    //   // Code size 65
+    //   .maxstack 3
+    //   .locals init(Test.EqualityTestClass V_0, Test.EqualityTestClass V_1)
+    //   IL_0000: nop
+    //   IL_0001: newobj instance void Test.EqualityTestClass::.ctor()
+    //   IL_0006: dup
+    //   IL_0007: ldc.i4.s 10
+    //   IL_0009: callvirt instance void Test.EqualityTestClass::set_Age(int32)
+    //   IL_000e: nop
+    //   IL_000f: stloc.0
+    //   IL_0010: newobj instance void Test.EqualityTestClass::.ctor()
+    //   IL_0015: dup
+    //   IL_0016: ldc.i4.s 10
+    //   IL_0018: callvirt instance void Test.EqualityTestClass::set_Age(int32)
+    //   IL_001d: nop
+    //   IL_001e: stloc.1
+    //   IL_001f: ldloc.0
+    //   IL_0020: ldloc.1
+    //   IL_0021: ceq
+    //   IL_0023: call [nunit.framework]NUnit.Framework.Constraints.FalseConstraint [nunit.framework]NUnit.Framework.Is::get_False()
+    //   IL_0028: call void [nunit.framework]NUnit.Framework.Assert::That(mvar, [nunit.framework]NUnit.Framework.Constraints.IResolveConstraint)
+    //   IL_002d: nop
+    //   IL_002e: ldloc.0
+    //   IL_002f: ldloc.1
+    //   IL_0030: ceq
+    //   IL_0032: ldc.i4.0
+    //   IL_0033: ceq
+    //   IL_0035: call [nunit.framework]NUnit.Framework.Constraints.TrueConstraint [nunit.framework]NUnit.Framework.Is::get_True()
+    //   IL_003a: call void [nunit.framework]NUnit.Framework.Assert::That(mvar, [nunit.framework]NUnit.Framework.Constraints.IResolveConstraint)
+    //   IL_003f: nop
+    //   IL_0040: ret
+    // } // End of method System.Void Test.TestCp6_Equality::TestOperator()
+    [Test]
+    public void TestOperator() {
+      var o1 = new EqualityTestClass {Age = 10};
+      var o2 = new EqualityTestClass {Age = 10};
+
+      Assert.That(o1 == o2, Is.False);
+      Assert.That(o1 != o2, Is.True);
+
+      // Wont't compile
+      // var o3 = new EqualityTestStruct(new DateTime(2019, 3, 12), 10);
+      // var o4 = new EqualityTestStruct(new DateTime(2019, 3, 12), 10);
+      // Assert.That(o3 == o4, Is.True);
+    }
   }
 }

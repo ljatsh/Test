@@ -667,6 +667,8 @@ Operator Overload Methods
 * Primitive types does not define overloaded operators for performance reason.
 * Overload operator method must be public and static.
 * [System.Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal?view=netcore-2.2) is a good example.
+* Struct does not support ==,!=... by default.
+* Operator == for reference type is identity comparision by default.
 * C# Unary Operators and Their CLS-Compilant Method Names:
 
 C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
