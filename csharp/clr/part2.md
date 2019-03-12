@@ -650,8 +650,7 @@ Constructor and Value
 
 * C# does not generate parameterless constructor, and parameterless constructor is forbidden in C#
 * Initializer is not allowed except for static field
-* Value type fields are guaranteed to be 0, if the value type is nested in reference type
-* Stack-based value fields are not guaranteed to be 0, you should call parameterless constructor explicitly to guarantee it
+* Value type constructor is executed only when explicitly called!!!
 
 [Back to TOC](#table-of-contents)
 
