@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Moq;
 using System;
 
 namespace Test {
@@ -8,7 +9,7 @@ namespace Test {
     public int Age { get; set; }
 
     public override bool Equals(object obj) {
-      return false;
+      return base.Equals(obj);
     }
 
     public override int GetHashCode() {
@@ -42,10 +43,21 @@ namespace Test {
       Assert.That(Object.ReferenceEquals(s1, s2), Is.True);
     }
 
+    // Object.Equal is designed to perform object comparision.
+    // However, its default implementation is identity comparision.
+    [Test]
+    public void TestObjectEqual() {
+      var o1 = new EqualityTestClass();
+      var o2 = new EqualityTestClass();
+      Assert.That(o1.Equals(o2), Is.False);
+      Assert.That(o1.Equals(o1), Is.True);
+    }
+
     // Object.Equals(left, right) is a helper method to invoke left.Equals
     [Test]
     public void TestObjectStaticEquals() {
-      
+      var mock = new Mock<EqualityTestClass>();
+      // TODO
     }
   }
 }
