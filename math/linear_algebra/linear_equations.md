@@ -9,6 +9,9 @@ Table of Contents
   * [The Row Reduction Algorithm](#the-row-reduction-algorithm)
   * [Theorem2](#theorem2)
   * [Using Row Reduction to Resolve a Linear System](#using-row-reduction-to-resolve-a-linear-system)
+* [Vector Equations](#vector-equations)
+  * [Linear Comination](#linear-comination)
+  * [Geometric Description](#geometric-description)
 
 * [Glossory](#glossory)
   * [Linear System](#linear-system)
@@ -18,6 +21,11 @@ Table of Contents
   * [RREF](#rref)
   * [Basic Variable](#basic-variable)
   * [Free Variable](#free-variable)
+  * [Commutative Law](#commutative-law)
+  * [Associative Law](#associative-law)
+  * [Distributive Law](#distributive-law)
+
+* [Refrence](#reference)
 
 System of Linear Equations
 --------------------------
@@ -98,6 +106,43 @@ Using Row Reduction to Resolve a Linear System
 4. Write the system of equations corresponding to the matrix obtained in step3.
 5. Rewrite each nonzero equation from step 4 so that its one basic variable is expressed in terms of any free variables appearing in the equation.
 
+[Back to TOC](#table-of-contents)
+
+Vector Equations
+----------------
+
+Vector (m * 1 matrix) is an ordered number list, denoted by (u1, u2 ... um). Vector addition and multiplication statisfies [Commutative](#commutative-law), [Associative](#associative-law) and [Distributive](#distributive-law).
+
+Linear Comination
+-----------------
+
+Given vectors v1, v2, ..., vp in Rn and given scalars c1, c2, ..., cp, the vector y defined by
+
+```math
+  y = c1v1 + c2v2 + ... + cpvp
+```
+
+is called a linear combination of v1, ..., vp with weights c1, ..., cp. All the combines of v1, ..., vp is denoted by Span{v1, ..., vp}.
+
+One of the key ideas in linear algebra is to study the set of all vectors that can be generated or written as a linear combination of a fixed set {v1, ..., vp} of vectors.
+
+Geometric Description
+---------------------
+
+Vectors in R2
+
+* u is a point in the plane
+* u + v statisfies Parallelogram Rule
+* Span{u} is a line through the origin and u
+
+Vectors in R3
+
+* u is a piont in the space
+* Span{u} is a line through the origin and u
+* Span{u, v} is a plane determined by line{0, u} and line{0, v}
+
+[Back to TOC](#table-of-contents)
+
 Glossary
 --------
 
@@ -136,4 +181,32 @@ Free Variable
 
 The variables not corresponding to pivot columns in the matrix called free variables.
 
+Commutative Law
+---------------
+
+operands order does not change the answer. For example ```a + b = b + a, a * b = b * a```
+
+Associative Law
+---------------
+
+It does not matter how we group operands (for the same type operator). For example
+
+```math
+(a + b) + c = a + (b + c)
+(a * b) * c = a * (b * c)
+```
+
+Distributive Law
+----------------
+
+```math
+c * (a + b) = c * a + c * b
+(a + b) * c = a * c + b * c
+```
+
 [Back to TOC](#table-of-contents)
+
+Reference
+---------
+
+https://www.mathsisfun.com/associative-commutative-distributive.html
