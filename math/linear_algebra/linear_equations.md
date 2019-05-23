@@ -12,6 +12,11 @@ Table of Contents
 * [Vector Equations](#vector-equations)
   * [Linear Comination](#linear-comination)
   * [Geometric Description](#geometric-description)
+* [Matrix Equations](#matrix-equations)
+  * [Theorem3](#theorem3)
+  * [Theorem4](#theorem4)
+  * [Theorem5](#theorem5)
+  * [Row Vector Rule](#row-vector-rule)
 
 * [Glossory](#glossory)
   * [Linear System](#linear-system)
@@ -143,7 +148,68 @@ Vectors in R3
 
 [Back to TOC](#table-of-contents)
 
-Glossary
+Matrix Equations
+----------------
+
+linear combinations of vectors a1, a2, ..., an an can be view as the product of Matrix A (with column a1, a2, ..., an) and the weight vector
+
+```math
+  [a1 a2 ... an](x1 x2 ... xn) = x1a1 + x2a2 + ... + xnan
+```
+
+Theorem3
+--------
+
+If A is an m * n matrix, with columns a1, a2 ... an and if b is in Rm, the matrix equation
+
+```math
+                Ax = b
+```
+
+has the same solution set as the vector equation
+
+```math
+                x1a1 + x2a2 + ... + xnan = b
+```
+
+which, in turn, has the same solution set as the system of linear equations whose augmented matrix is
+
+```math
+                [a1 a2 ... an b]
+```
+
+Linear equations can be viewd as 1) matrix equation 2) vector equation or 3) a system of linear equations
+
+Theorem4
+--------
+
+Let A be an m * n matrix. Then the following statements are logically equivalent. That is, for a particular A, either they are all true statements or they are all false.
+
+a. For each b in Rm,the equation Ax=b has a solution.
+b. Each b in Rm is a linear combination of the columns of A.
+c. The columns of A span Rm.
+d. A has a pivot position in everyrow.(The coefficient matrix)
+
+Theorem5
+--------
+
+If A is an m * n matrix, u and v are vectors in Rn, and c is a scalar, then:
+
+a. A(u + v) = Au + Av
+b. A(cu) = c(Au)
+
+Row Vector Rule
+---------------
+
+If A is n m * n matrix, x is a vector in Rn. For each value in b=Ax:
+
+```math
+  bi = aix1 + ai*x2 + ... + anxn
+```
+
+[Back to TOC](#table-of-contents)
+
+Glossory
 --------
 
 Linear System
