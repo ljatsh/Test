@@ -17,6 +17,10 @@ Table of Contents
   * [Theorem4](#theorem4)
   * [Theorem5](#theorem5)
   * [Row Vector Rule](#row-vector-rule)
+* [Solution Sets of Linear Systems](#solution-sets-of-linear-systems)
+  * [Homogeneous Systems](#homogeneous-systems)
+  * [Theorem6](#Theorem6)
+  * [Parametric Vector Form](#parametric-vector-form)
 
 * [Glossory](#glossory)
   * [Linear System](#linear-system)
@@ -206,6 +210,31 @@ If A is n m * n matrix, x is a vector in Rn. For each value in b=Ax:
 ```math
   bi = aix1 + ai*x2 + ... + anxn
 ```
+
+[Back to TOC](#table-of-contents)
+
+Solution Sets of Linear Systems
+-------------------------------
+
+The homogeneous system Ax = 0 has a nontrivial solution if and only the equation has at least one free variable.
+
+Theorem7
+--------
+
+Suppose the equation Ax=b (Nonhomogeneous System) is consistent for some given b, and let p be a solution. Then the solution set of Ax=b is the set of all vectors of the form w = p + vh, where vh is any solution of the homogeneous equation Ax=0.
+
+Theorem 7 says that if Ax=b has a solution, then the solution set is obtained by translating the solution set of Ax=0, using any particular solution p of Ax=b for the translation.
+
+Parametric Vector Form
+----------------------
+
+If we write solution set in vector combination form x = su + tv (s, t in R), we call the solution in **parametric vector form**.
+Writing a solution set (of a consistent system) in parametric vector form:
+
+1. Row reduce the augmented matrix to reduced echelon form.
+2. Express each basic variable in terms of any free variables appearing in an equation.
+3. Write a typical solution x as a vector whose entries depend on the free variables, if any.
+4. Decomposex into a linear combination of vectors(with numeric entries)using the free variables as parameters (weight)
 
 [Back to TOC](#table-of-contents)
 
