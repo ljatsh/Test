@@ -27,6 +27,11 @@ Table of Contents
   * [Theorem7](#theorem7)
   * [Theorem8](#theorem8)
   * [Theorem9](#theorem9)
+* [Introduction to Linear Transformation](#introduction-to-linear-transformation)
+  * [Matrix Transformations](#matrix-transformations)
+  * [Linear Transformation](#linear-transformation)
+  * [Transformation Examples](#transformation-examples)
+* [The Matrix of a Linear Transformation](#the-matrix-of-a-linear-transformation)
 
 * [Glossory](#glossory)
   * [Linear System](#linear-system)
@@ -269,8 +274,6 @@ A set of two vectors {v1, v2} is linearly dependent if at least one of the vecto
 
 In geometric terms, two vectors are linearly dependent if and only if they lie on the same line through the origin.
 
-[Back to TOC](#table-of-contents)
-
 Sets of Two or More Vectors
 ---------------------------
 
@@ -291,6 +294,53 @@ Theorem9
 --------
 
 If a set S = {v1, ..., vp} in Rn contains the zero vector, then the set is linearly dependent.
+
+[Back to TOC](#table-of-contents)
+
+Introduction to Linear Transformation
+-------------------------------------
+
+The equation Ax = b can be viewed as a combination of colums of matrix by weight vector x. If we think of A as an "actor", then Ax=b is an mapping from one domain to another.
+
+A **transformation**(or **function** or **mapping**) T from Rn to Rm is a rule that assigns to each vector x in Rn, a vector T(x) in Rm. The set Rn is called the **domain** of T, and Rm is called the **codomain** of T.
+
+Matrix Transformations
+----------------------
+
+For each x in Rn , T(x) is computed as Ax, where A is an m * n matrix. For simplicity, we sometimes denote such a matrix transformation by **x |-->  Ax**
+
+Linear Transformation
+---------------------
+
+A transformation (or mapping) T is linear if:
+
+1. T(u + v) = T(u) + T(v) for all u, v in the domain of T (similar to [Distributive](#distributive-law))
+2. T(cu) = cT(u) for all scalars c and all u in the domain of T
+
+These two properties lead easily to the following useful facts:
+
+1. T(0) = 0
+2. T(cu + dv) = cT(u) + dT(v) for all vectors in the domain of T and all scalars c, d
+3. T(c1v1 + c2v2 + ... + cpvp) = c1T(v1) + c2T(v2) + ... + cpT(vp) ---> superposition principle
+
+According to the definition, Matrix taanformation is a linear transformation
+
+Transformation Examples
+-----------------------
+
+* contraction/dialation
+
+```math
+  x |--> rx
+```
+
+* rotation
+
+```math
+  x |--> TODO
+```
+
+[Back to TOC](#table-of-contents)
 
 Glossory
 --------
