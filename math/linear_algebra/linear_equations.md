@@ -19,8 +19,14 @@ Table of Contents
   * [Row Vector Rule](#row-vector-rule)
 * [Solution Sets of Linear Systems](#solution-sets-of-linear-systems)
   * [Homogeneous Systems](#homogeneous-systems)
-  * [Theorem6](#Theorem6)
+  * [Theorem6](#theorem6)
   * [Parametric Vector Form](#parametric-vector-form)
+* [Linear Independency](#linear-independency)
+  * [Sets of One or Two Vectors](#sets-of-one-or-two-vectors)
+  * [Sets of Two or More Vectors](#sets-of-two-or-more-vectors)
+  * [Theorem7](#theorem7)
+  * [Theorem8](#theorem8)
+  * [Theorem9](#theorem9)
 
 * [Glossory](#glossory)
   * [Linear System](#linear-system)
@@ -218,7 +224,7 @@ Solution Sets of Linear Systems
 
 The homogeneous system Ax = 0 has a nontrivial solution if and only the equation has at least one free variable.
 
-Theorem7
+Theorem6
 --------
 
 Suppose the equation Ax=b (Nonhomogeneous System) is consistent for some given b, and let p be a solution. Then the solution set of Ax=b is the set of all vectors of the form w = p + vh, where vh is any solution of the homogeneous equation Ax=0.
@@ -237,6 +243,54 @@ Writing a solution set (of a consistent system) in parametric vector form:
 4. Decomposex into a linear combination of vectors(with numeric entries)using the free variables as parameters (weight)
 
 [Back to TOC](#table-of-contents)
+
+Linear Independency
+-------------------
+
+An indexed set of vectors {v1, ..., vp} in Rn is said to be linearly independent if the vector equation
+
+```math
+              x1v1 + x2v2 + ... + xpvp = 0
+```
+
+has only the trivial solution. The set {v1, ..., vp} is said to be linearly dependent if there exist weights c1, ..., cp, not all zero, such that
+
+```math
+              c1v1 + c2v2 + ... + cpvp = 0
+```
+
+Or we can say:
+The columns of a matrix A are linearly independent if and only if the equation Ax = 0 has only the trivial solution.
+
+Sets of One or Two Vectors
+--------------------------
+
+A set of two vectors {v1, v2} is linearly dependent if at least one of the vectors is a multiple of the other. The set is linearly independent if and only if neither of the vectors is a multiple of the other.
+
+In geometric terms, two vectors are linearly dependent if and only if they lie on the same line through the origin.
+
+[Back to TOC](#table-of-contents)
+
+Sets of Two or More Vectors
+---------------------------
+
+Theorem7
+--------
+
+An indexed set S = {v1, ..., vp } of two or more vectos is linearly dependent if and only if one of vectors is a linear combination of the others.
+In fact, if S is linearly dependent and v1 != 0, then some vj(with j > 1) is a linear combination of the preceding vectors.
+
+Theorem7 is the characterization of linearly dependant sets.
+
+Theorem8
+--------
+
+If a set contains more vectors than there are entries in each vector, then the set is linearly dependent. That is, any set {v1, ..., vp} in Rn is linearly dependent if p > n.
+
+Theorem9
+--------
+
+If a set S = {v1, ..., vp} in Rn contains the zero vector, then the set is linearly dependent.
 
 Glossory
 --------
