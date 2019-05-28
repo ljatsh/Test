@@ -30,8 +30,11 @@ Table of Contents
 * [Introduction to Linear Transformation](#introduction-to-linear-transformation)
   * [Matrix Transformations](#matrix-transformations)
   * [Linear Transformation](#linear-transformation)
-  * [Transformation Examples](#transformation-examples)
 * [The Matrix of a Linear Transformation](#the-matrix-of-a-linear-transformation)
+  * [Theorem10](#theorem10)
+  * [Theorem11](#theorem11)
+  * [Theorem12](#theorem12)
+  * [Transformation Examples](#transformation-examples)
 
 * [Glossory](#glossory)
   * [Linear System](#linear-system)
@@ -324,6 +327,41 @@ These two properties lead easily to the following useful facts:
 3. T(c1v1 + c2v2 + ... + cpvp) = c1T(v1) + c2T(v2) + ... + cpT(vp) ---> superposition principle
 
 According to the definition, Matrix taanformation is a linear transformation
+
+[Back to TOC](#table-of-contents)
+
+The Matrix of a Linear Transformation
+-------------------------------------
+
+A mapping T: Rn --> Rm is said to be **onto** Rm if each b in Rm is the image of at least one x in Rn(**Existance**)
+A mapping T: Rn --> Rm is said to be **one to one** if each b in Rm is the image of at most one x in Rn(**Uniqueness**)
+
+Theorem10
+---------
+
+Let T: Rn --> Rm be a linear transformation. Then there exists a unique matrix A such that
+
+```math
+                      T(x) = Ax   for all x in Rn
+```
+
+In fact, A is the m * n matrix whose jth column is the vector T(ej), where ej is the jth column of the identity matrix in Rn:
+
+```math
+                      A = [T(e1) T(e2) ... T(en)]
+```
+
+Theorem11
+---------
+
+Let T: Rn --> Rm be a linear transformation. Then T is one-to-one if and only if the equation T(x)=0 has only the trivial solution.
+
+Theorem12
+---------
+
+Let T: Rn --> Rm be a linear transformation, and let A be the standard matrix for T . Then:
+a. T maps Rn onto Rm if and only if the columns of A span Rm;
+b. T is one-to-one if and only if the columns of A are linearly independent.
 
 Transformation Examples
 -----------------------
