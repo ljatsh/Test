@@ -366,6 +366,8 @@ b. T is one-to-one if and only if the columns of A are linearly independent.
 Transformation Examples
 -----------------------
 
+assume x in R2
+
 * contraction/dialation
 
 ```math
@@ -375,7 +377,8 @@ Transformation Examples
 * rotation
 
 ```math
-  x |--> TODO
+  x |--> |cos@ -sin@|x
+         |sin@  cos@|
 ```
 
 [Back to TOC](#table-of-contents)
