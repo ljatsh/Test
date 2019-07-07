@@ -2,13 +2,14 @@ Table of Contents
 =================
 
 * [foreach](#foreach)
+* [iterator](#iterator)
 
 foreach
 -------
 
-[foreach](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in) can be used to traverse a collection implemetns IEnumerable. The foreach statement is not limited to those types. System.Span<T> is an example.
-foreach over an array is optimized.
-foreach statement over an collection implements IDispose also handles resource cleanup.
+* [foreach](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in) can be used to traverse a collection implemetns IEnumerable. The foreach statement is not limited to those types. System.Span<T> is an example.
+* foreach over an array is optimized.
+* foreach statement over an collection implements IDispose also handles resource cleanup.
 
 ```csharp
   static void TestForeach() {
@@ -89,3 +90,10 @@ foreach statement over an collection implements IDispose also handles resource c
     IL_006b: ret
   } // End of method System.Void clr.partme::TestForeach()
 ```
+
+[Back to TOC](#table-of-contents)
+
+iterator
+--------
+
+[iterator](https://docs.microsoft.com/en-us/dotnet/csharp/iterators) method is convenient syntactic sugar to have a method (returned IEnumerator is invalid in foreach but can be used in StartCoroutine in unity) used in foreach statement.
