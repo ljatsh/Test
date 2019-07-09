@@ -2,3 +2,5 @@ nutshell/bin
 nutshell/obj
 clr/bin
 clr/obj
+test/bin
+test/obj

@@ -669,6 +669,7 @@ Operator Overload Methods
 * [System.Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal?view=netcore-2.2) is a good example.
 * Struct does not support ==,!=... by default.
 * Operator == for reference type is identity comparision by default.
+* Operator == for primitive type is optimized(int, string)
 * C# Unary Operators and Their CLS-Compilant Method Names:
 
 C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
@@ -893,6 +894,94 @@ C# Operator Symbol | Special Method Name | Suggested CLS-Compilant Method Name
     IL_0046: stloc.s V_6
     IL_0048: ret
   } // End of method System.Void part2.cp4::TestOperatorOverload()
+```
+
+```csharp
+  static void TestEquality() {
+    int x1 = 5;
+    int y1 = 5;
+    Console.WriteLine(x1 == y1); // True (by virtue of value equality)
+
+    object x2 = 5;
+    object y2 = 5;
+    Console.WriteLine (x2 == y2);
+
+    var dt1 = new DateTimeOffset (2010, 1, 1, 1, 1, 1, TimeSpan.FromHours(8));
+    var dt2 = new DateTimeOffset (2010, 1, 1, 2, 1, 1, TimeSpan.FromHours(9));
+    Console.WriteLine (dt1 == dt2);
+
+    string a = "a";
+    string b = "b";
+    Console.WriteLine(a == b);
+
+    Console.WriteLine("a" == "abc");
+  }
+
+  .method private hidebysig static void TestEquality() cil managed
+  {
+    // Code size 153
+    .maxstack 8
+    .locals init(int32 V_0, int32 V_1, [netstandard]System.Object V_2, [netstandard]System.Object V_3, [netstandard]System.DateTimeOffset V_4, [netstandard]System.DateTimeOffset V_5, string V_6, string V_7)
+    IL_0000: nop
+    IL_0001: ldc.i4.5
+    IL_0002: stloc.0
+    IL_0003: ldc.i4.5
+    IL_0004: stloc.1
+    IL_0005: ldloc.0
+    IL_0006: ldloc.1
+    IL_0007: ceq
+    IL_0009: call void [netstandard]System.Console::WriteLine(boolean)
+    IL_000e: nop
+    IL_000f: ldc.i4.5
+    IL_0010: box System.Int32
+    IL_0015: stloc.2
+    IL_0016: ldc.i4.5
+    IL_0017: box System.Int32
+    IL_001c: stloc.3
+    IL_001d: ldloc.2
+    IL_001e: ldloc.3
+    IL_001f: ceq
+    IL_0021: call void [netstandard]System.Console::WriteLine(boolean)
+    IL_0026: nop
+    IL_0027: ldloca.s V_4
+    IL_0029: ldc.i4 2010
+    IL_002e: ldc.i4.1
+    IL_002f: ldc.i4.1
+    IL_0030: ldc.i4.1
+    IL_0031: ldc.i4.1
+    IL_0032: ldc.i4.1
+    IL_0033: ldc.r8 8
+    IL_003c: call [netstandard]System.TimeSpan [netstandard]System.TimeSpan::FromHours(double)
+    IL_0041: call instance void [netstandard]System.DateTimeOffset::.ctor(int32, int32, int32, int32, int32, int32, [netstandard]System.TimeSpan)
+    IL_0046: ldloca.s V_5
+    IL_0048: ldc.i4 2010
+    IL_004d: ldc.i4.1
+    IL_004e: ldc.i4.1
+    IL_004f: ldc.i4.2
+    IL_0050: ldc.i4.1
+    IL_0051: ldc.i4.1
+    IL_0052: ldc.r8 9
+    IL_005b: call [netstandard]System.TimeSpan [netstandard]System.TimeSpan::FromHours(double)
+    IL_0060: call instance void [netstandard]System.DateTimeOffset::.ctor(int32, int32, int32, int32, int32, int32, [netstandard]System.TimeSpan)
+    IL_0065: ldloc.s V_4
+    IL_0067: ldloc.s V_5
+    IL_0069: call boolean [netstandard]System.DateTimeOffset::op_Equality([netstandard]System.DateTimeOffset, [netstandard]System.DateTimeOffset)
+    IL_006e: call void [netstandard]System.Console::WriteLine(boolean)
+    IL_0073: nop
+    IL_0074: ldstr "a"
+    IL_0079: stloc.s V_6
+    IL_007b: ldstr "b"
+    IL_0080: stloc.s V_7
+    IL_0082: ldloc.s V_6
+    IL_0084: ldloc.s V_7
+    IL_0086: call boolean string::op_Equality(string, string)
+    IL_008b: call void [netstandard]System.Console::WriteLine(boolean)
+    IL_0090: nop
+    IL_0091: ldc.i4.0
+    IL_0092: call void [netstandard]System.Console::WriteLine(boolean)
+    IL_0097: nop
+    IL_0098: ret
+  } // End of method System.Void clr.partme::TestEquality()
 ```
 
 [Back to TOC](#table-of-contents)
