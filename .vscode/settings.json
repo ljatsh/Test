@@ -10,5 +10,11 @@
     },
 
     "editor.tabSize": 2,
-    "editor.wordWrap": "on"
+    "editor.wordWrap": "on",
+
+    "files.exclude": {
+      //"unity/Test3d/Assembly-CSharp.csproj": true
+      "**/bin/": true,
+      "**/obj/": true
+    }
 }
