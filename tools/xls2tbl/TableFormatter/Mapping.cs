@@ -2,10 +2,10 @@ using System;
 
 namespace TableFormatter {
   public class Mapping {
-    static Mapping MappingInt32 = new Int32Mapping();
-    static Mapping MappingUInt32 = new UInt32Mapping();
-    static Mapping MappingFloat = new NumericMapping(Single.MinValue, Single.MaxValue);
-    static Mapping MappingString = new StringMapping();
+    public static Mapping MappingInt32 = new Int32Mapping();
+    public static Mapping MappingUInt32 = new UInt32Mapping();
+    public static Mapping MappingFloat = new NumericMapping(Single.MinValue, Single.MaxValue);
+    public static Mapping MappingString = new StringMapping();
 
     public virtual string Map(string input) {
       return input;
@@ -28,7 +28,7 @@ namespace TableFormatter {
 
       float result = Convert.ToSingle(input);
 
-      if (result <= minValue || result >= maxValue) {
+      if (result < minValue || result > maxValue) {
         throw new OverflowException(string.Format("Number {0} is out of range [{1}-{2}]", result, minValue, maxValue));
       }
 

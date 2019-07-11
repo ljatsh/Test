@@ -9,26 +9,33 @@ namespace TableFormatter {
 
     private List<Field> fields;
 
+    private List<Field> keyFields;
+
     public string Name {
       get { return name; }
       set { name = value; }
     }
 
-    public Table(string name, IEnumerable<Field> fields) {
+    public IEnumerable<Field> Fields {
+      get { return fields; }
+    }
+
+    public IEnumerable<Field> KeyFields {
+      get { return keyFields; }
+    }
+
+    public int FieldCount {
+      get { return fields.Count; }
+    }
+
+    public Table(string name, IEnumerable<Field> fields, IEnumerable<Field> keyFields) {
       this.name = name;
-      fields = new List<Field>(fields);
-    }
-
-    public string DocumentToLua() {
-      return null;
-    }
-
-    public string ConvertDataToLua(IEnumerable<string> rowData) {
-      return null;
-    }
-
-    public string ConvertDatasToLua(IEnumerable<IEnumerable<string>> datas) {
-      return null;
+      this.fields = new List<Field>(fields);
+      if (keyFields == null) {
+        this.keyFields = new List<Field>{this.fields[0]};
+      } else {
+        this.keyFields = new List<Field>(keyFields);
+      }
     }
   }
 }

@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using TableFormatter;
 
@@ -29,18 +30,25 @@ namespace Tests
       // [3] = {3, 407, "228,170,57", 0, "0", 0},
       // }
       [Test]
-      public void TestTableDocument() {
+      public void TestTableMapping() {
         Field[] fields = new Field[] {
-          new FiledUInt32("id"),
-          new FiledUInt32("res_id"),
-          new FiledString("bg_color"),
-          new FiledUInt32("condition"),
-          new FiledString("condition_desc"),
-          new FiledUInt32("type")
+          new Field("ID", "id", "uint32"),
+          new Field("RES_ID", "res_id", "uint32"),
+          new Field("BG_COLOR", "bg_color", "string"),
+          new Field("C", "condition", "uint32"),
+          new Field("C_D", "condition_desc", "string"),
+          new Field("TYPE", "type", "uint32")
         };
-        Table t = new Table("Face", fields);
 
-        Assert.That(true, Is.False);
+        Table t = new Table("Face", fields, null);
+
+        Row[] datas = new Row[] {
+          new Row{{"ID", "1"}, {"RES_ID", "402"}, {"BG_COLOR", "228,170,57"}, {"C", "0"}, {"C_D", "0"}, {"TYPE", "0"}},
+          new Row{{"ID", "2"}, {"RES_ID", "403"}, {"BG_COLOR", "228,170,57"}, {"C", "0"}, {"C_D", "0"}, {"TYPE", "0"}},
+          new Row{{"ID", "3"}, {"RES_ID", "407"}, {"BG_COLOR", "228,170,57"}, {"C", "0"}, {"C_D", "0"}, {"TYPE", "0"}}
+        };
+
+        NUnit.Framework.TestContext.Progress.WriteLine(Lang.Lua.Mapping(datas, t));
       }
   }
 }
