@@ -4,29 +4,30 @@ FROM ubuntu:xenial
 MAINTAINER ljatsh@test.com
 
 ARG SKYNET_LUAROCKS_VERSION="3.0.0"
+ARG SKYNET_VERSION="1.2.0"
 
 RUN apt-get update \
     && apt-get install -y curl unzip make libreadline-dev autoconf gcc gdb vim
 
 # build skynet
 
-COPY luaconf.h /tmp/
+#COPY luaconf.h /tmp/
 
 RUN cd /tmp \
-    && curl -fSL https://github.com/cloudwu/skynet/archive/v1.1.0.zip -o skynet.zip --progress \
+    && curl -fSL https://github.com/cloudwu/skynet/archive/v${SKYNET_VERSION}.zip -o skynet.zip --progress \
     && unzip skynet.zip -d . \
-    && cd skynet-1.1.0/3rd \
+    && cd skynet-${SKYNET_VERSION}/3rd \
     && rmdir jemalloc \
     && curl -fSL https://github.com/jemalloc/jemalloc/archive/5.1.0.zip -o 5.1.0.zip --progress \
     && unzip 5.1.0.zip -d . \
     && mv jemalloc-5.1.0 jemalloc \
     && cd .. \
-    && mv /tmp/luaconf.h 3rd/lua/ \
+    #&& mv /tmp/luaconf.h 3rd/lua/ \
     && make linux
 
 # install skynet to /usr/local/skynet
 
-RUN cd /tmp/skynet-1.1.0 \
+RUN cd /tmp/skynet-${SKYNET_VERSION} \
     && for i in include lib bin; do mkdir -p /usr/local/skynet/lua/$i; done \
     && for i in lauxlib.h luaconf.h lua.h lua.hpp lualib.h; do cp 3rd/lua/$i /usr/local/skynet/lua/include; done \
     && cp 3rd/lua/liblua.a /usr/local/skynet/lua/lib \

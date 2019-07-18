@@ -35,6 +35,7 @@ local iphone = {
 
   {name = 'iphoneXsMax',        points = {414, 896},    scale = 3},
 
+  {name = 'ipad',               points = {768, 1024},   scale = 1},
   {name = 'ipad mini 4',        points = {768, 1024},   scale = 2},
   {name = 'ipad air 2',         points = {768, 1024},   scale = 2},
   {name = 'ipad pro(9.7 inch)', points = {768, 1024},   scale = 2},
