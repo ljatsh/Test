@@ -7,7 +7,7 @@ ARG SKYNET_LUAROCKS_VERSION="3.0.0"
 ARG SKYNET_VERSION="1.2.0"
 
 RUN apt-get update \
-    && apt-get install -y curl unzip make libreadline-dev autoconf gcc gdb vim
+    && apt-get install -y curl unzip make libreadline-dev autoconf gcc gdb vim telnet
 
 # build skynet
 
@@ -54,3 +54,5 @@ RUN apt-get autoremove -y
 ENV PATH=$PATH:/usr/local/skynet/lua/bin:/usr/local/skynet
 
 CMD ["/bin/bash"]
+
+#docker build --force-rm -t skynet-dev -f ubuntu/Dockerfile .

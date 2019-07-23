@@ -42,7 +42,7 @@ local iphone = {
 
   {name = 'ipad pro(12.9inch)', points = {1024, 1336},  scale = 2},
 
-  {name = 'ipad pro(10.5inch)', points = {1112, 834},   scale = 2}
+  {name = 'ipad pro(10.5inch)', points = {834, 1112},   scale = 2}
 }
 
 local function highest_common_divisor(a, b)
@@ -64,8 +64,10 @@ local function highest_common_divisor(a, b)
   return min
 end
 
-local design_width = 750
-local design_height = 1334
+-- local design_width = 750
+-- local design_height = 1334
+local design_width = 1080
+local design_height = 1920
 local design_wh_ratio = design_width / design_height
 
 for _, v in ipairs(iphone) do
