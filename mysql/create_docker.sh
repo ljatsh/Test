@@ -7,4 +7,7 @@ docker run --name mysql --detach \
 -v $dir/r:/usr/lib/mysql-test/r \
 -p 3306:3306 \
 -e MYSQL_ROOT_PASSWORD=root \
-mysql-dev:latest
+mysql-dev:latest \
+--log-output=FILE,TABLE \
+--general-log \
+--slow-query-log \

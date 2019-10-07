@@ -7,6 +7,9 @@ Table Of Contents
 
 * [Character Set and Collation](#charset)
 * [Database](#database)
+* [Administration](#administration)
+  * [Server Logs](#server_logs)
+* [Reference](#reference)
 
 Charset
 =======
@@ -76,7 +79,18 @@ reference
 
 [Back to TOC](#table-of-contents)
 
+Administration
+==============
+
+Server Logs
+-----------
+
+* general query log可以用来辅助开发
+* slow query log可以用来监控
+* [Ref](https://dev.mysql.com/doc/refman/5.7/en/server-logs.html)
+
 Reference
 =========
 
 * >[TestSuit](https://dev.mysql.com/doc/dev/mysql-server/latest/PAGE_MYSQL_TEST_RUN.html)
+* >[Docker](https://hub.docker.com/_/mysql)
