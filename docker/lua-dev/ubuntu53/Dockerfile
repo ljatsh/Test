@@ -27,8 +27,9 @@ RUN cd /tmp \
     && make build \
     && make install
 
-# install busted
-RUN luarocks install busted
+# install busted & lpeg
+RUN luarocks install busted \
+    && luarocks install lpeg
 
 # install gtests
 RUN apt-get update \
