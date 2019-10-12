@@ -14,6 +14,10 @@ local R = lpeg.R              -- match anything in a range
 --- Tips:
 --- 1. match从开头开始，返回匹配的末尾位置 (?)
 
+--- TODO
+--- * abc123 贪婪匹配非数字前的最大长度
+--- * P(-1) == -P(1)
+
 describe('lpeg #lpeg', function()
   it('check version', function()
     assert.are.same('1.0.2', lpeg.version())
@@ -54,5 +58,32 @@ describe('lpeg #lpeg', function()
     assert.are.same(2, match(R('az', 'AZ'), 'Lj'), 'ascii')
 
     assert.is_nil(match(R('az', 'AZ'), '1j'))
+  end)
+
+  --- Returns a pattern that matches patt1 and then matches patt2, starting where patt1 finished
+  it('operator * #operator_*', function()
+    assert.are.same(6, match(S'+-' * R'09' ^ 1, '-1234'))
+    assert.is_nil(match(S'+-' * R'09' ^ 1, '1234'), 'first mismatch')
+    assert.is_nil(match(S'+-' * R'09' ^ 1, '+x234'), 'second mismatch')
+  end)
+
+  --- patt1 | patt2 in PEG
+  it('operator + #operator_+', function()
+    assert.are.same(5, match(R'09' ^ 1 + R'az' ^ 1, 'name10age'))
+    assert.are.same(3, match(R'09' ^ 1 + R'az' ^ 1, '10age5name'))
+  end)
+
+  --- Returns a pattern equivalent to !patt2 patt1. This pattern asserts that the input does not match patt2 and then matches patt1.
+  --- Especially, -patt does not consume any input, independently of success or failure
+  --- -patt -> ^patt in PEG
+  it('operator - #operator_-', function()
+    assert.are.same(1, match(-R'09', 'abc123'))
+    assert.is_nil(match(-R'09', '123abc'))
+  end)
+
+  --- patt^0 -> patt*, patt^1 -> patt+, patt^-1 -> patt? in PEG
+  it('operator ^ #operator_^', function()
+    assert.are.same(5, match(R'09' ^ 1 * S'+-' * R'09' ^ 1, '16+5'))
+    assert.are.same(6, match(P'_' ^ -1 * R('az', 'AZ') ^ 1, '_name'))
   end)
 end)
