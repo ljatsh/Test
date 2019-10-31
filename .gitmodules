@@ -1,0 +1,3 @@
+[submodule "fw/tolua/toluapp"]
+	path = fw/tolua/toluapp
+	url = https://github.com/ljatsh/toluapp
