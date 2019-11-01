@@ -8,6 +8,7 @@ RUN apt-get update \
     && apt-get install -y libreadline-dev autoconf g++ scons lua5.1
 
 RUN apt-get install -y lua5.1-dev
+RUN apt-get install -y gdb
 
 RUN apt-get autoremove -y \
     && rm -fr /tmp/*
