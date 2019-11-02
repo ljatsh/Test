@@ -5,6 +5,9 @@ Table of Contents
 * [Install](#install)
 * [Samples](#samples)
   * [tarray](#tarray)
+* [Tips]
+  * [C Function](#c-function)
+  * [C Variable](#c-variable)
 * [Reference](#reference)
 
 Install
@@ -18,7 +21,7 @@ Install
 Samples
 -------
 
-貌似除了tclass，其他的例子都是tolua的格式，测试文件有问题
+貌似除了tclass，其他的例子都是tolua的格式，测试文件有问题。tolua++有参数控制索引是否-1
 
 tarray
 ------
@@ -75,6 +78,112 @@ static int tolua_get_tarray_Array_a(lua_State* tolua_S)
 #endif //#ifndef TOLUA_DISABLE
 ```
 新版本的数组索引转换有明显错误
+
+Tips
+----
+
+C Function
+----------
+
+C的导出函数都写入到LUA_GLOBALSINDEX, 等同于_G。
+
+* 相关注册信息
+
+```
+_G
+{
+  'test': function 0x1fcb840
+  'sum': function 0x1fcb8a0
+}
+```
+
+C Variable
+----------
+
+全局的变量导出是会被警告的--```** tolua warning: Mapping variable to global may degrade performance.```。
+变量的读写会以函数的的形式存在一个mt的.get和.set子表中， 这个mt会被设置成模块(如果是全局，则是_G)的元表，原来的元表会以现元表的元表而存在
+
+* 相关注册信息
+
+```
+_G
+{
+  '.get':
+  { 0x1fc9b60
+    'd': function 0x1fc9be0
+  }
+  '.set':
+  { 0x1fc9c70
+    'd': function 0x1fc9cc0
+  }
+  mt:
+  { 0x1fcb760
+    '__index': function 0x1fcb7b0
+    '__newindex': function 0x1fcb810
+  }
+}
+```
+
+* 相关代码
+
+```cpp
+TOLUA_API void tolua_module (lua_State* L, const char* name, int hasvar)
+{
+  ...
+  if (hasvar)
+	{
+		if (!tolua_ismodulemetatable(L))  /* check if it already has a module metatable */
+		{
+			/* create metatable to get/set C/C++ variable */
+			lua_newtable(L);
+			tolua_moduleevents(L);
+			if (lua_getmetatable(L,-2))
+				lua_setmetatable(L,-2);  /* set old metatable as metatable of metatable */
+			lua_setmetatable(L,-2);
+		}
+	}
+}
+
+static int module_index_event (lua_State* L)
+{
+	lua_pushstring(L,".get");
+	lua_rawget(L,-3);
+	if (lua_istable(L,-1))
+	{
+		lua_pushvalue(L,2);  /* key */
+		lua_rawget(L,-2);
+		if (lua_iscfunction(L,-1))
+		{
+			lua_call(L,0,1);
+			return 1;
+		}
+		else if (lua_istable(L,-1))
+			return 1;
+	}
+	/* call old index meta event */
+	if (lua_getmetatable(L,1))
+	{
+		lua_pushstring(L,"__index");
+		lua_rawget(L,-2);
+		lua_pushvalue(L,1);
+		lua_pushvalue(L,2);
+		if (lua_isfunction(L,-1))
+		{
+			lua_call(L,2,1);
+			return 1;
+		}
+		else if (lua_istable(L,-1))
+		{
+			lua_gettable(L,-3);
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
+```
+
+tolua_module
 
 Reference
 ---------
