@@ -10,6 +10,8 @@ Table of Contents
   * [C Variable](#c-variable)
   * [Class](#class)
     * [Static Function](#static-function)
+    * [Create Instance](#create-instance)
+    * [Access Instance Method](#access-instance-method)
 * [Reference](#reference)
 
 Install
@@ -331,6 +333,119 @@ static  int lua_isusertable (lua_State* L, int lo, const const char* type)
 ```
 
 [Back to TOC](#table-of-contents)
+
+Create Instance
+---------------
+
+* 测试代码
+
+```lua
+  local s = student:new('lj@sh', 35)
+  print(s)
+
+  -- ouput
+  -- sutdent 0x1ff37c0 was allocated
+  -- userdata: 0x1ff3b38
+```
+
+* 相关注册信息
+
+返回的userdata会以student作为mt, userdata本身存储的是native对象的地址
+
+```
+  'student': 
+  { 0x1ff0740
+    'get_age': function 0x1ff0f60
+    '__eq': function 0x1ff0d20
+    '__gc': function 0x1fef730
+    '.call': function 0x1ff0d80
+    'tolua_ubox': 
+    { 0x1fee930
+      lightuserdata 0x1ff37c0: userdata 0x1ff3b38
+      mt: 
+      { 0x1fee980
+        '__mode': 'v'
+      }
+    }
+    'set_age': function 0x1ff0f00
+    '__newindex': function 0x1ff07f0
+    '__call': function 0x1ff0bd0
+    'sub': function 0x1ff21f0
+    'delete': function 0x1ff0de0
+    '.set': 
+    { 0x1ff1b70
+      'boy': function 0x1ff1bc0
+    }
+    '__index': function 0x1ff0790
+    'new': function 0x1ff1c50
+    '.collector': function 0x1feeb70
+    'set_name': function 0x1ff0e40
+    'new_local': function 0x1ff1cb0
+    '__add': function 0x1ff07c0
+    '__div': function 0x1ff0ac0
+    'get_name': function 0x1ff0ea0
+    '__mul': function 0x1ff0ba0
+    '__lt': function 0x1ff0af0
+    '.get': 
+    { 0x1feebd0
+      'boy': function 0x1ff1b10
+    }
+    '__sub': function 0x1ff0b70
+    '__le': function 0x1ff0b20
+    mt: table 0x1fefa40
+  }
+```
+
+* 相关代码
+
+```cpp
+TOLUA_API void tolua_pushusertype (lua_State* L, void* value, const char* type)
+{
+ if (value == NULL)
+  lua_pushnil(L);
+ else
+ {
+  luaL_getmetatable(L, type);
+  lua_pushstring(L,"tolua_ubox");
+  lua_rawget(L,-2);        /* stack: mt ubox */
+  if (lua_isnil(L, -1)) {
+	  lua_pop(L, 1);
+	  lua_pushstring(L, "tolua_ubox");
+	  lua_rawget(L, LUA_REGISTRYINDEX);
+  };
+  lua_pushlightuserdata(L,value);
+  lua_rawget(L,-2);                       /* stack: mt ubox ubox[u] */
+  if (lua_isnil(L,-1))
+  {
+   lua_pop(L,1);                          /* stack: mt ubox */
+   lua_pushlightuserdata(L,value);
+   *(void**)lua_newuserdata(L,sizeof(void *)) = value;   /* stack: mt ubox u newud */
+   lua_pushvalue(L,-1);                   /* stack: mt ubox u newud newud */
+   lua_insert(L,-4);                      /* stack: mt newud ubox u newud */
+   lua_rawset(L,-3);                      /* stack: mt newud ubox */
+   lua_pop(L,1);                          /* stack: mt newud */
+   /*luaL_getmetatable(L,type);*/
+   lua_pushvalue(L, -2);			/* stack: mt newud mt */
+   lua_setmetatable(L,-2);			/* stack: mt newud */
+
+   #ifdef LUA_VERSION_NUM
+   lua_pushvalue(L, TOLUA_NOPEER);
+   lua_setfenv(L, -2);
+   #endif
+  }
+ }
+ ...
+}
+```
+
+[Back to TOC](#table-of-contents)
+
+Access Instance Method
+----------------------
+
+
+
+相关代码
 
 Reference
 ---------

@@ -1,12 +1,15 @@
 {
     "files.associations": {
-        "*.jade": "jade",
-        "stdio.h": "c",
-        "cdefs.h": "c",
-        "string": "cpp",
-        "*.test": "sql",
-        "lua_engine.h": "c",
-        "*.bats": "shellscript"
+      "*.jade": "jade",
+      "*.gyp": "jade",
+      "*.gypi": "jade",
+      "stdio.h": "c",
+      "cdefs.h": "c",
+      "string": "cpp",
+      "*.test": "sql",
+      "lua_engine.h": "c",
+      "*.bats": "shellscript",
+      "texample.h": "c"
     },
 
     "editor.tabSize": 2,
