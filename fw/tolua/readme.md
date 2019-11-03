@@ -15,6 +15,7 @@ Table of Contents
     * [Inheritance](#inheritance)
     * [Delete Instance](#delete-instance)
 * [Reference](#reference)
+* [TODO](#todo)
 
 Install
 -------
@@ -831,3 +832,9 @@ Reference
 ---------
 
 * [tolua++ manual](https://www8.cs.umu.se/kurser/TDBD12/VT04/lab/lua/tolua++.html)
+
+TODO
+----
+
+* 继承中的tolua_ubox, tolua_super, tolua_cast等细节
+* 内存释放机制，如何通过peer扩展类
