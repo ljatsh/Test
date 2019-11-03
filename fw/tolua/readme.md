@@ -443,9 +443,113 @@ TOLUA_API void tolua_pushusertype (lua_State* L, void* value, const char* type)
 Access Instance Method
 ----------------------
 
+* 相关代码
+  userdata的index访问顺序如下:
+  * 如果peer表中有对应的值，则返回它(TODO)
+  * 直接转到类的元表找到对应的键， 如果key为number，则转为访问.geti函数； 否则，按照对应的值、变量的顺序循环访问下去
+  找到对应的到处函数后，userdata解释成对应的native对象，进行访问
 
-
-相关代码
+```cpp
+static int class_index_event (lua_State* L)
+{
+ int t = lua_type(L,1);
+	if (t == LUA_TUSERDATA)
+	{
+		/* Access alternative table */
+		#ifdef LUA_VERSION_NUM /* new macro on version 5.1 */
+		lua_getfenv(L,1);
+		if (!lua_rawequal(L, -1, TOLUA_NOPEER)) {
+			lua_pushvalue(L, 2); /* key */
+			lua_gettable(L, -2); /* on lua 5.1, we trade the "tolua_peers" lookup for a gettable call */
+			if (!lua_isnil(L, -1))
+				return 1;
+		};
+		#else
+		lua_pushstring(L,"tolua_peers");
+		lua_rawget(L,LUA_REGISTRYINDEX);        /* stack: obj key ubox */
+		lua_pushvalue(L,1);
+		lua_rawget(L,-2);                       /* stack: obj key ubox ubox[u] */
+		if (lua_istable(L,-1))
+		{
+			lua_pushvalue(L,2);  /* key */
+			lua_rawget(L,-2);                      /* stack: obj key ubox ubox[u] value */
+			if (!lua_isnil(L,-1))
+				return 1;
+		}
+		#endif
+		lua_settop(L,2);                        /* stack: obj key */
+		/* Try metatables */
+		lua_pushvalue(L,1);                     /* stack: obj key obj */
+		while (lua_getmetatable(L,-1))
+		{                                       /* stack: obj key obj mt */
+			lua_remove(L,-2);                      /* stack: obj key mt */
+			if (lua_isnumber(L,2))                 /* check if key is a numeric value */
+			{
+				/* try operator[] */
+				lua_pushstring(L,".geti");
+				lua_rawget(L,-2);                      /* stack: obj key mt func */
+				if (lua_isfunction(L,-1))
+				{
+					lua_pushvalue(L,1);
+					lua_pushvalue(L,2);
+					lua_call(L,2,1);
+					return 1;
+				}
+			}
+			else
+			{
+			 lua_pushvalue(L,2);                    /* stack: obj key mt key */
+				lua_rawget(L,-2);                      /* stack: obj key mt value */
+				if (!lua_isnil(L,-1))
+					return 1;
+				else
+					lua_pop(L,1);
+				/* try C/C++ variable */
+				lua_pushstring(L,".get");
+				lua_rawget(L,-2);                      /* stack: obj key mt tget */
+				if (lua_istable(L,-1))
+				{
+					lua_pushvalue(L,2);
+					lua_rawget(L,-2);                      /* stack: obj key mt value */
+					if (lua_iscfunction(L,-1))
+					{
+						lua_pushvalue(L,1);
+						lua_pushvalue(L,2);
+						lua_call(L,2,1);
+						return 1;
+					}
+					else if (lua_istable(L,-1))
+					{
+						/* deal with array: create table to be returned and cache it in ubox */
+						void* u = *((void**)lua_touserdata(L,1));
+						lua_newtable(L);                /* stack: obj key mt value table */
+						lua_pushstring(L,".self");
+						lua_pushlightuserdata(L,u);
+						lua_rawset(L,-3);               /* store usertype in ".self" */
+						lua_insert(L,-2);               /* stack: obj key mt table value */
+						lua_setmetatable(L,-2);         /* set stored value as metatable */
+						lua_pushvalue(L,-1);            /* stack: obj key met table table */
+						lua_pushvalue(L,2);             /* stack: obj key mt table table key */
+						lua_insert(L,-2);               /*  stack: obj key mt table key table */
+						storeatubox(L,1);               /* stack: obj key mt table */
+						return 1;
+					}
+				}
+			}
+			lua_settop(L,3);
+		}
+		lua_pushnil(L);
+		return 1;
+	}
+	else if (t== LUA_TTABLE)
+	{
+		module_index_event(L);
+		return 1;
+	}
+	lua_pushnil(L);
+	return 1;
+}
+```
 
 Reference
 ---------
