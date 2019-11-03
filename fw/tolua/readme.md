@@ -12,6 +12,8 @@ Table of Contents
     * [Static Function](#static-function)
     * [Create Instance](#create-instance)
     * [Access Instance Method](#access-instance-method)
+    * [Inheritance](#inheritance)
+    * [Delete Instance](#delete-instance)
 * [Reference](#reference)
 
 Install
@@ -550,6 +552,280 @@ static int class_index_event (lua_State* L)
 	return 1;
 }
 ```
+
+Inheritance
+-----------
+
+* 父类mt作为子类mt的mt，使得继承成为现实。最终父类mt的mt是tolua_commonclass
+* 有继承关系类的mt、对应的const版本类的mt，有继承关系保存在tolua_super中，方便做类型转换
+* 如果lua对象是一个基类对象，则不能访问具体类对应的私有方法，如果确实需要访问，只能先做tolua.cast操作
+
+* 相关注册
+
+```
+{ 0x1f2e370
+  table 0x1f32200: 'stuff'
+  'tolua_gc_event': function 0x1f30730
+  'tolua_commonclass': 
+  { 0x1f30a40
+    '__eq': function 0x1f30d50
+    '__mul': function 0x1f30bd0
+    '__gc': function 0x1f30730
+    '__lt': function 0x1f30b20
+    '__div': function 0x1f30af0
+    '__index': function 0x1f30780
+    '__add': function 0x1f30a90
+    '__le': function 0x1f30b50
+    '__sub': function 0x1f30ba0
+    '__newindex': function 0x1f30ac0
+    '__call': function 0x1f30c00
+  }
+  table 0x1f30a40: 'tolua_commonclass'
+  '_LOADED': 
+  { 0x1f2ee10
+    'coroutine': 
+    { 0x1f30190
+      'resume': function 0x1f303c0
+      'yield': function 0x1f30540
+      'status': function 0x1f30480
+      'wrap': function 0x1f304e0
+      'create': function 0x1f2ee60
+      'running': function 0x1f30420
+    }
+    '_G': 
+    { 0x1f2e2c0
+      'xpcall': function 0x1f2f540
+      'tostring': function 0x1f2f420
+      'print': function 0x1f2f5c0
+      'unpack': function 0x1f2f4e0
+      '.set': 
+      { 0x1f2f880
+        'd': function 0x1f2f8d0
+      }
+      'getfenv': function 0x1f2efb0
+      'setmetatable': function 0x1f2f360
+      'next': function 0x1f2f180
+      'assert': function 0x1f2ee90
+      'stuff': 
+      { 0x1f32200
+        'get_id': function 0x1f33eb0
+        '__eq': function 0x1f32810
+        '__mul': function 0x1f32690
+        '.call': function 0x1f34020
+        'unique': function 0x1f32840
+        '__newindex': function 0x1f322b0
+        '__call': function 0x1f326c0
+        'delete': function 0x1f34050
+        '.collector': function 0x1f31c50
+        '__gc': function 0x1f30730
+        'new_local': function 0x1f33ff0
+        '__add': function 0x1f32280
+        '__div': function 0x1f325b0
+        'new': function 0x1f33fc0
+        'tolua_ubox': 
+        { 0x1f2f930
+          lightuserdata 0x1f329b0: userdata 0x1f35b88
+          lightuserdata 0x1f35910: userdata 0x1f35968
+          mt: 
+          { 0x1f2f980
+            '__mode': 'v'
+          }
+        }
+        '__lt': function 0x1f325e0
+        '__index': function 0x1f32250
+        '__sub': function 0x1f32660
+        '__le': function 0x1f32610
+        mt: 
+        { 0x1f31740
+          'get_id': function 0x1f33d10
+          'get_age': function 0x1f31f60
+          '__eq': function 0x1f31d20
+          '__gc': function 0x1f30730
+          '.call': function 0x1f31d80
+          'create': function 0x1f33da0
+          'tolua_ubox': table 0x1f2f930
+          'set_age': function 0x1f31f00
+          '__newindex': function 0x1f317f0
+          '__call': function 0x1f31bd0
+          'sub': function 0x1f33d70
+          'delete': function 0x1f31de0
+          '.set': 
+          { 0x1f33690
+            'boy': function 0x1f336e0
+          }
+          '__index': function 0x1f31790
+          'new': function 0x1f33770
+          '.collector': function 0x1f2fb90
+          'set_name': function 0x1f31e40
+          'new_local': function 0x1f337d0
+          '__add': function 0x1f317c0
+          '__div': function 0x1f31ac0
+          'get_name': function 0x1f31ea0
+          '__mul': function 0x1f31ba0
+          '__lt': function 0x1f31af0
+          '.get': 
+          { 0x1f2fbf0
+            'boy': function 0x1f33630
+          }
+          '__sub': function 0x1f31b70
+          '__le': function 0x1f31b20
+          mt: table 0x1f30a40
+        }
+      }
+      'tonumber': function 0x1f2f3c0
+      'rawequal': function 0x1f2f620
+      'collectgarbage': function 0x1f2eef0
+      'getmetatable': function 0x1f2f240
+      'rawset': function 0x1f2f6e0
+      'dump_lua': function 0x1f32870
+      'student': table 0x1f31740
+      'load': function 0x1f2f0c0
+      '_VERSION': 'Lua 5.1'
+      'test': function 0x1f32b60
+      'pcall': function 0x1f2f1e0
+      'tolua': 
+      { 0x1f30c60
+        'cast': function 0x1f31160
+        'type': function 0x1f30cb0
+        'releaseownership': function 0x1f30ce0
+        'getpeer': function 0x1f31340
+        'setpeer': function 0x1f310b0
+        'takeownership': function 0x1f31010
+        'inherit': function 0x1f311c0
+      }
+      'coroutine': table 0x1f30190
+      'type': function 0x1f2f480
+      'newproxy': function 0x1f300f0
+      '_G': table 0x1f2e2c0
+      'select': function 0x1f2e310
+      'gcinfo': function 0x1f2ef50
+      'pairs': function 0x1f2ec90
+      'rawget': function 0x1f2f680
+      'loadstring': function 0x1f2f120
+      'ipairs': function 0x1f2ebf0
+      'sum': function 0x1f32bc0
+      'dofile': function 0x1f2f000
+      'setfenv': function 0x1f2f300
+      '.get': 
+      { 0x1f2f770
+        'd': function 0x1f2f7f0
+      }
+      'error': function 0x1f2f060
+      'loadfile': function 0x1f2f2a0
+      mt: 
+      { 0x1f32740
+        '__index': function 0x1f32790
+        '__newindex': function 0x1f32ad0
+      }
+    }
+  }
+  table 0x1f31fe0: 'const stuff'
+  'stuff': table 0x1f32200
+  'const stuff': 
+  { 0x1f31fe0
+    '__eq': function 0x1f322f0
+    'tolua_ubox': table 0x1f2f930
+    '.collector': function 0x1f33e20
+    '__mul': function 0x1f32170
+    '__gc': function 0x1f30730
+    '__lt': function 0x1f320c0
+    '__div': function 0x1f32090
+    '__index': function 0x1f31ce0
+    '__add': function 0x1f32030
+    '__le': function 0x1f320f0
+    '__sub': function 0x1f32140
+    '__newindex': function 0x1f32060
+    '__call': function 0x1f321a0
+    mt: table 0x1f32200
+  }
+  'tolua_ubox': 
+  { 0x1f30600
+    mt: 
+    { 0x1f30650
+      '__mode': 'v'
+    }
+  }
+  table 0x1f31740: 'student'
+  'student': table 0x1f31740
+  table 0x1f313a0: 'const student'
+  'const student': 
+  { 0x1f313a0
+    '__eq': function 0x1f309d0
+    'tolua_ubox': table 0x1f2f930
+    '.collector': function 0x1f2fbc0
+    '__mul': function 0x1f316b0
+    '__gc': function 0x1f30730
+    '__lt': function 0x1f30970
+    '__div': function 0x1f30940
+    '__index': function 0x1f308b0
+    '__add': function 0x1f308e0
+    '__le': function 0x1f309a0
+    '__sub': function 0x1f31680
+    '__newindex': function 0x1f30910
+    '__call': function 0x1f316e0
+    mt: table 0x1f31740
+  }
+  'tolua_gc': 
+  { 0x1f30860
+  }
+  'tolua_super': 
+  { 0x1f307e0
+    table 0x1f313a0: 
+    { 0x1f2fa00
+      'const ': true
+    }
+    table 0x1f31740: 
+    { 0x1f31c00
+      'const student': true
+      '': true
+    }
+    table 0x1f32200: 
+    { 0x1f326f0
+      'const student': true
+      '': true
+      'student': true
+      'const stuff': true
+    }
+    table 0x1f31fe0: 
+    { 0x1f33dd0
+      'const student': true
+      'const ': true
+    }
+  }
+  'tolua_opened': true
+} 
+```
+
+* 相关代码
+
+```cpp
+static void mapinheritance (lua_State* L, const char* name, const char* base)
+{
+	/* set metatable inheritance */
+	luaL_getmetatable(L,name);
+
+	if (base && *base)
+		luaL_getmetatable(L,base);
+	else {
+
+		if (lua_getmetatable(L, -1)) { /* already has a mt, we don't overwrite it */
+			lua_pop(L, 2);
+			return;
+		};
+		luaL_getmetatable(L,"tolua_commonclass");
+	};
+
+	set_ubox(L);
+
+	lua_setmetatable(L,-2);
+	lua_pop(L,1);
+}
+```
+
+Delete Instance
+---------------
+
+TODO
 
 Reference
 ---------
