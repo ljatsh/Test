@@ -2,7 +2,8 @@
 // Learning JavaScript, 3rd Edition.
 // Chapter 6, Functions
 
-var assert = require('assert');
+const { assert } = require('chai');
+var expect = require('chai').expect;
 
 // 1. Primptive values are passed as value, and Object value are passed as reference
 // 2. Parameter destructuring can be mixed with normal parameters
@@ -13,126 +14,176 @@ var assert = require('assert');
 // 7. Spread operator ... can be used in call
 // 8. function is a kind of object and contains prototype property. Function can be called as constructor, and this was bind to the new created object.
 describe('Functions', function() {
-    it('Value and Reference passing', function() {
-        var a = 1, b = 2, obj = {age : 10};
+  // function is a Function Object which is callable
+  it('Function Object', function() {
+    let f = (x) => x * 2;
+    expect(typeof f).to.be.equal('function');
+    let proto = f;
+    assert.isFunction(proto.apply);
+    expect(f.call(undefined, 2)).to.be.equal(4);
+    expect(f.name).to.be.equal('f');
+  });
 
-        function test(a, b, obj) {
-            a += 1;
-            b += 1;
-            obj.age += 1;
+  // function declaration
+  // function expression
+  // function creation; prefer eval to Function
+  it('function create', function() {
+    function f1(name) { return name; }
+    let f2 = function f(name) { return name; }; // name f can be invoked recursivley
+    let f3 = new Function('name', 'return name;');
 
-            return [a, b, obj];
-        }
+    expect(f1('lj@sh')).to.be.equal('lj@sh');
+    expect(f2('lj@sh')).to.be.equal('lj@sh');
+    expect(f3('lj@sh')).to.be.equal('lj@sh');
+  });
 
-        var [c, d, e] = test(a, b, obj);
-        assert.equal(a, 1);
-        assert.equal(b, 2);
-        assert.equal(c, 2);
-        assert.equal(d, 3);
-        assert.equal(obj, e);
-        assert.equal(obj.age, 11);
-    });
+  // prefer to position default parameters at the right
+  it('parameters - default', function() {
+    function f(a = 1, b) {
+      return [a, b];
+    }
 
-    it('Parameter Destructuring', function() {
-        function test1({a, b, c}) {
-            return `${a}_${b}_${c}`;
-        }
+    expect(f()).be.deep.equal([1, undefined]);
+    expect(f(2)).be.deep.equal([2, undefined]);
+    expect(f.length).to.be.equal(0);
+  });
 
-        function test2([a, b, c]) {
-            return `${a}_${b}_${c}`;
-        }
+  // prefer to use rest parameter instead of argument
+  it('parameters - rest', function() {
+    function multiply(multiplier, ...args) {
+      return [args.map((x) => x * multiplier), Object.getPrototypeOf(args)];
+    }
 
-        function test3(x, {a, b, c}, [y, z]) {
-            return `${x}_${a}_${b}_${c}_${y}_${z}`;
-        }
+    function multiply2(multiplier) {
+      let o = [];
+      for (let i=1; i<arguments.length; i++) {
+        o.push(arguments[i] * multiplier);
+      }
 
-        assert.equal(test1({a:1, b:3, c:2, d:'ljatsh'}), '1_3_2');
-        assert.equal(test2([1, 3, 2, 4]), '1_3_2');
-        assert.equal(test3(10, {a:1, b:3, c:2}, [1, 3, 2, 4]), '10_1_3_2_1_3');
-    });
+      return o;
+    }
 
-    it('Variant Parameters', function() {
-        function test(...args) {
-            return args.join();
-        }
+    let [results, proto] = multiply(2, 1, 2, 3);
+    expect(results).be.deep.equal([2, 4, 6]);
+    expect(proto).to.be.equal(Object.getPrototypeOf([]));
 
-        assert.equal(test(1, 'ljatsh', false), '1,ljatsh,false');
-    });
+    let results2 = multiply2(2, 1, 2, 3);
+    expect(results2).be.deep.equal([2, 4, 6]);
+  });
 
-    it('The key this', function() {
-        function test() {
-            // return the caller
-            return this;
-        }
+  it('parameters - Value and Reference passing', function() {
+    var a = 1, b = 2, obj = {age : 10};
 
-        var a = test();
-        assert.ok(a == undefined || a != null);
+    function test(a, b, obj) {
+      a += 1;
+      b += 1;
+      obj.age += 1;
 
-        var obj = {test : test};
-        assert.equal(obj.test(), obj);
+      return [a, b, obj];
+    }
 
-        function test2() {
-            function inner() { return this; }
+    var [c, d, e] = test(a, b, obj);
+    assert.equal(a, 1);
+    assert.equal(b, 2);
+    assert.equal(c, 2);
+    assert.equal(d, 3);
+    assert.equal(obj, e);
+    assert.equal(obj.age, 11);
+  });
 
-            return [this, inner()];
-        }
+  it('parameters - Parameter Destructuring', function() {
+    function test1({a, b, c}) {
+      return `${a}_${b}_${c}`;
+    }
 
-        obj.test2 = test2;
-        var [s1, s2] = obj.test2();
-        assert.equal(s1, obj);
-        assert.notEqual(s2, obj);
-    });
+    function test2([a, b, c]) {
+      return `${a}_${b}_${c}`;
+    }
 
-    it('Arrow Notation', function() {
-        function test() {
-            var f = ()=> this;
-            return f();
-        }
-        var obj = {test : test};
+    function test3(x, {a, b, c}, [y, z]) {
+      return `${x}_${a}_${b}_${c}_${y}_${z}`;
+    }
 
-        var f1 = () => 1;
-        var f2 = x => x * 2;
+    assert.equal(test1({a:1, b:3, c:2, d:'ljatsh'}), '1_3_2');
+    assert.equal(test2([1, 3, 2, 4]), '1_3_2');
+    assert.equal(test3(10, {a:1, b:3, c:2}, [1, 3, 2, 4]), '10_1_3_2_1_3');
+  });
 
-        assert.equal(f1(), 1);
-        assert.equal(f2(2), 4);
-        assert.equal(obj.test(), obj);
-    });
 
-    it('The call, apply and bind', function() {
-        function test(...args) {
-            var results = [];
-            for (var i=0; i<args.length; i++)
-                results.push(args[i]);
+  it('The key this', function() {
+    function test() {
+      // return the caller
+      return this;
+    }
 
-            results.push(this);
-            return results;
-        }
+    var a = test();
+    assert.ok(a == undefined || a != null);
 
-        var obj = {};
-        assert.deepEqual(test.call(obj), [obj]);
-        assert.deepEqual(test.call(obj, 1, 'ljatsh'), [1, 'ljatsh', obj]);
-        assert.deepEqual(test.call(obj, ...[1, 'ljatsh']), [1, 'ljatsh', obj]);
+    var obj = {test : test};
+    assert.equal(obj.test(), obj);
 
-        assert.deepEqual(test.apply(obj, [1, 'ljatsh']), [1, 'ljatsh', obj]);
+    function test2() {
+      function inner() { return this; }
 
-        var test2 = test.bind(obj, 1);
-        assert.deepEqual(test2(2, 'ljatsh'), [1, 2, 'ljatsh', obj]);
-    });
+      return [this, inner()];
+    }
 
-    it('Constructor', function() {
-        function Test(out) {
-            out.push(this);
-        }
+    obj.test2 = test2;
+    var [s1, s2] = obj.test2();
+    assert.equal(s1, obj);
+    assert.notEqual(s2, obj);
+  });
 
-        var array = [];
-        var obj = new Test(array);
-        assert.equal(array[0], obj);
-        assert.equal(Object.getPrototypeOf(obj), Test.prototype, 'Function is actually object and contains prototype object');
+  it('Arrow Notation', function() {
+    function test() {
+      var f = ()=> this;
+      return f();
+    }
+    var obj = {test : test};
 
-        var obj2 = {method:Test};
-        array.splice(0);
-        obj = new obj2.method(array);
-        assert.equal(array[0], obj);
-        assert.ok(obj !== obj2, 'this binds to the new created object event if constructor was called as method');
-    });
+    var f1 = () => 1;
+    var f2 = x => x * 2;
+
+    assert.equal(f1(), 1);
+    assert.equal(f2(2), 4);
+    assert.equal(obj.test(), obj);
+});
+
+  it('The call, apply and bind', function() { 
+    function test(...args) {
+      var results = [];
+      for (var i=0; i<args.length; i++)
+        results.push(args[i]);
+
+      results.push(this);
+      return results;
+    }
+
+    var obj = {};
+    assert.deepEqual(test.call(obj), [obj]);
+    assert.deepEqual(test.call(obj, 1, 'ljatsh'), [1, 'ljatsh', obj]);
+    assert.deepEqual(test.call(obj, ...[1, 'ljatsh']), [1, 'ljatsh', obj]);
+
+    assert.deepEqual(test.apply(obj, [1, 'ljatsh']), [1, 'ljatsh', obj]);
+
+    var test2 = test.bind(obj, 1);
+    assert.deepEqual(test2(2, 'ljatsh'), [1, 2, 'ljatsh', obj]);
+  });
+
+  it('Constructor', function() {
+    function Test(out) {
+      out.push(this);
+    }
+
+    var array = [];
+    var obj = new Test(array);
+    assert.equal(array[0], obj);
+    assert.equal(Object.getPrototypeOf(obj), Test.prototype, 'Function is actually object and contains prototype object');
+
+    var obj2 = {method:Test};
+    array.splice(0);
+    obj = new obj2.method(array);
+    assert.equal(array[0], obj);
+    assert.ok(obj !== obj2, 'this binds to the new created object event if constructor was called as method');
+  });
 });
