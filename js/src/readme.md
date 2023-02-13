@@ -16,7 +16,7 @@ JavaScript Specification
 3. [globalThis](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis)
 4. [Iterators and Generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_generators)
 5. [Spread Syntax(...)](http://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
-6. Function
+6. Function(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions)
     * [Creation]
         * [declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
         * [expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
@@ -27,6 +27,7 @@ JavaScript Specification
     * [Closure](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
       * [LexicialEnvironment](https://amnsingh.medium.com/lexical-environment-the-hidden-part-to-understand-closures-71d60efac0e0)
       * [ExecutionContext](https://medium.com/dailyjs/javascript-basics-the-execution-context-and-the-lexical-environment-3505d4fe1be2)
+    * [Arrow Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
 
 Reference
 =========

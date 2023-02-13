@@ -127,6 +127,7 @@ describe('Functions', function() {
     expect(f(5)).to.be.equal(15);
   });
 
+  // An arrow function does not have its own this; the this value of the enclosing execution context is used.
   it('Arrow Notation', function() {
     function test() {
       var f = ()=> this;
