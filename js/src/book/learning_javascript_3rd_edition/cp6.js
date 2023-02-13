@@ -109,29 +109,22 @@ describe('Functions', function() {
     assert.equal(test3(10, {a:1, b:3, c:2}, [1, 3, 2, 4]), '10_1_3_2_1_3');
   });
 
-
-  it('The key this', function() {
-    function test() {
-      // return the caller
-      return this;
+  // the key point to understand closure is the execution context
+  // Execution context in ES5
+  // ExecutionContext = {
+  //   ThisBinding: <this value>,
+  //   VariableEnvironment: { ... },
+  //   LexicalEnvironment: { ... }
+  // }
+  it('closure', function() {
+    function adder(age) {
+      return function(v) {
+        return age + v;
+      }
     }
 
-    var a = test();
-    assert.ok(a == undefined || a != null);
-
-    var obj = {test : test};
-    assert.equal(obj.test(), obj);
-
-    function test2() {
-      function inner() { return this; }
-
-      return [this, inner()];
-    }
-
-    obj.test2 = test2;
-    var [s1, s2] = obj.test2();
-    assert.equal(s1, obj);
-    assert.notEqual(s2, obj);
+    let f = adder(10);
+    expect(f(5)).to.be.equal(15);
   });
 
   it('Arrow Notation', function() {
@@ -147,27 +140,6 @@ describe('Functions', function() {
     assert.equal(f1(), 1);
     assert.equal(f2(2), 4);
     assert.equal(obj.test(), obj);
-});
-
-  it('The call, apply and bind', function() { 
-    function test(...args) {
-      var results = [];
-      for (var i=0; i<args.length; i++)
-        results.push(args[i]);
-
-      results.push(this);
-      return results;
-    }
-
-    var obj = {};
-    assert.deepEqual(test.call(obj), [obj]);
-    assert.deepEqual(test.call(obj, 1, 'ljatsh'), [1, 'ljatsh', obj]);
-    assert.deepEqual(test.call(obj, ...[1, 'ljatsh']), [1, 'ljatsh', obj]);
-
-    assert.deepEqual(test.apply(obj, [1, 'ljatsh']), [1, 'ljatsh', obj]);
-
-    var test2 = test.bind(obj, 1);
-    assert.deepEqual(test2(2, 'ljatsh'), [1, 2, 'ljatsh', obj]);
   });
 
   it('Constructor', function() {
