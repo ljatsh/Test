@@ -1,4 +1,9 @@
 
+// TODO
+// 1. 非递归的中序遍历; https://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/?ref=lbp的算法不容易处理3-arr树
+// 2. 非递归的后序遍历
+// 3. 查找离散数学中, 转换递归为非递归的通用算法
+
 function tree_new(v, ...children) {
   return {
     label: v,
@@ -52,7 +57,7 @@ function *tree_pre_order_visit_recursively(r) {
 
 function *tree_pre_order_visit(r) {
   let s = stack_new();
-  s.push(r);
+  stack_push(s, r);
 
   let step = 0;
   console.log(`[${step}]: ${dump_stack_tree(s)}`);
@@ -61,11 +66,11 @@ function *tree_pre_order_visit(r) {
   while (!stack_empty(s)) {
     step++;
 
-    v = s.pop();
+    v = stack_pop(s);
     yield tree_label(v);
 
     for (let child of tree_reverse_children(v)) {
-      s.push(child);
+      stack_push(s, child);
     }
 
     console.log(`[${step}]: ${tree_label(v)}; ${dump_stack_tree(s)}`);
@@ -88,6 +93,10 @@ function *tree_in_order_visit_recursively(r) {
   }
 }
 
+function *tree_in_order_visit(r) {
+  // TODO...
+}
+
 function *tree_post_order_visit_recursively(r) {
   for (child of tree_children(r)) {
     for (let v of tree_post_order_visit_recursively(child)) {
@@ -96,6 +105,40 @@ function *tree_post_order_visit_recursively(r) {
   }
 
   yield tree_label(r);
+}
+
+function *tree_post_order_visit(r) {
+  // let s = stack_new();
+  // stack_push(s, r);
+  // let touched = {};
+
+  // let step = 0;
+  // console.log(`[${step}]: ${dump_stack_tree(s)}`);
+
+  // let v;
+  // while (!stack_empty(s)) {
+  //   step++;
+
+  //   v = stack_top(s);
+  //   let visit;
+  //   if (tree_leaf(v) || touched[tree_label(v)]) {
+  //     stack_pop(s);
+  //     visit = tree_label(v);
+  //     yield visit;
+  //   }
+  //   else {
+  //     for (let child of tree_reverse_children(v)) {
+  //       stack_push(s, child);
+  //     }
+  //     touched[tree_label(v)] = true;
+
+  //     visit = '-';
+  //   }
+
+  //   console.log(`[${step}]: ${visit}; ${dump_stack_tree(s)}`);
+  // }
+
+  // TODO
 }
 
 function stack_new() {
@@ -147,6 +190,8 @@ console.log(`循环前序遍历: ${v.join(', ')}\n`);
 
 v = [...tree_in_order_visit_recursively(t)];
 console.log(`递归中序遍历: ${v.join(', ')}`);
+// v = [...tree_in_order_visit(t)];
+// console.log(`循环中序遍历: ${v.join(', ')}\n`);
 
 v = [...tree_post_order_visit_recursively(t)];
 console.log(`递归后序遍历: ${v.join(', ')}`);
