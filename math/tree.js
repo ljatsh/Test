@@ -57,23 +57,21 @@ function *tree_pre_order_visit_recursively(r) {
 
 function *tree_pre_order_visit(r) {
   let s = stack_new();
-  stack_push(s, r);
-
   let step = 0;
-  console.log(`[${step}]: ${dump_stack_tree(s)}`);
 
-  let v;
-  while (!stack_empty(s)) {
+  let n = r;
+  while (n) {
     step++;
 
-    v = stack_pop(s);
-    yield tree_label(v);
+    yield tree_label(n);
 
-    for (let child of tree_reverse_children(v)) {
+    for (let child of tree_reverse_children(n)) {
       stack_push(s, child);
     }
 
-    console.log(`[${step}]: ${tree_label(v)}; ${dump_stack_tree(s)}`);
+    console.log(`[${step}]: ${tree_label(n)}; ${dump_stack_tree(s)}`);
+
+    n = stack_pop(s);
   }
 }
 
@@ -141,6 +139,25 @@ function *tree_post_order_visit(r) {
   // TODO
 }
 
+function *tree_level_visit(r) {
+  let q = queue_new();
+  let n = r;
+  let step = 0;
+  while (n) {
+    step++;
+
+    yield tree_label(n);
+
+    for (let child of tree_children(n)) {
+      queue_push(q, child);
+    }
+
+    console.log(`[${step}]: ${tree_label(n)}; ${dump_queue_tree(q)}`);
+
+    n = queue_pop(q);
+  }
+}
+
 function stack_new() {
   return [];
 }
@@ -162,6 +179,33 @@ function stack_pop(s) {
 }
 
 function dump_stack_tree(s) {
+  let s1 = Array.from(s);
+  return s1.reverse()
+           .map(n => `T(${tree_label(n)})`)
+          .join(', ');
+}
+
+function queue_new() {
+  return [];
+}
+
+function queue_empty(s) {
+  return s.length == 0;
+}
+
+function queue_push(s, v) {
+  s.push(v);
+}
+
+function queue_top(s) {
+  return s[0];
+}
+
+function queue_pop(s) {
+  return s.shift();
+}
+
+function dump_queue_tree(s) {
   return s.map(n => `T(${tree_label(n)})`)
           .join(', ');
 }
@@ -194,4 +238,7 @@ console.log(`递归中序遍历: ${v.join(', ')}`);
 // console.log(`循环中序遍历: ${v.join(', ')}\n`);
 
 v = [...tree_post_order_visit_recursively(t)];
-console.log(`递归后序遍历: ${v.join(', ')}`);
+console.log(`递归后序遍历: ${v.join(', ')}\n`);
+
+v = [...tree_level_visit(t)];
+console.log(`层级遍历: ${v.join(', ')}`);
