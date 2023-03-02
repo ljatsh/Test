@@ -82,3 +82,26 @@ function reverse(array) {
 
 array = 'Hello, Longjun!';
 console.log(`翻转"${array}": ${reverse(array.split('')).join('')}`);
+
+// https://www.geeksforgeeks.org/array-rotation/
+// 左侧旋转
+
+// 精巧思路
+function rotate_left(array, d) {
+  let v;
+  for (let t=1; t<=d; t++) {
+    v = array[0];
+    for (let i=1; i<array.length; i++) {
+      array[i-1] = array[i];
+    }
+    array[array.length - 1] = v;
+  }
+
+  return array;
+}
+
+array = [1, 2, 3, 4, 5, 6, 7];
+console.log(`左旋转[${array}]2次:[${rotate_left(array, 2)}]`);
+
+// TODO 还有其他的算法
+// https://ide.geeksforgeeks.org
