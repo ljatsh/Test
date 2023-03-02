@@ -62,3 +62,23 @@ array = [1, 3, 4, 9, 10, 20, 50, 51, 60];
 console.log(`binary locate 3 recursively at ${array}: ${binary_search_recursive(array, 3, 0, array.length)}`);
 console.log(`binary locate 3 iteratively at ${array}: ${binary_search_iterative(array, 3, 0, array.length)}`);
 
+// https://www.geeksforgeeks.org/write-a-program-to-reverse-an-array-or-string/
+// 反转数组
+function reverse(array) {
+  let from = 0;
+  let to = array.length - 1;
+  let v;
+  while (from < to) {
+    v = array[to];
+    array[to] = array[from];
+    array[from] = v;
+
+    from++;
+    to--;
+  }
+
+  return array;
+}
+
+array = 'Hello, Longjun!';
+console.log(`翻转"${array}": ${reverse(array.split('')).join('')}`);
