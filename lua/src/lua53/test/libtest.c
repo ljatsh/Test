@@ -119,10 +119,12 @@ new_student(lua_State* L) {
   }
 
   size_t max_length = sizeof(struct student);
-  struct student* s = (struct student*)lua_newuserdata(L, max_length);
+  struct student** s1 = (struct student**)lua_newuserdata(L, sizeof(struct student*));
+  struct student* s = (struct student*)malloc(max_length);
   memset(s, 0, max_length);
   s->age = age;
   memcpy(s->name, name, length > (max_length - 1) ? (max_length - 1) : length);
+  *s1 = s;
 
   // set metatable
   luaL_getmetatable(L, student_mt);
@@ -133,35 +135,35 @@ new_student(lua_State* L) {
 
 static int
 student_age(lua_State* L) {
-  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
-  lua_pushinteger(L, s->age);
+  struct student** s = (struct student**)luaL_checkudata(L, 1, student_mt);
+  lua_pushinteger(L, (*s)->age);
 
   return 1;
 }
 
 static int
 student_set_age(lua_State* L) {
-  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
+  struct student** s = (struct student**)luaL_checkudata(L, 1, student_mt);
   int age = luaL_checkinteger(L, 2);
-  s->age = age;
+  (*s)->age = age;
 
   return 0;
 }
 
 static int
 student_name(lua_State* L) {
-  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
-  lua_pushstring(L, s->name);
+  struct student** s = (struct student**)luaL_checkudata(L, 1, student_mt);
+  lua_pushstring(L, (*s)->name);
 
   return 1;
 }
 
 static int
 student_set_name(lua_State* L) {
-  struct student* s = (struct student*)luaL_checkudata(L, 1, student_mt);
+  struct student** s = (struct student**)luaL_checkudata(L, 1, student_mt);
   size_t length = 9;
   const char* name = luaL_checklstring(L, 2, &length);
-  memcpy(s->name, name, length > (sizeof(struct student) - 1) ? (sizeof(struct student) - 1) : length);
+  memcpy((*s)->name, name, length > (sizeof(struct student) - 1) ? (sizeof(struct student) - 1) : length);
 
   return 0;
 }

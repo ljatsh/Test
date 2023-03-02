@@ -1,0 +1,64 @@
+
+// https://www.geeksforgeeks.org/array-data-structure/
+
+// 数组是连续的布局, O(1)按照索引、地址访问
+
+// ---------------------------------
+// Basic Operations
+
+// https://www.geeksforgeeks.org/searching-algorithms//
+// 数组的查找, 一个线性
+function linear_search(array, v) {
+  for (let i=0; i<array.length-1; i++) {
+    if (array[i] == v) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+function binary_search_recursive(array, v, from, to) {
+  let m = from + Math.floor((to - from) / 2);
+  if (m < from) {
+    return -1;
+  }
+
+  if (v < array[m]) {
+    return binary_search_recursive(array, v, from, m - 1);
+  }
+  else if (v > array[m]) {
+    return binary_search_recursive(array, v, m + 1, to);
+  }
+  else {
+    return m;
+  }
+}
+
+function binary_search_iterative(array, v) {
+  let from = 0;
+  let to = array.length - 1;
+  let m;
+  while (from <= to) {
+    m = from + Math.floor((to - from) / 2);
+
+    if (v < array[m]) {
+      to = m - 1;
+    }
+    else if (v > array[m]) {
+      from = m + 1;
+    }
+    else {
+      return m;
+    }
+  }
+
+  return - 1;
+}
+
+let array = [1, 4, 7, 10, 30, 40];
+console.log(`linear locate 30 at ${array}: ${linear_search(array, 30)}`);
+array = [1, 3, 4, 9, 10, 20, 50, 51, 60];
+console.log(`binary locate 3 recursively at ${array}: ${binary_search_recursive(array, 3, 0, array.length)}`);
+console.log(`binary locate 3 iteratively at ${array}: ${binary_search_iterative(array, 3, 0, array.length)}`);
+
