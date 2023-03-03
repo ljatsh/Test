@@ -224,6 +224,9 @@ for (let array of [[1, 2], [1, 2, 3], [1, 2, 3, 4]]) {
   }
 }
 
+// ---------------------------------
+// Standard problem on Array
+
 // https://www.geeksforgeeks.org/find-the-largest-three-elements-in-an-array/
 // 搜寻k个最大的值, 和第k个最大值
 
@@ -258,5 +261,28 @@ array.sort(()=> Math.random() - 0.5);
 console.log(`在100个随机数中找最大3个值: [${search_largest_three(array, 3)}]`);
 
 // TODO 用heap等结构
+
+// https://www.geeksforgeeks.org/move-zeroes-end-array/
+// 所有0移动到末尾
+
+// O(N)
+function move_zeroes_to_end(array) {
+  let offset = 0;
+  for (let i=0; i<array.length; i++) {
+    if (array[i] == 0) {
+      offset++;
+    }
+    else if (array[i] != 0 && offset > 0) {
+      array[i-offset] = array[i];
+      array[i] = 0;
+    }
+  }
+}
+
+for (let array of [[1, 2, 0, 4, 3, 0, 5, 0], [1, 2, 0, 0, 0, 3, 6]]) {
+  let array2 = Array.from(array);
+  move_zeroes_to_end(array2);
+  console.log(`移动[${array}]所有的0到末尾:[${array2}]`);
+}
 
 // https://ide.geeksforgeeks.org
