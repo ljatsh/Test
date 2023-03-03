@@ -104,4 +104,81 @@ array = [1, 2, 3, 4, 5, 6, 7];
 console.log(`左旋转[${array}]2次:[${rotate_left(array, 2)}]`);
 
 // TODO 还有其他的算法
+
+// https://www.geeksforgeeks.org/search-insert-and-delete-in-a-sorted-array/
+// 插入到有序数组
+
+function insert_sorted_linear(array, element) {
+  let index = array.length; // 默认插到最后
+  for (let i=0; i<array.length; i++) {
+    if (element == array[i]) {
+      index = -1;
+      break;
+    }
+
+    if (element < array[i]) {
+      index = i;
+      break;
+    }
+  }
+
+  if (index == -1) { return index; }
+  
+  for (i=array.length-1; i>=index; i--) {
+    array[i+1] = array[i];
+  }
+  array[index] = element;
+  return index;
+}
+
+function insert_sorted_binary(array, element) {
+  let left = 0, right = array.length - 1;
+  let m;
+  let index = 0;
+  while (left <= right) {
+    m = left + Math.floor((right - left) / 2);
+    if (element < array[m]) {
+      if (m == 0 || element > array[m - 1]) {
+        index = m;
+        break;
+      }
+
+      right = m - 1;
+    }
+    else if (element > array[m]) {
+      if (m == (array.length - 1) || element < array[m + 1]) {
+        index = m + 1;
+        break;
+      }
+
+      left = m + 1;
+    }
+    else {
+      index = -1;
+      break;
+    }
+  }
+
+  if (index == -1) { return index; }
+
+  for (let i=array.length-1; i>=index; i--) {
+    array[i + 1] = array[i];
+  }
+  array[index] = element;
+  return index;
+}
+
+let index_array_1 = [];
+let index_array_2 = [];
+let random;
+for (let i=0; i<30; i++) {
+  random = Math.floor(Math.random() * 100);
+  insert_sorted_linear(index_array_1, random);
+  insert_sorted_binary(index_array_2, random);
+}
+console.log(`线性有序随机插入30个数字到[]:[${index_array_1}]`);
+console.log(`折半有序随机插入30个数字到[]:[${index_array_2}]`);
+
+// TODO 标准答案虽然精巧, 可是没有考虑重复; 比较的次数也不理想
+
 // https://ide.geeksforgeeks.org
