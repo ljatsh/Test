@@ -73,6 +73,41 @@ function *visit_tree_levelorder(r) {
   }
 }
 
+// https://www.geeksforgeeks.org/find-the-maximum-depth-or-height-of-a-tree/
+// 树的高度
+function tree_height_recursively(r) {
+  if (!r) return 0;
+
+  let h1 = tree_height_recursively(r.left);
+  let h2 = tree_height_recursively(r.right);
+  return 1 + Math.max(h1, h2);
+}
+
+function tree_height(r) {
+  let h = 0;
+  
+  if (!r) return h;
+  let q = queue_new();
+  queue_enqueue(q, r);
+  queue_enqueue(q, null);
+  
+  let n;
+  while (!queue_empty()) {
+    n = queue_dequeue(q);
+    if (n) {
+      if (n.left)
+        queue_enqueue(q, n.left);
+      if (n.right)
+        queue_enqueue(q, n.right);
+    } else {
+      h++;
+      queue_enqueue(q, null); // 一层访问完毕, 下一层的节点必然都进入队列了
+    }
+  }
+  
+  return h;
+}
+
 let root = tree_new(25,
                     tree_new(15,
                              tree_new(10,
@@ -103,4 +138,14 @@ console.log(`前序递归遍历:${result}`);
 result = [...visit_tree_postorder_recursilve(root)];
 console.log(`后序递归遍历:${result}`);
 result = [...visit_tree_levelorder(root)];
-console.log(`层级遍历:${result}`);
+console.log(`层级遍历:${result}\n`);
+
+root = tree_new(1,
+                tree_new(2,
+                         tree_new(4),
+                         tree_new(5)
+                         ),
+                tree_new(3)
+                );
+console.log(`递归计算树高${tree_height_recursively(root)}`);
+console.log(`层级计算树高${tree_height_recursively(root)}`);
