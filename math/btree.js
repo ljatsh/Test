@@ -108,6 +108,46 @@ function tree_height(r) {
   return h;
 }
 
+// https://www.geeksforgeeks.org/deletion-binary-tree/
+// 事实上是删除最底层的最右侧节点
+
+function tree_remove_key(r, key) {
+  let node_key;
+  let parent_replace, replace, left;
+  let q = queue_new();
+  queue_enqueue(q, r);
+
+  let n;
+  while (!queue_empty(q)) {
+    n = queue_dequeue(q);
+    if (tree_label(n) == key)
+      node_key = n;
+
+    if (n.left) {
+      queue_enqueue(q, n.left);
+
+      parent_replace = n;
+      replace = n.left;
+      left = true;
+    }
+    if (n.right) {
+      queue_enqueue(q, n.right);
+
+      parent_replace = n;
+      replace = n.right;
+      left = false;
+    }
+  }
+
+  if (!node_key) return;
+
+  node_key.label = replace.label;
+  if (left)
+    parent_replace.left = null;
+  else
+    parent_replace.right = null;
+}
+
 let root = tree_new(25,
                     tree_new(15,
                              tree_new(10,
@@ -149,3 +189,32 @@ root = tree_new(1,
                 );
 console.log(`递归计算树高${tree_height_recursively(root)}`);
 console.log(`层级计算树高${tree_height_recursively(root)}`);
+
+root = tree_new(10,
+                tree_new(11,
+                        tree_new(7),
+                        tree_new(12)
+                        ),
+                tree_new(9,
+                         tree_new(15),
+                         tree_new(8)
+                         )
+                );
+result = [...visit_tree_inorder_recursilve(root)];
+console.log(`删除前:${result}`);
+tree_remove_key(root, 11);
+result = [...visit_tree_inorder_recursilve(root)];
+console.log(`删除11, 按照层级缩减后: ${result}`);
+
+root = tree_new(9,
+                tree_new(2,
+                        tree_new(4),
+                        tree_new(7)
+                        ),
+                tree_new(8)
+                );
+result = [...visit_tree_inorder_recursilve(root)];
+console.log(`删除前:${result}`);
+tree_remove_key(root, 7);
+result = [...visit_tree_inorder_recursilve(root)];
+console.log(`删除7, 按照层级缩减后: ${result}`);
