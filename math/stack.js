@@ -35,35 +35,74 @@ function priority(c, push) {
 function infix_postfix(expr) {
   let out = [];
   let s = stack_new();
-  let p_in, p_out;
+  let p, p_top;
   let top;
   for (let c of expr) {
-    p_in = priority(c, true);
-    if (p_in == -1) {
+    p = priority(c, true);
+    if (p == -1) {
       out.push(c);
     } else {
-      while (!stack_empty(s) && ((p_out = priority(stack_top(s), false)) >= p_in)) {
-        top = stack_pop(s);
-        if (p_out > 0)
+      if (c == ')') {
+        while (!stack_empty(s)) {
+          top = stack_pop(s);
+          if (top == '(') {
+            break;
+          }
+
           out.push(top);
+        }
       }
-      if (p_in > 0)
+      else {
+        while (!stack_empty(s) && ((p_top = priority(stack_top(s), false)) >= p)) {
+          out.push(stack_pop(s));
+        }
         stack_push(s, c);
+      }
     }
   }
   while (!stack_empty(s)) {
     out.push(stack_pop(s));
   }
-  
+
   return out;
 }
 
-let expr = 'A + B * C + D';
-let expr2 = expr.replace(/\s/g, '').split('');
-console.log(`${expr}转换为postExpression: ${infix_postfix(expr2).join('')}`);
-expr = '(A + B) * (C + D)';
-expr2 = expr.replace(/\s/g, '').split('');
-console.log(`${expr}转换为postExpression: ${infix_postfix(expr2).join('')}`);
-expr = '((A + B) / (E - F)) * (C + D)';
-expr2 = expr.replace(/\s/g, '').split('');
-console.log(`${expr}转换为postExpression: ${infix_postfix(expr2).join('')}`);
+for (let expr of ['A + B * C + D', '(A + B) * (C + D)', '((A + B) - C * (D / E)) + F']) {
+  let expr2 = expr.replace(/\s/g, '').split('');
+  console.log(`${expr}转换为postExpression: ${infix_postfix(expr2).join('')}`);
+}
+
+// https://www.geeksforgeeks.org/arithmetic-expression-evalution/
+// 后缀表达式计算
+
+function postfix_expr_eval(expr) {
+  let s = stack_new();
+  let postfix = infix_postfix(expr);
+  let left, right;
+  for (let v of postfix) {
+    if (priority(v) == -1) {
+      stack_push(s, v);
+    }
+    else {
+      right = Number.parseFloat(stack_pop(s));
+      left = Number.parseFloat(stack_pop(s));
+
+      if (v == '+') {
+        stack_push(s, left + right);
+      } else if (v == '-') {
+        stack_push(s, left - right);
+      } else if (v == '*') {
+        stack_push(s, left * right);
+      } else if (v == '/') {
+        stack_push(s, left / right);
+      }
+    }
+  }
+
+  return stack_pop(s);
+}
+
+for (let expr of ['(2 + 4) * (4 + 6)', '2 + (3 * 1) - 9']) {
+  let expr2 = expr.replace(/\s/g, '').split('');
+  console.log(`${expr}计算结果: ${postfix_expr_eval(expr2)}`);
+}
