@@ -106,3 +106,30 @@ for (let expr of ['(2 + 4) * (4 + 6)', '2 + (3 * 1) - 9']) {
   let expr2 = expr.replace(/\s/g, '').split('');
   console.log(`${expr}计算结果: ${postfix_expr_eval(expr2)}`);
 }
+
+// https://www.geeksforgeeks.org/reverse-individual-words/
+// 给定字符串, 按照单词翻转
+
+function reverse_word(str) {
+  let out = [];
+  let s = stack_new();
+  for (let c of str) {
+    if (c == ' ' || c == '\t') {
+      while (!stack_empty(s))
+        out.push(stack_pop(s));
+      out.push(c);
+    }
+    else {
+      stack_push(s, c);
+    }
+  }
+  
+  while (!stack_empty(s))
+    out.push(stack_pop(s));
+    
+  return out.join('');
+}
+
+for (let str of ['Hello World', 'Geeks for Geeks']) {
+  console.log(`按照单词翻转'${str}': '${reverse_word(str)}'`);
+}
