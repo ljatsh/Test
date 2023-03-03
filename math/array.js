@@ -181,4 +181,82 @@ console.log(`折半有序随机插入30个数字到[]:[${index_array_2}]`);
 
 // TODO 标准答案虽然精巧, 可是没有考虑重复; 比较的次数也不理想
 
+// https://www.geeksforgeeks.org/sorting-algorithms/
+// TODO 用专门的章节来复习排序
+
+// https://www.geeksforgeeks.org/generating-subarrays-using-recursion/
+// 生成所有子数组
+
+// 组合递归的逻辑有逻辑判断, 明显不好 TODO
+// function *generate_sub_arrays_recursively(array, from, to) {
+//   if (from > to) {
+//     yield;
+//     return;
+//   }
+ 
+//   if (from === to) {
+//     yield {value: Array.of(array[from]), from: from, to: to};
+//     return;
+//   }
+
+//   yield {value: Array.of(array[from]), from: from, to: from};
+//   for (let v of generate_sub_arrays_recursively(array, from + 1, to)) {
+//     yield v;
+//     // 不能跨索引合并
+//     if (v.from == from + 1) {
+//       yield {value: Array.of(array[from]).concat(v.value), from: from, to: v.to};
+//     }
+//   }
+// }
+
+function *generate_sub_arrays_iteratively(array) {
+  for (let from=0; from<array.length; from++) {
+    for (let to=from; to<array.length; to++) {
+      yield array.slice(from, to+1);
+    }
+  }
+}
+
+for (let array of [[1, 2], [1, 2, 3], [1, 2, 3, 4]]) {
+  console.log(`迭代生成[${array}]的所有子数组:`);
+  for (let sub_array of generate_sub_arrays_iteratively(array)) {
+    console.log(sub_array);
+  }
+}
+
+// https://www.geeksforgeeks.org/find-the-largest-three-elements-in-an-array/
+// 搜寻k个最大的值, 和第k个最大值
+
+// O(N * (k-1)); 如果k变大, 先排序, 再取值, O(N * logN)
+function search_largest_three(array, k) {
+  let largest = new Array(k);
+  largest.fill(-Infinity);
+  let swap;
+  for (let v of array) {
+    if (v > largest[0]) {
+      largest[0] = v;
+
+      // bubble to the top
+      for (let i=1; i<largest.length; i++) {
+        if (largest[i - 1] > largest[i]) {
+          swap = largest[i - 1];
+          largest[i - 1] = largest[i];
+          largest[i] = swap;
+        }
+      }
+    }
+  }
+  
+  return largest;
+}
+
+array = [];
+for (let i=1; i<=100; i++) {
+  array.push(i);
+}
+array.sort(()=> Math.random() - 0.5);
+console.log(`在100个随机数中找最大3个值: [${search_largest_three(array, 3)}]`);
+
+// TODO 用heap等结构
+
 // https://ide.geeksforgeeks.org
