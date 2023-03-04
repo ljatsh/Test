@@ -20,6 +20,13 @@ function queue_top(q) { return q[0]; }
 function queue_enqueue(q, v) { q.push(v); }
 function queue_dequeue(q) { return q.shift(); }
 
+function stack_new() { return []; }
+function stack_empty(s) { return s.length == 0; }
+function stack_top(s) { return s[s.length - 1]; }
+function stack_push(s, v) { s.push(v); }
+function stack_pop(s) { return s.pop(); }
+function stack_dump(s, visit) { return s.map(x => `T(${visit(x)})`); }
+
 // -----------------------------------------------------------------
 // Basic Operations on Binary Tree:
 
@@ -36,6 +43,23 @@ function *visit_tree_inorder_recursilve(r) {
     yield v;
 }
 
+function *visit_tree_inorder_iterative(r) {
+  let n = r;
+  let s = stack_new();
+
+  while (n || !stack_empty(s)) {
+    while (n) {
+      stack_push(s, n);
+      n = n.left;
+    }
+
+    n = stack_pop(s);
+    yield tree_label(n);
+
+    n = n.right;
+  }
+}
+
 // pre-order
 function *visit_tree_preorder_recursilve(r) {
   if (!r) return;
@@ -45,6 +69,22 @@ function *visit_tree_preorder_recursilve(r) {
     yield v;
   for (let v of visit_tree_preorder_recursilve(r.right))
     yield v;
+}
+
+function *visit_tree_preorder_iterative(r) {
+  let n = r;
+  let s = stack_new();
+  
+  while (n) {
+    yield tree_label(n);
+
+    if (n.right)
+      stack_push(s, n.right);
+    if (n.left)
+      stack_push(s, n.left);
+      
+    n = stack_pop(s);
+  }
 }
 
 // post-order
@@ -71,6 +111,25 @@ function *visit_tree_levelorder(r) {
 
     n = queue_dequeue(q);
   }
+}
+
+// https://www.geeksforgeeks.org/reverse-level-order-traversal/
+// reverse level-order
+function *visit_tree_reverse_levelorder(r) {
+  let s = stack_new(), q = queue_new();
+  let n = r;
+  while (n) {
+    stack_push(s, n);
+    if (n.right)
+      queue_enqueue(q, n.right);
+    if (n.left)
+      queue_enqueue(q, n.left);
+      
+    n = queue_dequeue(q);
+  }
+
+  while (!stack_empty(s))
+    yield tree_label(stack_pop(s));
 }
 
 // https://www.geeksforgeeks.org/find-the-maximum-depth-or-height-of-a-tree/
@@ -173,12 +232,25 @@ let root = tree_new(25,
 
 let result = [...visit_tree_inorder_recursilve(root)];
 console.log(`中序递归遍历:${result}`);
+result = [...visit_tree_inorder_iterative(root)];
+console.log(`中序迭代遍历:${result}`);
 result = [...visit_tree_preorder_recursilve(root)];
 console.log(`前序递归遍历:${result}`);
+result = [...visit_tree_preorder_iterative(root)];
+console.log(`前序迭代遍历:${result}`);
 result = [...visit_tree_postorder_recursilve(root)];
 console.log(`后序递归遍历:${result}`);
 result = [...visit_tree_levelorder(root)];
-console.log(`层级遍历:${result}\n`);
+console.log(`层级遍历:${result}`);
+
+root = tree_new(1,
+                tree_new(2,
+                        tree_new(4),
+                        tree_new(5)
+                        ),
+                tree_new(3));
+result = [...visit_tree_reverse_levelorder(root)];
+console.log(`层级逆序遍历:${result}\n`);
 
 root = tree_new(1,
                 tree_new(2,
