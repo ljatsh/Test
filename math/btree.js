@@ -231,6 +231,57 @@ function tree_remove_key(r, key) {
     parent_replace.right = null;
 }
 
+// Must solve Standard Problems on Binary Tree Data Structure
+
+// https://www.geeksforgeeks.org/construct-tree-from-given-inorder-and-preorder-traversal/
+// 根据前序和中序的访问序列, 唯一确定树的结构
+
+function build_tree_from_preorder_inorder_sequence(preorder, inorder) {
+  if (preorder.length == 0) return;
+
+  let key = preorder[0];
+  let n = tree_new(key);
+  let i = inorder.indexOf(key);
+  let inorder_left = inorder.slice(0, i);
+  let inorder_right = inorder.slice(i+1);
+  let preorder_left = preorder.slice(1, 1+inorder_left.length);
+  let preorder_right = preorder.slice(1+inorder_left.length);
+
+  n.left = build_tree_from_preorder_inorder_sequence(preorder_left, inorder_left);
+  n.right = build_tree_from_preorder_inorder_sequence(preorder_right, inorder_right);
+
+  return n;
+}
+
+// TODO 迭代的方法
+
+// https://www.geeksforgeeks.org/construct-tree-inorder-level-order-traversals/
+// 根据中序、层级的访问序列, 唯一确定树的结构
+
+function build_tree_from_inorder_level_sequence(inorder, level) {
+  if (level.length == 0) return;
+
+  let key = level[0];
+  let n = tree_new(key);
+  let i = inorder.indexOf(key);
+  let inorder_left = inorder.slice(0, i);
+  let inorder_right = inorder.slice(i+1);
+  let level_left = [], level_right = [];
+  for (let j=1; j<level.length; j++) {
+    if (inorder_left.indexOf(level[j]) != -1)
+      level_left.push(level[j]);
+    else
+      level_right.push(level[j]);
+  }
+  
+  n.left = build_tree_from_inorder_level_sequence(inorder_left, level_left.join(''));
+  n.right = build_tree_from_inorder_level_sequence(inorder_right, level_right.join(''));
+
+  return n;
+}
+
+// TODO 迭代的方法
+
 let root = tree_new(25,
                     tree_new(15,
                              tree_new(10,
@@ -315,4 +366,16 @@ result = [...visit_tree_inorder_recursilve(root)];
 console.log(`删除前:${result}`);
 tree_remove_key(root, 7);
 result = [...visit_tree_inorder_recursilve(root)];
-console.log(`删除7, 按照层级缩减后: ${result}`);
+console.log(`删除7, 按照层级缩减后: ${result}\n`);
+
+root = build_tree_from_preorder_inorder_sequence('ABDECF', 'DBEAFC');
+result = [...visit_tree_preorder_iterative(root)];
+console.log(`根据前序、中序访问序列, 重构后的树前序为:${result}`);
+result = [...visit_tree_inorder_iterative(root)];
+console.log(`根据前序、中序访问序列, 重构后的树中序为:${result}`);
+
+root = build_tree_from_inorder_level_sequence('DBFEGAC', 'ABCDEFG');
+result = [...visit_tree_inorder_iterative(root)];
+console.log(`根据中序、层级访问序列, 重构后的树中序为:${result}`);
+result = [...visit_tree_levelorder(root)];
+console.log(`根据中序、层级访问序列, 重构后的树层级为:${result}`);
