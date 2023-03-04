@@ -98,6 +98,28 @@ function *visit_tree_postorder_recursilve(r) {
   yield tree_label(r);
 }
 
+// https://www.geeksforgeeks.org/iterative-postorder-traversal/
+// TODO Tail Call Recursion https://en.wikipedia.org/wiki/Tail_call
+// 直接遍历困难
+function *visit_tree_postorder_itervative(r) {
+  let s_outer = stack_new(), s_inner = stack_new();
+  let n = r;
+
+  while (n) {
+    stack_push(s_outer, n);
+
+    if (n.left)
+      stack_push(s_inner, n.left);
+    if (n.right)
+      stack_push(s_inner, n.right);
+    
+    n = stack_pop(s_inner);
+  }
+  
+  while (!stack_empty(s_outer))
+    yield tree_label(stack_pop(s_outer));
+}
+
 // level-order
 function *visit_tree_levelorder(r) {
   let q = queue_new();
@@ -112,6 +134,8 @@ function *visit_tree_levelorder(r) {
     n = queue_dequeue(q);
   }
 }
+
+// TODO Morris traversal
 
 // https://www.geeksforgeeks.org/reverse-level-order-traversal/
 // reverse level-order
@@ -240,6 +264,8 @@ result = [...visit_tree_preorder_iterative(root)];
 console.log(`前序迭代遍历:${result}`);
 result = [...visit_tree_postorder_recursilve(root)];
 console.log(`后序递归遍历:${result}`);
+result = [...visit_tree_postorder_itervative(root)];
+console.log(`后序迭代遍历:${result}`);
 result = [...visit_tree_levelorder(root)];
 console.log(`层级遍历:${result}`);
 
