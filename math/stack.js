@@ -131,5 +131,24 @@ function reverse_word(str) {
 }
 
 for (let str of ['Hello World', 'Geeks for Geeks']) {
-  console.log(`按照单词翻转'${str}': '${reverse_word(str)}'`);
+  console.log(`按照单词翻转'${str}': '${reverse_word(str)}'\n`);
 }
+
+// https://www.geeksforgeeks.org/iterative-tower-of-hanoi/
+// 汉诺塔游戏
+
+function move_recursively(count, from, to, other) {
+  if (count == 0) {
+    return;
+  }
+  
+  move_recursively(count - 1, from, other, to);
+  console.log(`(${count} ${from} -> ${to});`);
+  move_recursively(count - 1, other, to, from);
+}
+
+console.log("递归汉诺塔:");
+move_recursively(3, 'S', 'D', 'A');
+
+// https://www.geeksforgeeks.org/iterative-tower-of-hanoi/
+// TODO 总的移动次数2^n - 1, 如果解f(n) = 2f(n-1) + 1的方程; 怎么理解这个迭代算法？
