@@ -391,3 +391,108 @@ root = tree_new('A',
                 );
 result = is_banlanced_bst(root) !== -1;
 console.log(`ABCDE${result ? '是' : '不是'}平衡二叉树`);
+
+// https://www.geeksforgeeks.org/sorted-array-to-balanced-bst/
+// 已知有序数组, 构建平衡搜索二叉树
+
+function build_tree_from_ordered_sequence(array, start, end) {
+  let length = end - start;
+  if (length <= 0) return;
+
+  if (length == 1) return tree_new(array[start]);
+
+  let m = start + Math.floor((end - start) / 2);
+  let n = tree_new(array[m]);
+  n.left = build_tree_from_ordered_sequence(array, start, m);
+  n.right = build_tree_from_ordered_sequence(array, m+1, end);
+
+  return n;
+}
+
+let array = [1, 2, 3, 4, 5, 6, 7];
+root = build_tree_from_ordered_sequence(array, 0, array.length);
+result = [...visit_tree_preorder_recursilve(root)];
+console.log(`根据有序数组构建的树前序遍历:${result}`);
+print_tree(root);
+
+// https://www.geeksforgeeks.org/second-largest-element-in-binary-search-tree-bst/
+// 找到BST中的第二大元素
+
+function find_second_larged_node(r) {
+  let s = stack_new();
+  let n = r;
+  
+  let seq = 0;
+  while (n || !stack_empty(s)) {
+    while (n) {
+      stack_push(s, n);
+      n = n.right;
+    }
+
+    seq++;
+    n = stack_pop(s);
+
+    if (seq == 2) {
+      return tree_label(n);
+    }
+
+    n = n.left;
+  }
+}
+
+root = tree_new(8,
+                tree_new(3,
+                         tree_new(1),
+                         tree_new(6,
+                                  tree_new(4),
+                                  tree_new(7)
+                                  )
+                         ),
+                tree_new(10,
+                         null,
+                         tree_new(14,
+                                  tree_new(13)
+                                  )
+                        )
+                );
+console.log(`BST中第二大元素:${find_second_larged_node(root)}\n`);
+
+// https://www.geeksforgeeks.org/add-greater-values-every-node-given-bst/
+
+function add_all_greater_values(r) {
+  let n = r;
+  let s = stack_new();
+  let sum = 0;
+
+  let value;
+  while (n || !stack_empty(s)) {
+    while (n) {
+      stack_push(s, n);
+      n = n.right;
+    }
+
+    n = stack_pop(s);
+    value = tree_label(n);
+    n.label += sum;
+    sum += value;
+
+    n = n.left;
+  }
+}
+
+root = tree_new(50,
+                tree_new(30,
+                         tree_new(20),
+                         tree_new(40)),
+                tree_new(70,
+                         tree_new(60),
+                         tree_new(80))
+                );
+console.log("增加最大值之前:");
+print_tree(root);
+console.log("增加最大值之后:");
+add_all_greater_values(root);
+print_tree(root);
+
+// https://www.geeksforgeeks.org/sum-k-smallest-elements-bst/
+// TODO 更改节点内容的算法
