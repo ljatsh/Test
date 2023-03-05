@@ -256,3 +256,138 @@ root = tree_remove(root, 4);
 root = tree_remove(root, 8);
 root = tree_remove(root, 5);
 print_tree(root);
+
+// https://www.geeksforgeeks.org/a-program-to-check-if-a-binary-tree-is-bst-or-not/
+// https://www.geeksforgeeks.org/check-array-represents-inorder-binary-search-tree-not/
+// 判断二叉树是否是BST
+
+// 中序遍历的同时, 检查访问到的数列是否从小到大; 如果不是, 则不是BST; 不用搜索, O(N)
+
+// ttps://www.geeksforgeeks.org/binary-tree-to-binary-search-tree-conversion/
+// 树排序
+
+function merge(arr1, arr2, out) {
+  let i=0, j=0;
+  out.splice(0, out.length);
+  for (; i<arr1.length && j<arr2.length;) {
+    if (arr1[i] < arr2[j]) {
+      out.push(arr1[i++]);
+    }
+    else {
+      out.push(arr2[j++]);
+    }
+  }
+
+  for (; i<arr1.length; i++)
+    out.push(arr1[i]);
+  for (; j<arr2.length; j++)
+    out.push(arr2[j]);
+}
+
+function merge_sort(array) {
+  if (array.length <= 1) return;
+
+  let m = Math.floor(array.length / 2);
+  let left = array.slice(0, m);
+  let right = array.slice(m);
+
+  merge_sort(left);
+  merge_sort(right);
+  merge(left, right, array);
+}
+
+function quick_sort(array) {
+  if (array.length <= 1)
+    return;
+
+  let pivot = array[Math.floor(array.length / 2)];
+  let left = [], right = [];
+  for (let v of array) {
+    if (v < pivot)
+      left.push(v);
+    else if (v > pivot)
+      right.push(v);
+  }
+
+  quick_sort(left);
+  quick_sort(right);
+
+  for (let i=0; i<left.length; i++)
+    array[i] = left[i];
+  array[left.length] = pivot;
+  for (let i=0; i<right.length; i++)
+    array[left.length + 1 + i] = right[i];
+}
+
+function tree_sort(r) {
+  let result = [...visit_tree_inorder_recursilve(r)];
+  //merge_sort(result);
+  quick_sort(result);
+
+  let s = stack_new();
+  let n = r;
+  let index = 0;
+  while (n || !stack_empty(s)) {
+    while (n) {
+      stack_push(s, n);
+      n = n.left;
+    }
+
+    n = stack_pop(s);
+    n.label = result[index++];
+
+    n = n.right;
+  }
+}
+
+root = tree_new(3,
+                tree_new(7,
+                        tree_new(0)),
+                tree_new(10,
+                        tree_new(2),
+                        tree_new(4)));
+console.log("排序前的树:");
+print_tree(root);
+console.log("排序后的树:");
+tree_sort(root);
+print_tree(root);
+
+// https://www.geeksforgeeks.org/how-to-determine-if-a-binary-tree-is-balanced/
+// 判断是否为平衡二叉树; 可以适当优化递归算法, 使得时间复杂度为O(N)
+
+// < 0 表示不平衡; 否则平衡, 而且返回值为树高
+function is_banlanced_bst(r) {
+  if (r == null) return 0;
+
+  let lh = is_banlanced_bst(r.left);
+  if (lh == -1)
+    return -1;
+    
+  let rh = is_banlanced_bst(r.right);
+  if (rh == -1)
+    return -1;
+    
+  if (Math.abs(lh - rh) > 1)
+    return -1;
+
+  return Math.max(lh, rh) + 1;
+}
+
+root = tree_new('A',
+                tree_new('B',
+                         tree_new('D')
+                        ),
+                tree_new('C')
+                );
+result = is_banlanced_bst(root) !== -1;
+console.log(`ABCD${result ? '是' : '不是'}平衡二叉树`);
+
+root = tree_new('A',
+                tree_new('B',
+                         tree_new('D',
+                                  tree_new('E'))
+                        ),
+                tree_new('C')
+                );
+result = is_banlanced_bst(root) !== -1;
+console.log(`ABCDE${result ? '是' : '不是'}平衡二叉树`);
