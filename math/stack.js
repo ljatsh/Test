@@ -149,6 +149,117 @@ function move_recursively(count, from, to, other) {
 
 console.log("递归汉诺塔:");
 move_recursively(3, 'S', 'D', 'A');
+console.log("\n");
 
 // https://www.geeksforgeeks.org/iterative-tower-of-hanoi/
 // TODO 总的移动次数2^n - 1, 如果解f(n) = 2f(n-1) + 1的方程; 怎么理解这个迭代算法？
+
+// https://www.geeksforgeeks.org/introduction-to-monotonic-stack/
+// https://www.geeksforgeeks.org/next-greater-element/
+// https://leetcode.com/discuss/study-guide/2347639/A-comprehensive-guide-and-template-for-monotonic-stack-based-problems
+
+// 单调栈的特点:
+// 1. 终止时, 留在栈内的是有序元素
+// 2. 入栈过程中, 弹出的元素都是与目标元素相左
+// 3. 入栈过程中, 如果是严格的单调栈, 则栈顶元素是与目标元素相符
+// 这个特点, 天然的就是解决NGE、PGE类似问题的答案(栈中压入索引而非值):
+
+// a. Next Greater Element
+// 寻找[13, 8, 1, 5, 2, 5, 9, 7, 6, 12]的NGE, 那么构建一个单调递减栈(如果是>=, 则采用严格单调递减栈):
+// [13]
+// [13, 8]
+// [13, 8, 1]
+// (1, 5) [13, 8, 5]
+// [13, 8, 5, 2]
+// (2, 5) [13, 8, 5, 5]
+// (5, 9) (5, 9) (8, 9) [13, 9]
+// [13, 9, 7]
+// [13, 9, 7, 6]
+// (6, 12) (7, 12) (9, 12) [13, 12]
+// 终值: [-1, 9, 5, 9, 5, 9, 12, 12, 12, -1]
+
+// b. Previous Greater Element
+// 寻找[13, 8, 1, 5, 2, 5, 9, 7, 6, 12]的PGE, 那么构建一个严格单调递减栈(当然也可以反序遍历, 采用NGE算法):
+// [13]
+// [13, 8]
+// (8, 13) [13, 8]
+// (1, 8) [13, 8, 1]
+// (5, 8) [13, 8, 5]
+// (2, 5) [13, 8, 5, 2]
+// (5, 8) [13, 8, 5]
+// (9, 13) [13, 9]
+// (7, 9) [13, 9, 7]
+// (6, 7) [13, 9, 7, 6]
+// (12, 13) [13, 12]
+// 终值: [-1, 13, 8, 8, 5, 8, 13, 9, 7, 13]
+
+// c. Next Smaller Element
+// 与NGE正好相反
+
+// d. Previous Smaller Element
+// 与PGE正好相反
+
+// 另外, 同时搜索NGE, PGE可以在一个循环内完成
+
+function next_greater_elment(array) {
+  let s = stack_new();
+  let out = new Array(array.length).fill(-1);
+
+  let index
+  for (let i=0; i<array.length; i++) {
+    while (!stack_empty(s) && array[stack_top(s)] < array[i]) {
+      index = stack_pop(s)
+      out[index] = array[i];
+    }
+
+    stack_push(s, i);
+  }
+  
+  return out;
+}
+
+function previous_greater_element(array) {
+  let s = stack_new();
+  let out = new Array(array.length).fill(-1);
+
+  for (let i=0; i<array.length; i++) {
+    while (!stack_empty(s) && array[stack_top(s)] <= array[i]) {
+      stack_pop(s);
+    }
+
+    if (!stack_empty(s)) {
+      out[i] = array[stack_top(s)];
+    }
+
+    stack_push(s, i);
+  }
+
+  return out;
+}
+
+function next_greater_and_previous_greater_element(array) {
+  let next = new Array(array.length).fill(-1);
+  let prev = new Array(array.length).fill(-1);
+  let s = stack_new();
+
+  for (let i=0; i<array.length; i++) {
+    found_nge = false;
+    while (!stack_empty(s) && array[stack_top(s)] <= array[i]) {
+      next[stack_pop(s)] = array[i];
+    }
+
+    if (!stack_empty(s)) {
+      prev[i] = array[stack_top(s)];
+    }
+
+    stack_push(s, i);
+  }
+  
+  return [next, prev];
+}
+
+let array = [13, 8, 1, 5, 2, 5, 9, 7, 6, 12];
+console.log(`[${array}]的NGE: [${next_greater_elment(array)}]`);
+console.log(`[${array}]的PGE: [${previous_greater_element(array)}]`);
+let [next, prev] = next_greater_and_previous_greater_element(array);
+console.log(`[${array}]的NPGE: [${next}], [${prev}]`);
