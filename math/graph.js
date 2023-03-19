@@ -134,3 +134,59 @@ console.log(`深度优先迭代遍历图:${result}`);
 
 // https://www.geeksforgeeks.org/difference-between-bfs-and-dfs/
 // DFS vs BFS
+
+// https://www.geeksforgeeks.org/topological-sorting/
+// 拓补排序
+
+// TODO 递归算法反而不容易理解，需要反向查找precedent
+
+function *visit_graph_topologically(g) {
+  let indegrees = {}
+
+  for (const [k, n] of Object.entries(g)) {
+    indegrees[k] = indegrees[k] || 0; // 处理一开始就没有indgree的节点
+
+    for (const adj of node_adjacency(n)) {
+      indegrees[adj] = (indegrees[adj] || 0) + 1;
+    }
+  }
+  
+  let q = queue_new();
+  for (const [k, indgree] of Object.entries(indegrees)) {
+    if (indgree == 0) {
+      queue_enqueue(q, k);
+    }
+  }
+  
+  let k, n
+  while (!queue_empty(q)) {
+    k = queue_dequeue(q);
+    yield k;
+
+    n = graph_node(g, k)
+    for (let adj of node_adjacency(n)) {
+      indegrees[adj]--;
+      if (indegrees[adj] == 0) {
+        queue_enqueue(q, adj);
+      }
+    }
+  }
+}
+
+//              5          4
+//             / \       /  \
+//           /.    \.  /.    \.
+//         2        0         1
+//           \             /.
+//             \         /
+//               \.    /
+//                  3
+
+g = graph_new(node_new(0),
+              node_new(1),
+              node_new(2, 3),
+              node_new(3, 1),
+              node_new(4, 0, 1),
+              node_new(5, 0, 2))
+result = [...visit_graph_topologically(g)]
+console.log(`拓补遍历图:${result}`);
