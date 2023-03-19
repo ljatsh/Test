@@ -1,4 +1,10 @@
 
+function stack_new() { return []; }
+function stack_empty(s) { return s.length == 0; }
+function stack_top(s) { return s[s.length - 1]; }
+function stack_push(s, v) { s.push(v); }
+function stack_pop(s) { return s.pop(); }
+
 function is_prime(n) {
   let max = Math.floor(Math.sqrt(n));
   let array = new Array(max);
@@ -130,9 +136,31 @@ function gcd(a, b) {
     s = r;
     r = l % s;
   };
-  
+
   return s;
 }
 
 console.log(`gcd_recursive(98, 56)=${gcd_recursive(98, 56)}`);
 console.log(`gcd(98, 56)=${gcd(98, 56)}`);
+
+// 给一个十进制整数, 计算base的扩展
+let char = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+function expansion(n, base=10) {
+  let q = n, r;
+
+  let s = stack_new();
+  do {
+    r = q % base;
+    q = (q - r) / base;
+    stack_push(s, char[r]);
+  } while (q > 0);
+
+  let ret = [];
+  while (!stack_empty(s))
+    ret.push(stack_pop(s));
+  return ret.join('');
+}
+
+for (let v of [1000, 1234]) {
+  console.log(`${v}: 10进制${expansion(v)}; 2进制${expansion(v, 2)}; 8进制${expansion(v, 8)}; 16进制${expansion(v, 16)}`);
+}
